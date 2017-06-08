@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.representation;
 
-import java.math.BigInteger;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 
@@ -22,14 +22,14 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class ActionRequestInstructionDTO {
   @Id
-  private BigInteger actionId;
+  private UUID actionId;
   private boolean responseRequired;
   private String actionPlan;
   private String actionType;
   private String questionSet;
   private ActionContact contact;
   private ActionAddress address;
-  private BigInteger caseId;
+  private UUID caseId;
   private Priority priority;
   private String caseRef;
   private String iac;

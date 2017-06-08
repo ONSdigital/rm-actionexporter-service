@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,7 +31,7 @@ public class ActionRequestInstruction {
 
   @Id
   @Column(name = "actionid")
-  private BigInteger actionId;
+  private UUID actionId;
 
   @Column(name = "responserequired")
   private boolean responseRequired;
@@ -46,7 +46,7 @@ public class ActionRequestInstruction {
   private String questionSet;
 
   @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "contactid", referencedColumnName = "contactid")
+  @JoinColumn(name = "contactfk", referencedColumnName = "contactfk")
   private Contact contact;
 
   @ManyToOne
@@ -54,7 +54,7 @@ public class ActionRequestInstruction {
   private Address address;
 
   @Column(name = "caseid")
-  private BigInteger caseId;
+  private UUID caseId;
 
   @Enumerated(EnumType.STRING)
   private Priority priority;

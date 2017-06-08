@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
-import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -70,7 +70,7 @@ public class ActionRequestEndpoint {
    * @throws CTPException if no ActionRequest found
    */
   @RequestMapping(value = "/{actionId}", method = RequestMethod.GET)
-  public ActionRequestInstructionDTO findActionRequest(@PathVariable("actionId") final BigInteger actionId)
+  public ActionRequestInstructionDTO findActionRequest(@PathVariable("actionId") final UUID actionId)
       throws CTPException {
     log.debug("Entering findActionRequest with {}", actionId);
     ActionRequestInstruction result = actionRequestService.retrieveActionRequest(actionId);
@@ -89,7 +89,7 @@ public class ActionRequestEndpoint {
    * @throws CTPException if specific ActionRequest not found
    */
   @RequestMapping(value = "/{actionId}", method = RequestMethod.POST)
-  public ResponseEntity<?> export(@PathVariable("actionId") final BigInteger actionId) throws CTPException {
+  public ResponseEntity<?> export(@PathVariable("actionId") final UUID actionId) throws CTPException {
     log.debug("Entering export with actionId {}", actionId);
     ActionRequestInstruction actionRequest = actionRequestService.retrieveActionRequest(actionId);
     if (actionRequest == null) {

@@ -2,9 +2,9 @@ package uk.gov.ons.ctp.response.action.export.endpoint;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class ManualTestEndpoint {
    */
   private static ActionRequestInstruction buildAMeActionRequest(int i) {
     ActionRequestInstruction result =  new ActionRequestInstruction();
-    result.setActionId(new BigInteger(new Integer(i).toString()));
+    result.setActionId(UUID.randomUUID());
     result.setActionType("testActionType");
     result.setIac("testIac");
     result.setAddress(buildAddress());

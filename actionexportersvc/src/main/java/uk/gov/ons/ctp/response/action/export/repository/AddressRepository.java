@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
-import java.math.BigInteger;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,12 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import uk.gov.ons.ctp.response.action.export.domain.Address;
 
+import java.util.UUID;
+
 /**
  * JPA repository for Address entities
  *
  */
 @Repository
-public interface AddressRepository extends BaseRepository<Address, BigInteger> {
+public interface AddressRepository extends BaseRepository<Address, UUID> {
 
   /**
    * Check repository for uprn existence
@@ -22,5 +23,5 @@ public interface AddressRepository extends BaseRepository<Address, BigInteger> {
    * @return boolean whether exists
    */
   @Query(value = "select exists(select 1 from actionexporter.address where uprn=:p_uprn)", nativeQuery = true)
-  boolean tupleExists(@Param("p_uprn") BigInteger uprn);
+  boolean tupleExists(@Param("p_uprn") UUID uprn);
 }

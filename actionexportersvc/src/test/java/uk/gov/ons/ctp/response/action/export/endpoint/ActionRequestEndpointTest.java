@@ -23,10 +23,10 @@ import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
@@ -107,7 +107,7 @@ public class ActionRequestEndpointTest {
 
   @Test
   public void findExistingActionRequest() throws Exception {
-    when(actionRequestService.retrieveActionRequest(BigInteger.valueOf(EXISTING_ACTION_ID))).thenReturn(buildActionRequest(EXISTING_ACTION_ID));
+    when(actionRequestService.retrieveActionRequest(EXISTING_ACTION_ID)).thenReturn(buildActionRequest(EXISTING_ACTION_ID));
 
     ResultActions actions = mockMvc.perform(getJson(String.format("/actionrequests/%s", EXISTING_ACTION_ID)));
 
@@ -131,7 +131,7 @@ public class ActionRequestEndpointTest {
 
   @Test
   public void exportExistingActionRequest() throws Exception {
-    when(actionRequestService.retrieveActionRequest(BigInteger.valueOf(EXISTING_ACTION_ID))).thenReturn(buildActionRequest(EXISTING_ACTION_ID));
+    when(actionRequestService.retrieveActionRequest(EXISTING_ACTION_ID)).thenReturn(buildActionRequest(EXISTING_ACTION_ID));
     when(transformationService.processActionRequest(any(ExportMessage.class), any(ActionRequestInstruction.class))).thenAnswer(invocation -> {
       Object[] args = invocation.getArguments();
       return buildSftpMessage((ExportMessage) args[0]);
@@ -148,7 +148,7 @@ public class ActionRequestEndpointTest {
 
   private static ActionRequestInstruction buildActionRequest(int actionId) {
     ActionRequestInstruction actionRequest = new ActionRequestInstruction();
-    actionRequest.setActionId(BigInteger.valueOf(actionId));
+    actionRequest.setActionId(actionId);
     return actionRequest;
   }
 

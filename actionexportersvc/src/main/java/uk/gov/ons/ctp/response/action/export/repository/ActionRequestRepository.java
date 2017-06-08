@@ -1,9 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -19,7 +19,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
  *
  */
 @Repository
-public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, BigInteger> {
+public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, UUID> {
 
   /**
    * Retrieve all action export requests not done for an actionType.
@@ -48,7 +48,7 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
   @Modifying
   @Transactional
   @Query("UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent WHERE r.actionId IN :actionIds")
-  int updateDateSentByActionId(@Param("actionIds") Set<BigInteger> actionIds, @Param("dateSent") Timestamp dateSent);
+  int updateDateSentByActionId(@Param("actionIds") Set<UUID> actionIds, @Param("dateSent") Timestamp dateSent);
 
   /**
    * Retrieve actionIds where response required is true for List of actionIds.
@@ -58,7 +58,7 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @return actionIds of those where response required.
    */
   @Query("SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = TRUE AND r.actionId IN :actionIds")
-  List<BigInteger> retrieveResponseRequiredByActionId(@Param("actionIds") Set<BigInteger> actionIds);
+  List<UUID> retrieveResponseRequiredByActionId(@Param("actionIds") Set<UUID> actionIds);
 
   /**
    * Check repository for actionId existence
@@ -67,6 +67,6 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @return boolean whether exists
    */
   @Query(value = "select exists(select 1 from actionexporter.actionrequest where actionid=:p_actionid)", nativeQuery = true)
-  boolean tupleExists(@Param("p_actionid") BigInteger actionId);
+  boolean tupleExists(@Param("p_actionid") UUID actionId);
   
 }

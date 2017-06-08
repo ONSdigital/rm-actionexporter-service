@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.response.action.export.utility;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.Address;
@@ -21,7 +21,7 @@ public class ObjectBuilder {
 
   private static ActionRequestInstruction buildActionRequest(int i) {
     ActionRequestInstruction result =  new ActionRequestInstruction();
-    result.setActionId(new BigInteger(new Integer(i).toString()));
+    result.setActionId(UUID.randomUUID());
     result.setActionType("testActionType");
     result.setIac("testIac");
     result.setAddress(buildActionAddress());

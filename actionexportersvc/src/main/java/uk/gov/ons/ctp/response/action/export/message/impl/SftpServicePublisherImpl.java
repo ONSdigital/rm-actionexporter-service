@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.message.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
@@ -76,13 +76,13 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @ServiceActivator(inputChannel = "sftpSuccessProcess")
   public void sftpSuccessProcess(GenericMessage<GenericMessage<byte[]>> message) {
     List<String> actionList = (List<String>) message.getPayload().getHeaders().get(ACTION_LIST);
-    Set<BigInteger> actionIds = new HashSet<BigInteger>();
+    Set<UUID> actionIds = new HashSet<UUID>();
     Timestamp now = DateTimeUtil.nowUTC();
     String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
     List<List<String>> subLists = Lists.partition(actionList, BATCH_SIZE);
     subLists.forEach((batch) -> {
       batch.forEach((actionId) -> {
-        actionIds.add(new BigInteger(actionId));
+        actionIds.add(actionId);
       });
       int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
       if (actionIds.size() == saved) {
@@ -122,7 +122,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
    * @param actionIds of ActionRequests for which to send ActionFeedback.
    * @param dateStr when actioned.
    */
-  private void sendFeedbackMessage(List<BigInteger> actionIds, String dateStr) {
+  private void sendFeedbackMessage(List<UUID> actionIds, String dateStr) {
 
     actionIds.forEach((actionId) -> {
       ActionFeedback actionFeedback = new ActionFeedback(actionId,

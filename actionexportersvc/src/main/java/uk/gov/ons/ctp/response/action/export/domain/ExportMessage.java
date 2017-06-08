@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,8 +49,8 @@ public class ExportMessage {
    * 
    * @return List of all actionIds.
    */
-  public List<String> getMergedActionRequestIds() {
-    List<String> actionIds = new ArrayList<String>();
+  public List<UUID> getMergedActionRequestIds() {
+    List<UUID> actionIds = new ArrayList<UUID>();
     actionRequestIds.forEach((key, mergeIds) -> {
       actionIds.addAll(mergeIds);
     });

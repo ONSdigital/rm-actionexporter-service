@@ -27,8 +27,8 @@ public class Contact {
       @Parameter(name = "increment_size", value = "1")
   })
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "actionexportseq_gen")
-  @Column(name = "contactid")
-  private Integer contactId;
+  @Column(name = "contactpk")
+  private Integer contactPk;
 
   private String title;
 

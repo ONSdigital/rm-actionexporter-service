@@ -1,9 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ActionRequestServiceImpl implements ActionRequestService {
   }
 
   @Override
-  public ActionRequestInstruction retrieveActionRequest(BigInteger actionId) {
+  public ActionRequestInstruction retrieveActionRequest(UUID actionId) {
     return repository.findOne(actionId);
   }
 
@@ -49,12 +49,12 @@ public class ActionRequestServiceImpl implements ActionRequestService {
   }
 
   @Override
-  public int updateDateSentByActionId(Set<BigInteger> actionIds, Timestamp dateSent) {
+  public int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent) {
     return repository.updateDateSentByActionId(actionIds, dateSent);
   }
 
   @Override
-  public List<BigInteger> retrieveResponseRequiredByActionId(Set<BigInteger> actionIds) {
+  public List<UUID> retrieveResponseRequiredByActionId(Set<UUID> actionIds) {
     return repository.retrieveResponseRequiredByActionId(actionIds);
   }
 }

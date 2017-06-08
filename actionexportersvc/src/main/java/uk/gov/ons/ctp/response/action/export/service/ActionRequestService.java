@@ -1,9 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 
@@ -24,7 +24,7 @@ public interface ActionRequestService {
    * @param actionId the ActionRequest actionId to be retrieved
    * @return the given ActionRequest
    */
-  ActionRequestInstruction retrieveActionRequest(BigInteger actionId);
+  ActionRequestInstruction retrieveActionRequest(UUID actionId);
 
   /**
    * Save an ActionRequest
@@ -57,7 +57,7 @@ public interface ActionRequestService {
    * @param dateSent to set on each ActionRequest.
    * @return int of affected rows
    */
-  int updateDateSentByActionId(Set<BigInteger> actionIds, Timestamp dateSent);
+  int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent);
 
   /**
    * Retrieve actionIds where response required is true for batch of actionIds.
@@ -65,5 +65,5 @@ public interface ActionRequestService {
    * @param actionIds ActionRequest actionIds to check for response required.
    * @return actionIds of those where response required.
    */
-  List<BigInteger> retrieveResponseRequiredByActionId(Set<BigInteger> actionIds);
+  List<UUID> retrieveResponseRequiredByActionId(Set<UUID> actionIds);
 }
