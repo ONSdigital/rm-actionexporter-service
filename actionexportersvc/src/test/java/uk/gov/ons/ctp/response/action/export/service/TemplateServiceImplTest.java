@@ -11,7 +11,7 @@ import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateService
 import static uk.gov.ons.ctp.response.action.export.utility.ObjectBuilder.buildListOfActionRequests;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+
 import java.io.IOException;
 
 import org.junit.Test;
