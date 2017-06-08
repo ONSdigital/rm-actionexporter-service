@@ -54,7 +54,7 @@ public class ActionRequestInstruction {
   private Address address;
 
   @Column(name = "caseid")
-  private BigInteger caseId;
+  private BigInteger casePK;
 
   @Enumerated(EnumType.STRING)
   private Priority priority;

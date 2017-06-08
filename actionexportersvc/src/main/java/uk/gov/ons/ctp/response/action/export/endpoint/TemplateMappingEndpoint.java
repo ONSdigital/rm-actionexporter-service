@@ -1,7 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 

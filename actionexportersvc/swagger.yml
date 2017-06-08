@@ -520,9 +520,9 @@ definitions:
         $ref: '#/definitions/ActionContact'
       address:
         $ref: '#/definitions/Address'
-      caseId:
+      casePK:
         type: integer
-        description: Unique caseId.
+        description: Unique casePK.
       priority:
         type: string
         description: Action priority level.

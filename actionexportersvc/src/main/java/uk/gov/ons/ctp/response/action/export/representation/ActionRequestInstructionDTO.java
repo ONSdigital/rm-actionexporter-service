@@ -29,7 +29,7 @@ public class ActionRequestInstructionDTO {
   private String questionSet;
   private ActionContact contact;
   private ActionAddress address;
-  private BigInteger caseId;
+  private BigInteger casePK;
   private Priority priority;
   private String caseRef;
   private String iac;
