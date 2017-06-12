@@ -1,0 +1,21 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.40.0-1
+      author: Sarah Radford
+      changes:
+        - sqlFile:
+            comment: Foundation Schema
+            path: actionexporter_foundation_schema.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 10.40.0-2
+      author: Sarah Radford
+      changes:
+        - sqlFile:
+            comment: BRES seed data
+            path: actionexporter_BRES_seeddata.sql
+            relativeToChangelogFile: true
+            splitStatements: false
