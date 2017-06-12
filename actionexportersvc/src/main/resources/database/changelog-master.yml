@@ -5,23 +5,5 @@ databaseChangeLog:
         username: actionexportersvc
 
   - include:
-      file: database/changes/release-9.32.0/changelog.yml
+      file: database/changes/release-10.40.0/changelog.yml
 
-  - include:
-      file: database/changes/release-9.33.0/changelog.yml
-
-  - include:
-      file: database/changes/release-9.33.1/changelog.yml
-
-  - include:
-      file: database/changes/release-9.33.2/changelog.yml
-
-  - include:
-      file: database/changes/release-9.33.3/changelog.yml
-
-
-  - include:
-      file: database/changes/release-9.34.0/changelog.yml
-
-  - include:
-      file: database/changes/release-9.35.0/changelog.yml
