@@ -3,6 +3,7 @@ package uk.gov.ons.ctp.response.action.export.domain;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExportMessage {
 
-  private Map<String, List<String>> actionRequestIds = new HashMap<String, List<String>>();
+  private Map<String, List<UUID>> actionRequestIds = new HashMap<String, List<UUID>>();
   private Map<String, ByteArrayOutputStream> outputStreams = new HashMap<String, ByteArrayOutputStream>();
 
   /**
@@ -32,7 +33,7 @@ public class ExportMessage {
    * @param key for which to get actionIds.
    * @return List of actionIds for key.
    */
-  public List<String> getActionRequestIds(String key) {
+  public List<UUID> getActionRequestIds(String key) {
     return actionRequestIds.get(key);
   }
 

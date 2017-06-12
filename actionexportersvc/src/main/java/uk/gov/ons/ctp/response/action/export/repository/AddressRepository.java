@@ -23,5 +23,5 @@ public interface AddressRepository extends BaseRepository<Address, UUID> {
    * @return boolean whether exists
    */
   @Query(value = "select exists(select 1 from actionexporter.address where uprn=:p_uprn)", nativeQuery = true)
-  boolean tupleExists(@Param("p_uprn") UUID uprn);
+  boolean tupleExists(@Param("p_uprn") UUID sampleUnitRefpk);
 }

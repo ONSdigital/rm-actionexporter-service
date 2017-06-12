@@ -3,11 +3,13 @@ package uk.gov.ons.ctp.response.action.export.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
@@ -71,10 +73,10 @@ public class TransformationServiceImpl implements TransformationService {
         try {
           message.getOutputStreams().put(actionType,
               templateService.stream(actionRequests, mapping.get(actionType).getTemplate()));
-          List<String> addActionIds = new ArrayList<String>();
+          List<UUID> addActionIds = new ArrayList<UUID>();
           message.getActionRequestIds().put(actionType, addActionIds);
           actionRequests.forEach((actionRequest) -> {
-            addActionIds.add(actionRequest.getActionId().toString());
+            addActionIds.add(actionRequest.getActionId());
           });
         } catch (CTPException e) {
           // catch failure for templateService stream operation for that

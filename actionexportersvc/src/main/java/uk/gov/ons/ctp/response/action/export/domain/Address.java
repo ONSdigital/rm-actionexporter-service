@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Address {
 
   @Id
-  private BigInteger uprn;
+  private UUID sampleUnitRefPK;
 
   @Column(name = "addresstype")
   private String addressType;

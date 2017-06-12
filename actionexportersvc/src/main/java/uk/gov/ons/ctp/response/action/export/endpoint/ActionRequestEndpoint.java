@@ -76,7 +76,7 @@ public class ActionRequestEndpoint {
     ActionRequestInstruction result = actionRequestService.retrieveActionRequest(actionId);
     if (result == null) {
       throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND,
-          String.format("%s %d", ACTION_REQUEST_NOT_FOUND, actionId));
+          String.format("%s %s", ACTION_REQUEST_NOT_FOUND, actionId.toString()));
     }
     return mapperFacade.map(result, ActionRequestInstructionDTO.class);
   }
@@ -94,13 +94,13 @@ public class ActionRequestEndpoint {
     ActionRequestInstruction actionRequest = actionRequestService.retrieveActionRequest(actionId);
     if (actionRequest == null) {
       throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND,
-          String.format("%s %d", ACTION_REQUEST_NOT_FOUND, actionId));
+          String.format("%s %s", ACTION_REQUEST_NOT_FOUND, actionId.toString()));
     }
     ExportMessage message = new ExportMessage();
     transformationService.processActionRequest(message, actionRequest);
     if (message.isEmpty()) {
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR,
-          String.format("%s %d", ACTION_REQUEST_TRANSFORM_ERROR, actionId));
+          String.format("%s %s", ACTION_REQUEST_TRANSFORM_ERROR, actionId.toString()));
     }
     message.getOutputStreams().forEach((fileName, stream) -> {
       sftpService.sendMessage(fileName, message.getActionRequestIds(fileName), stream);

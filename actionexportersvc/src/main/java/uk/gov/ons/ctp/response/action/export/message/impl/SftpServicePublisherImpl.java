@@ -59,7 +59,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @Override
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(@Header(FileHeaders.REMOTE_FILE) String filename,
-      @Header(ACTION_LIST) List<String> actionIds,
+      @Header(ACTION_LIST) List<UUID> actionIds,
       ByteArrayOutputStream stream) {
     return stream.toByteArray();
   }
@@ -82,7 +82,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
     List<List<String>> subLists = Lists.partition(actionList, BATCH_SIZE);
     subLists.forEach((batch) -> {
       batch.forEach((actionId) -> {
-        actionIds.add(actionId);
+        actionIds.add(UUID.fromString(actionId));
       });
       int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
       if (actionIds.size() == saved) {
@@ -125,7 +125,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   private void sendFeedbackMessage(List<UUID> actionIds, String dateStr) {
 
     actionIds.forEach((actionId) -> {
-      ActionFeedback actionFeedback = new ActionFeedback(actionId,
+      ActionFeedback actionFeedback = new ActionFeedback(actionId.toString(),
           "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);
       actionFeedbackPubl.sendActionFeedback(actionFeedback);
     });

@@ -127,32 +127,30 @@ public class ExportScheduler implements HealthIndicator {
     templateMappingService.retrieveAllTemplateMappingsByFilename()
         .forEach((fileName, templatemappings) -> {
           log.info("Lock test {} {}", fileName, actionExportLockManager.isLocked(fileName));
-          if (!actionExportLockManager.isLocked(fileName)) {
-            if (actionExportLockManager.lock(fileName)) {
-              log.info("Lock file {} {}", fileName, actionExportLockManager.isLocked(fileName));
-              ExportMessage message = new ExportMessage();
-              // process Collection of templateMappings
-              templatemappings.forEach((templateMapping) -> {
-                List<ActionRequestInstruction> requests = actionRequestService
-                    .findByDateSentIsNullAndActionType(templateMapping.getActionType());
-                if (requests.isEmpty()) {
-                  log.info("No requests for actionType {} to process", templateMapping.getActionType());
-                } else {
-                  try {
-                    transformationService.processActionRequests(message, requests);
-                  } catch (CTPException e) {
-                    // Error retrieving TemplateMapping in
-                    // transformationService
-                    log.error("Scheduled run error transforming ActionRequests");
-                  }
-                }
-              });
-              if (!message.isEmpty()) {
-                sftpService.sendMessage(fileName + "_" + timeStamp + ".csv", message.getMergedActionRequestIds(),
-                    message.getMergedOutputStreams());
-              }
-            }
-          }
+          if (!actionExportLockManager.isLocked(fileName) && actionExportLockManager.lock(fileName)) {
+	          log.info("Lock file {} {}", fileName, actionExportLockManager.isLocked(fileName));
+	          ExportMessage message = new ExportMessage();
+	          // process Collection of templateMappings
+	          templatemappings.forEach((templateMapping) -> {
+	            List<ActionRequestInstruction> requests = actionRequestService
+	                .findByDateSentIsNullAndActionType(templateMapping.getActionType());
+	            if (requests.isEmpty()) {
+	              log.info("No requests for actionType {} to process", templateMapping.getActionType());
+	            } else {
+	              try {
+	                transformationService.processActionRequests(message, requests);
+	              } catch (CTPException e) {
+	                // Error retrieving TemplateMapping in
+	                // transformationService
+	                log.error("Scheduled run error transforming ActionRequests");
+	              }
+	            }
+	          });
+	          if (!message.isEmpty()) {
+	            sftpService.sendMessage(fileName + "_" + timeStamp + ".csv", message.getMergedActionRequestIds(),
+	                message.getMergedOutputStreams());
+	          }
+	        }
         });
     // Wait for all instances to finish to synchronise the removal of locks
     try {

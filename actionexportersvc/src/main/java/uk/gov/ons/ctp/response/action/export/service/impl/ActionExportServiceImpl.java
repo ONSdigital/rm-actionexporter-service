@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -78,7 +79,7 @@ public class ActionExportServiceImpl implements ActionExportService {
     Timestamp now = DateTimeUtil.nowUTC();
     actionRequestDocs.forEach(actionRequestDoc -> {
       actionRequestDoc.setDateStored(now);
-      if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getUprn())) {
+      if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRefPK())) {
         // Address should never change so do not save if already exists
         addressRepo.persist(actionRequestDoc.getAddress());
       }
@@ -94,7 +95,7 @@ public class ActionExportServiceImpl implements ActionExportService {
     String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(now);
     actionRequestDocs.forEach(actionRequestDoc -> {
       if (actionRequestDoc.isResponseRequired()) {
-        ActionFeedback actionFeedback = new ActionFeedback(actionRequestDoc.getActionId(),
+        ActionFeedback actionFeedback = new ActionFeedback(actionRequestDoc.getActionId().toString(),
             "ActionExport Stored: " + timeStamp, Outcome.REQUEST_ACCEPTED);
         actionFeedbackPubl.sendActionFeedback(actionFeedback);
       }
@@ -111,9 +112,9 @@ public class ActionExportServiceImpl implements ActionExportService {
     String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
     boolean cancelled = false;
     for (ActionCancel actionCancel : actionCancels) {
-      ActionRequestInstruction actionRequest = actionRequestRepo.findOne(actionCancel.getActionId());
+      ActionRequestInstruction actionRequest = actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
       if (actionRequest != null && actionRequest.getDateSent() == null) {
-        actionRequestRepo.delete(actionCancel.getActionId());
+        actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
         cancelled = true;
       } else {
         cancelled = false;
