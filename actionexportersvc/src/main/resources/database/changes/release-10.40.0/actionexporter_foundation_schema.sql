@@ -35,6 +35,13 @@ CREATE TABLE address (
 );
 
 
+CREATE TABLE actionexporter.filerowcount
+(
+ filename character varying(100) NOT NULL,
+ rowcount integer NOT NULL,
+ datesent timestamp with time zone NOT NULL,
+ reported boolean NOT NULL
+);
 
 
 CREATE SEQUENCE contactPKseq
