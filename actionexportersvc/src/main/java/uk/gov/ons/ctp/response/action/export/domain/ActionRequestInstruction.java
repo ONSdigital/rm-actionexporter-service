@@ -36,21 +36,21 @@ public class ActionRequestInstruction {
   @Column(name = "responserequired")
   private boolean responseRequired;
 
-  @Column(name = "actionplan")
+  @Column(name = "actionplanname")
   private String actionPlan;
 
-  @Column(name = "actiontype")
+  @Column(name = "actiontypename")
   private String actionType;
 
   @Column(name = "questionset")
   private String questionSet;
 
   @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "contactfk", referencedColumnName = "contactfk")
+  @JoinColumn(name = "contactfk", referencedColumnName = "contactpk")
   private Contact contact;
 
   @ManyToOne
-  @JoinColumn(name = "uprn", referencedColumnName = "uprn")
+  @JoinColumn(name = "sampleunitreffk", referencedColumnName = "sampleunitrefpk")
   private Address address;
 
   @Column(name = "caseid")

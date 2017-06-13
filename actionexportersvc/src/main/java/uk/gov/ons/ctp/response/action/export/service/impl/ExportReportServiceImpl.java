@@ -12,17 +12,18 @@ import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 @Service
 public class ExportReportServiceImpl implements ExportReportService {
 
-  @Autowired
-  private ExportReportRepository exportReportRepo;
-
-  @Override
-  public ExportReport save(ExportReport exportReport) {
-    return exportReportRepo.save(exportReport);
-  }
-
-  @Override
-  public boolean createReport() {
-    return exportReportRepo.createReport();
-  }
+//  @Autowired
+//  private ExportReportRepository exportReportRepo;
+//
+//  @Override
+//  public ExportReport save(ExportReport exportReport) {
+//    return exportReportRepo.save(exportReport);
+//  }
+//
+//  @Override
+//  public boolean createReport() {
+//    return exportReportRepo.createReport();
+//	
+//  }
 
 }

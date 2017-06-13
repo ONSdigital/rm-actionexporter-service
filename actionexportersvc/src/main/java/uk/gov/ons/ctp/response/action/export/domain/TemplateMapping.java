@@ -23,9 +23,10 @@ import lombok.NoArgsConstructor;
 public class TemplateMapping {
 
   @Id
-  @Column(name = "actiontype")
+  @Column(name = "actiontypenamepk")
   private String actionType;
 
+  @Column(name = "templatenamefk")
   private String template;
 
   private String file;

@@ -17,11 +17,11 @@ import java.util.UUID;
 public interface AddressRepository extends BaseRepository<Address, UUID> {
 
   /**
-   * Check repository for uprn existence
+   * Check repository for sampleunitrefpk existence
    * 
-   * @param uprn to check for existence
+   * @param sampleunitrefpk to check for existence
    * @return boolean whether exists
    */
-  @Query(value = "select exists(select 1 from actionexporter.address where uprn=:p_uprn)", nativeQuery = true)
-  boolean tupleExists(@Param("p_uprn") UUID sampleUnitRefpk);
+  @Query(value = "select exists(select 1 from actionexporter.address where sampleunitrefpk=:p_surpk)", nativeQuery = true)
+  boolean tupleExists(@Param("p_surpk") UUID sampleUnitRefpk);
 }
