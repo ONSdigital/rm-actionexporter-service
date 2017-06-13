@@ -186,7 +186,8 @@ public class ExportScheduler implements HealthIndicator {
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
     if (!actionExportLockManager.isLocked(DISTRIBUTED_OBJECT_KEY_REPORT)) {
       if (actionExportLockManager.lock(DISTRIBUTED_OBJECT_KEY_REPORT)) {
-        result = exportReportService.createReport();
+        //TODO:
+    	  //result = exportReportService.createReport();
       } else {
         result = true;
       }

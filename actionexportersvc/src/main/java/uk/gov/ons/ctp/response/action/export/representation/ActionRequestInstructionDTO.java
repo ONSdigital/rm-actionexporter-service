@@ -27,13 +27,13 @@ public class ActionRequestInstructionDTO {
   private String actionPlan;
   private String actionType;
   private String questionSet;
-  private ActionContact contact;
-  private ActionAddress address;
+  //private ActionContact contact;
+  //private ActionAddress address;
   private UUID caseId;
-  private Priority priority;
+  //private Priority priority;
   private String caseRef;
   private String iac;
-  private ActionEvent events;
+  //private ActionEvent events;
   private Date dateStored;
   private Date dateSent;
 }

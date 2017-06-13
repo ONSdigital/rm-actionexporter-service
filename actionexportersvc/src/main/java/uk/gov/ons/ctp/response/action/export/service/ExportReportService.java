@@ -13,8 +13,8 @@ public interface ExportReportService {
    * @param exportReport the ExportReport to save.
    * @return the ExportReport saved.
    */
-//  ExportReport save(final ExportReport exportReport);
-//
+  ExportReport save(final ExportReport exportReport);
+//TODO:
 //  /**
 //   * Create a report entry for files created since last report run.
 //   * 
