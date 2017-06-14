@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
 public class Address {
 
   @Id
-  private UUID sampleUnitRefPK;
+  @Column(name = "sampleunitrefpk")
+  private String sampleUnitRef;
 
   @Column(name = "addresstype")
   private String addressType;
