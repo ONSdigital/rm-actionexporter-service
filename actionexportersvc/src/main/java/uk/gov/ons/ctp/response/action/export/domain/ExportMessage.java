@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.response.action.export.domain;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class ExportMessage {
 
   /**
    * Return actionIds for actionRequests for key.
-   * 
+   *
    * @param key for which to get actionIds.
    * @return List of actionIds for key.
    */
@@ -37,6 +36,10 @@ public class ExportMessage {
     return actionRequestIds.get(key);
   }
 
+  /**
+   * Checks if list are empty
+   * @return boolean
+   */
   public boolean isEmpty() {
     if (actionRequestIds.isEmpty() || outputStreams.isEmpty()) {
       return true;
@@ -47,7 +50,6 @@ public class ExportMessage {
 
   /**
    * Return all actionIds.
-   * 
    * @return List of all actionIds.
    */
   public List<UUID> getMergedActionRequestIds() {
@@ -60,7 +62,6 @@ public class ExportMessage {
 
   /**
    * Return all outputStreams merged.
-   * 
    * @return ByteArrayOutputStream.
    */
   public ByteArrayOutputStream getMergedOutputStreams() {

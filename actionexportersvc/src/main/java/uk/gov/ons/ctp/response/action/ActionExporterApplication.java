@@ -46,23 +46,46 @@ public class ActionExporterApplication {
   @Autowired
   private AppConfig appConfig;
 
+  /**
+   * Bean used to access Distributed Lock Manager
+   *
+   * @param redissonClient Redisson Client
+   * @return the Distributed Lock Manager
+   */
   @Bean
   public DistributedInstanceManager actionExportInstanceManager(RedissonClient redissonClient) {
     return new DistributedInstanceManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient);
   }
 
+  /**
+   * Bean used to access Distributed Latch Manager
+   *
+   * @param redissonClient Redisson Client
+   * @return the Distributed Lock Manager
+   */
   @Bean
   public DistributedLatchManager actionExportLatchManager(RedissonClient redissonClient) {
     return new DistributedLatchManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient,
         appConfig.getDataGrid().getLockTimeToLiveSeconds());
   }
 
+  /**
+   * Bean used to access Distributed Excution Lock Manager
+   *
+   * @param redissonClient Redisson Client
+   * @return the Distributed Lock Manager
+   */
   @Bean
   public DistributedLockManager actionExportExecutionLockManager(RedissonClient redissonClient) {
     return new DistributedLockManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient,
         appConfig.getDataGrid().getLockTimeToLiveSeconds());
   }
 
+  /**
+   * Bean used to create and configure Redisson Client
+   *
+   * @return the Redisson client
+   */
   @Bean
   public RedissonClient redissonClient() {
     Config config = new Config();

@@ -57,7 +57,8 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    *          required.
    * @return actionIds of those where response required.
    */
-  @Query("SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = TRUE AND r.actionId IN :actionIds")
+  @Query("SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = "
+  		+ "TRUE AND r.actionId IN :actionIds")
   List<UUID> retrieveResponseRequiredByActionId(@Param("actionIds") Set<UUID> actionIds);
 
   /**
@@ -66,7 +67,8 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @param actionId to check for existence
    * @return boolean whether exists
    */
-  @Query(value = "select exists(select 1 from actionexporter.actionrequest where actionid=:p_actionid)", nativeQuery = true)
+  @Query(value = "select exists(select 1 from actionexporter.actionrequest where "
+  		+ "actionid=:p_actionid)", nativeQuery = true)
   boolean tupleExists(@Param("p_actionid") UUID actionId);
   
 }
