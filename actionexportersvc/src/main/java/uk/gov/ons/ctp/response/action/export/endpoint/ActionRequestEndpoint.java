@@ -50,7 +50,6 @@ public class ActionRequestEndpoint {
 
   /**
    * To retrieve all ActionRequests
-   * 
    * @return a list of ActionRequests
    */
   @RequestMapping(method = RequestMethod.GET)
@@ -64,7 +63,6 @@ public class ActionRequestEndpoint {
 
   /**
    * To retrieve a specific ActionRequest
-   * 
    * @param actionId for the specific ActionRequest to retrieve
    * @return the specific ActionRequest
    * @throws CTPException if no ActionRequest found
@@ -83,7 +81,6 @@ public class ActionRequestEndpoint {
 
   /**
    * To export a specific ActionRequest
-   * 
    * @param actionId the actionId of the specific ActionRequest
    * @return 201 if successful
    * @throws CTPException if specific ActionRequest not found

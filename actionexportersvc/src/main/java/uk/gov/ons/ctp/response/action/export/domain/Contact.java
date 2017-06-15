@@ -14,6 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Domain model object.
+ */
 @Entity
 @Data
 @AllArgsConstructor
@@ -22,7 +25,8 @@ import lombok.NoArgsConstructor;
 public class Contact {
 
   @Id
-  @GenericGenerator(name = "actionexportseq_gen", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+  @GenericGenerator(name = "actionexportseq_gen", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+      parameters = {
       @Parameter(name = "sequence_name", value = "actionexporter.contactidseq"),
       @Parameter(name = "increment_size", value = "1")
   })

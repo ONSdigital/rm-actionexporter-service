@@ -13,6 +13,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Domain model object.
+ */
 @Entity
 @Data
 @Builder
@@ -22,7 +25,8 @@ import lombok.NoArgsConstructor;
 public class Address {
 
   @Id
-  private UUID sampleUnitRefPK;
+  @Column(name = "sampleunitrefpk")
+  private String sampleUnitRef;
 
   @Column(name = "addresstype")
   private String addressType;

@@ -79,7 +79,7 @@ public class ActionExportServiceImpl implements ActionExportService {
     Timestamp now = DateTimeUtil.nowUTC();
     actionRequestDocs.forEach(actionRequestDoc -> {
       actionRequestDoc.setDateStored(now);
-      if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRefPK())) {
+      if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRef())) {
         // Address should never change so do not save if already exists
         addressRepo.persist(actionRequestDoc.getAddress());
       }

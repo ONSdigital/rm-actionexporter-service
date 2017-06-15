@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 //@Table(name = "filerowcount", schema = "actionexporter")
-//@NamedStoredProcedureQuery(name = "createReport", procedureName = "actionexporter.generate_print_volumes_mi", parameters = {
-//   @StoredProcedureParameter(mode = ParameterMode.OUT, type = Boolean.class)})
+//@NamedStoredProcedureQuery(name = "createReport", procedureName = "actionexporter.generate_print_volumes_mi",
+//parameters = {@StoredProcedureParameter(mode = ParameterMode.OUT, type = Boolean.class)})
 public class ExportReport {
 
   @Id

@@ -22,6 +22,11 @@ public class ActionFeedbackPublisherImpl implements ActionFeedbackPublisher {
   @Autowired
   private RabbitTemplate rabbitTemplate;
 
+  /**
+   * To publish an ActionFeedback message
+   *
+   * @param actionFeedback the ActionFeedback to publish.
+   */
   public void sendActionFeedback(ActionFeedback actionFeedback) {
     log.debug("Entering sendActionFeedback for actionId {} ", actionFeedback.getActionId());
     rabbitTemplate.convertAndSend(actionFeedback);
