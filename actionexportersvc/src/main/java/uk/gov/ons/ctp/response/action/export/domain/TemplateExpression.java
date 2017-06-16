@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class TemplateExpression {
 
   @Id
+  @Column(name = "templatenamepk")
   private String name;
   private String content;
   @Column(name = "datemodified")

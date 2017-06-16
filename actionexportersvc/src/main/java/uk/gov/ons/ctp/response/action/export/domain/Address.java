@@ -1,7 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

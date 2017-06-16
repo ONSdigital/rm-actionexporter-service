@@ -32,8 +32,14 @@ public class ExportMessage {
    * @param key for which to get actionIds.
    * @return List of actionIds for key.
    */
-  public List<UUID> getActionRequestIds(String key) {
-    return actionRequestIds.get(key);
+  public List<String> getActionRequestIds(String key) {
+    List<UUID> list = actionRequestIds.get(key);
+    List<String> ids = new ArrayList<String>();
+
+    for (UUID uuid : list) {
+      ids.add(uuid.toString());
+    }
+    return ids;
   }
 
   /**
@@ -52,10 +58,13 @@ public class ExportMessage {
    * Return all actionIds.
    * @return List of all actionIds.
    */
-  public List<UUID> getMergedActionRequestIds() {
-    List<UUID> actionIds = new ArrayList<UUID>();
+  public List<String> getMergedActionRequestIdsAsStrings() {
+    List<String> actionIds = new ArrayList<String>();
+
     actionRequestIds.forEach((key, mergeIds) -> {
-      actionIds.addAll(mergeIds);
+        for (UUID uuid : mergeIds) {
+        actionIds.add(uuid.toString());
+      }
     });
     return actionIds;
   }

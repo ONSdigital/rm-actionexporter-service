@@ -16,19 +16,20 @@ public interface TransformationService {
    * This produces a stream for all action requests not already sent for a
    * particular actionType, applying the template mapped in the stored mapping
    * document.
-   * 
-   * @param ExportMessage being built
-   * @param actionType to process
+   *
+   * @param message being built
+   * @param requests to process
    * @return ExportMessage with stream objects and list of ActionRequest Ids.
    * @throws CTPException if cannot retrieve TemplateMapping for ActionRequest.
    */
-  ExportMessage processActionRequests(ExportMessage message, List<ActionRequestInstruction> requests) throws CTPException;
+  ExportMessage processActionRequests(ExportMessage message,
+        List<ActionRequestInstruction> requests) throws CTPException;
 
   /**
    * This produces a stream for the given action request applying the template
-   * mapped in the stored mapping document.
-   * 
-   * @param ExportMessage being built
+   * mapped in the stored mapping document
+   *
+   * @param message being built
    * @param actionRequest the given actionRequest
    * @return ExportMessage with stream object and the given ActionRequest Id.
    * @throws CTPException if cannot retrieve TemplateMapping for ActionRequest.

@@ -19,6 +19,7 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
    * Give visibility of underlying EntityManager persist method.
    *
    * @param entity to persist.
+   * @param <S> persisted entity
    * @return <S> persisted entity.
    *
    */

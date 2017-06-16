@@ -118,14 +118,14 @@ data-grid:
   lock-time-to-live-seconds: 3600
 
 export-schedule:
-  cron-expression: "0 0/5 * * * ?"
+  cron-expression: "0 * * * * ?"
 
 sftp:
   host: localhost
   port: 22
   username: centos
   password: "JLibV2&XD,"
-  directory: Documents
+  directory: Documents/sftp/
 
 freemarker:
   delayfornewtemplates: 86400000  # ie 24 hours in milliseconds

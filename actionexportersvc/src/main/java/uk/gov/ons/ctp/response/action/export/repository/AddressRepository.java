@@ -18,10 +18,11 @@ public interface AddressRepository extends BaseRepository<Address, UUID> {
 
   /**
    * Check repository for sampleunitrefpk existence
-   * 
-   * @param sampleunitrefpk to check for existence
+   *
+   * @param sampleUnitRefpk to check for existence
    * @return boolean whether exists
    */
-  @Query(value = "select exists(select 1 from actionexporter.address where sampleunitrefpk=:p_surpk)", nativeQuery = true)
+  @Query(value = "select exists(select 1 from actionexporter.address where sampleunitrefpk=:p_surpk)",
+      nativeQuery = true)
   boolean tupleExists(@Param("p_surpk") String sampleUnitRefpk);
 }

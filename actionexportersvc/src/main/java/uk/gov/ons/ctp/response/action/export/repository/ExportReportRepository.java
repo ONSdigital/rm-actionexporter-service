@@ -15,6 +15,10 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 @Repository
 public interface ExportReportRepository extends JpaRepository<ExportReport, String> {
 
+  /**
+   * exports generated reports.
+   *
+   */
   @Modifying
   @Transactional
   @Procedure(name = "createReport")

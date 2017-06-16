@@ -1,7 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
@@ -24,7 +23,6 @@ public class ExportReportServiceImpl implements ExportReportService {
 //  @Override
 //  public boolean createReport() {
 //    return exportReportRepo.createReport();
-//	
-//  }
+//}
 
 }

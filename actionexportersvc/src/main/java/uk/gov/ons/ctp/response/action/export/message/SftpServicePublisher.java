@@ -2,8 +2,6 @@ package uk.gov.ons.ctp.response.action.export.message;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.UUID;
-
 import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 
@@ -21,7 +19,7 @@ public interface SftpServicePublisher {
    * @param stream to send.
    * @return byte array sent as message body.
    */
-  byte[] sendMessage(String filename, List<UUID> actionIds, ByteArrayOutputStream stream);
+  byte[] sendMessage(String filename, List<String> actionIds, ByteArrayOutputStream stream);
 
   /**
    * Operations after success of sftp transfer.

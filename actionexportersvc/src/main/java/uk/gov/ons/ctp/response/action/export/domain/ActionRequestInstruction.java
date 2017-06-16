@@ -8,11 +8,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,10 +33,20 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 @NoArgsConstructor
 @Table(name = "actionrequest", schema = "actionexporter")
 public class ActionRequestInstruction {
-
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "actionexportseq_gen")
+  @GenericGenerator(name = "actionexportseq_gen", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+      parameters = {
+      @Parameter(name = "sequence_name", value = "actionexporter.actionrequestpkseq"),
+      @Parameter(name = "increment_size", value = "1")})
+  @Column(name = "actionrequestpk")
+  private Integer actionrequestPK;
+
+
   @Column(name = "actionid")
   private UUID actionId;
+
+
 
   @Column(name = "responserequired")
   private boolean responseRequired;

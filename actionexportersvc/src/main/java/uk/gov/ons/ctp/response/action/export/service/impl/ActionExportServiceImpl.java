@@ -53,14 +53,14 @@ public class ActionExportServiceImpl implements ActionExportService {
   @Transactional(propagation = Propagation.REQUIRED, readOnly = false, timeout = TRANSACTION_TIMEOUT)
   @Override
   public void acceptInstruction(ActionInstruction instruction) {
-    if ((instruction.getActionRequests() != null) &&
-        (instruction.getActionRequests().getActionRequests().size() > 0)) {
+    if ((instruction.getActionRequests() != null)
+        && (instruction.getActionRequests().getActionRequests().size() > 0)) {
       processActionRequests(instruction.getActionRequests().getActionRequests());
     } else {
       log.info("No ActionRequests to process");
     }
-    if ((instruction.getActionCancels() != null) &&
-        (instruction.getActionCancels().getActionCancels().size() > 0)) {
+    if ((instruction.getActionCancels() != null)
+       && (instruction.getActionCancels().getActionCancels().size() > 0)) {
       processActionCancels(instruction.getActionCancels().getActionCancels());
     } else {
       log.info("No ActionCancels to process");
