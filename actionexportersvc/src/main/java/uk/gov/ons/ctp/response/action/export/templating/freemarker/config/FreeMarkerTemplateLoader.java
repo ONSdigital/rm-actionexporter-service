@@ -42,6 +42,9 @@ public class FreeMarkerTemplateLoader implements TemplateLoader {
     return new StringReader(((TemplateExpression) templateSource).getContent());
   }
 
+  /**
+   * Used to close Template Source
+   */
   @Override
   public void closeTemplateSource(Object templateSource) throws IOException {
   }

@@ -14,12 +14,12 @@ public class ObjectBuilder {
   public static List<ActionRequestInstruction> buildListOfActionRequests() {
     List<ActionRequestInstruction> result = new ArrayList<>();
     for (int i = 1; i < 51; i++) {
-      result.add(buildActionRequest(i));
+      result.add(buildActionRequest());
     }
     return result;
   }
 
-  private static ActionRequestInstruction buildActionRequest(int i) {
+  private static ActionRequestInstruction buildActionRequest() {
     ActionRequestInstruction result =  new ActionRequestInstruction();
     result.setActionId(UUID.randomUUID());
     result.setActionType("testActionType");

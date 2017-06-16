@@ -61,8 +61,8 @@ public class ExportScheduler implements HealthIndicator {
   @Autowired
   private DistributedLatchManager actionExportLatchManager;
 
-  @Autowired
-  private ExportReportService exportReportService;
+//  @Autowired
+//  private ExportReportService exportReportService;
 
   @Autowired
   private ExportInfo exportInfo;

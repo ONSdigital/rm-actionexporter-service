@@ -65,7 +65,7 @@ public class ManualTestEndpoint {
   private static List<ActionRequestInstruction> buildMeListOfActionRequests() {
     List<ActionRequestInstruction> result = new ArrayList<>();
     for (int i = 1; i < ACTION_REQUEST_NUMBER; i++) {
-      result.add(buildAMeActionRequest(i));
+      result.add(buildAMeActionRequest());
     }
     return result;
   }
@@ -75,7 +75,7 @@ public class ManualTestEndpoint {
    * @param i the action id for the ActionRequest
    * @return an ActionRequest
    */
-  private static ActionRequestInstruction buildAMeActionRequest(int i) {
+  private static ActionRequestInstruction buildAMeActionRequest() {
     ActionRequestInstruction result =  new ActionRequestInstruction();
     result.setActionId(UUID.randomUUID());
     result.setActionType("testActionType");

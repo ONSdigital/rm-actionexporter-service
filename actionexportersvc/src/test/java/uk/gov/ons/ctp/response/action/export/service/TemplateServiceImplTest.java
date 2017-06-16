@@ -91,7 +91,7 @@ public class TemplateServiceImplTest {
       templateService.file(buildListOfActionRequests(), TEMPLATE_NAME, TEST_FILE_PATH);
     } catch (CTPException e) {
       exceptionThrown = true;
-      Assert.assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
+      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
     }
     TestCase.assertTrue(exceptionThrown);
   }
