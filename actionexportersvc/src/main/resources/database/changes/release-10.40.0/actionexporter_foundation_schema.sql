@@ -12,7 +12,7 @@ CREATE TABLE actionrequest (
   sampleunitrefFK	character varying(20) NOT NULL,
   caseId 		uuid NOT NULL,
   priority              character varying(10),
-  caseref               character varying(16) NOT NULL,
+  caseref               character varying(16),
   iac                   character varying (24) NOT NULL,
   dateStored            timestamp with time zone,
   dateSent              timestamp with time zone
