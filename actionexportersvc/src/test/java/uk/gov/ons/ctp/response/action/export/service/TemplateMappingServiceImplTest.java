@@ -1,5 +1,15 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
+import uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -8,17 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl.EXCEPTION_STORE_TEMPLATE_MAPPING;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
-import uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl;
-
 /**
  * To unit test TemplateMappingServiceImpl
  */
@@ -26,11 +25,14 @@ import uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingService
 public class TemplateMappingServiceImplTest {
 
   @InjectMocks
-  TemplateMappingServiceImpl templateMappingService;
+  private TemplateMappingServiceImpl templateMappingService;
 
   @Mock
-  TemplateMappingRepository repository;
+  private TemplateMappingRepository repository;
 
+  /**
+   * Tests store with template mapping as null
+   */
   @Test
   public void testStoreNullTemplateMapping() {
     boolean exceptionThrown = false;
@@ -45,6 +47,9 @@ public class TemplateMappingServiceImplTest {
     verify(repository, times(0)).save(any(TemplateMapping.class));
   }
 
+  /**
+   * Tests store with template mapping empty
+   */
   @Test
   public void testStoreEmptyTemplateMapping() {
     boolean exceptionThrown = false;
@@ -60,6 +65,9 @@ public class TemplateMappingServiceImplTest {
     verify(repository, times(0)).save(any(TemplateMapping.class));
   }
 
+  /**
+   * Tests store with template mapping as valid
+   */
   @Test
   public void testStoreValidTemplateMapping() throws CTPException {
     templateMappingService.storeTemplateMappings(

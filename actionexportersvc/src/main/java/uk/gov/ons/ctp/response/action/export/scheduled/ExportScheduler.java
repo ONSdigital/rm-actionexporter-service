@@ -1,18 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.common.distributed.DistributedInstanceManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLatchManager;
@@ -22,9 +14,14 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -179,6 +176,7 @@ public class ExportScheduler implements HealthIndicator {
    * calling this method to produce a report. Also have to synchronise all
    * potential services creating report to ensure only one report created per
    * scheduled run so need a latch for this purpose.
+   * @return boolean whether or not report has been created successfully.
    */
   private boolean createReport() {
     boolean result = false;

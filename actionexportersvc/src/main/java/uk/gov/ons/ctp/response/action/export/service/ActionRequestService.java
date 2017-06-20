@@ -1,11 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 
 /**
  * Service responsible for dealing with ActionRequests
@@ -32,7 +32,7 @@ public interface ActionRequestService {
    * @param actionRequest the ActionRequest to save.
    * @return the ActionRequest saved.
    */
-  ActionRequestInstruction save(final ActionRequestInstruction actionRequest);
+  ActionRequestInstruction save(ActionRequestInstruction actionRequest);
 
   /**
    * Retrieve all ActionRequests not sent for an actionType.

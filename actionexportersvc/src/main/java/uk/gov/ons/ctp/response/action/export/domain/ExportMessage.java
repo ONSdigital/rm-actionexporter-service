@@ -1,18 +1,14 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Representation of a message being sent.
@@ -47,11 +43,7 @@ public class ExportMessage {
    * @return boolean
    */
   public boolean isEmpty() {
-    if (actionRequestIds.isEmpty() || outputStreams.isEmpty()) {
-      return true;
-    } else {
-      return false;
-    }
+      return actionRequestIds.isEmpty() || outputStreams.isEmpty();
   }
 
   /**
