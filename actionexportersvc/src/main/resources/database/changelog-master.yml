@@ -1,9 +1,4 @@
 databaseChangeLog:
 
-  - preConditions:
-    - runningAs:
-        username: actionexportersvc
-
   - include:
       file: database/changes/release-10.40.0/changelog.yml
-

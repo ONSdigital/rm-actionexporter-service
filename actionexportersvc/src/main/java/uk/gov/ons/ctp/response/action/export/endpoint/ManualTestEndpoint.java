@@ -1,17 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +13,12 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.Address;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
+
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Convenient endpoint to test manually our POC with FreeMarker templates
@@ -71,8 +70,7 @@ public class ManualTestEndpoint {
   }
 
   /**
-   *  To build an ActionRequest
-   * @param i the action id for the ActionRequest
+   * To build an ActionRequest
    * @return an ActionRequest
    */
   private static ActionRequestInstruction buildAMeActionRequest() {
