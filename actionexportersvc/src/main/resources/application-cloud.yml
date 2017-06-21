@@ -1,0 +1,149 @@
+info:
+  contactEmail: philippe.brossier@ons.gov.uk
+  version: ${project.version}
+  commit: ${buildNumber}
+  branch: ${scmBranch}
+  buildTime: ${timestamp}
+
+# logging config here as a reminder as to how to override logback from cmd line
+# ie -Dlogging.level.org.springframework=DEBUG
+logging:
+  level:
+    uk.gov.ons.ctp: DEBUG
+    org.springframework.cloud.sleuth.instrument.messaging.MessagingSpanExtractor: ERROR
+    org.springframework.context.annotation.ConfigurationClassPostProcessor: ERROR
+  profile: DEV
+
+liquibase:
+  user: ${cloud.services.postgresql.connection.username}
+  password: ${cloud.services.postgresql.connection.password}
+  default-schema: actionexporter
+  url: jdbc:postgresql://localhost:5432/postgres
+  changeLog: classpath:/database/changelog-master.yml
+
+security:
+  basic:
+    enabled: false
+  user:
+    name: actionexporter
+    password: ctp
+
+
+management:
+  port: 8241
+  context-path: /mgmt
+  security:
+    role: SUPERUSER
+    enabled: true
+  health:
+    mongo:
+      enabled: true
+    rabbit:
+      enabled: false
+
+server:
+  port: 8141
+  servlet-path: /
+
+endpoints:
+  autoconfig:
+    enabled: true
+    sensitive: true
+  beans:
+    enabled: true
+    sensitive: true
+  configprops:
+    enabled: true
+    sensitive: true
+  dump:
+    enabled: true
+    sensitive: true
+  env:
+    enabled: true
+    sensitive: true
+  info:
+    enabled: true
+    sensitive: true
+  metrics:
+    enabled: true
+    sensitive: true
+  mappings:
+    enabled: true
+    sensitive: true
+  shutdown:
+    enabled: true
+    sensitive: true
+  trace:
+    enabled: true
+    sensitive: true
+
+spring:
+  output:
+    ansi:
+      enabled: never
+
+  application:
+    name: ONS ActionExporterSvc
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: actionexportersvc
+    password: actionexportersvc
+    driverClassName: org.postgresql.Driver
+    tomcat:
+      initial-size: 5
+      max-active: 10
+      max-idle: 5
+      min-idle: 3
+
+  freemarker:
+    checkTemplateLocation: false
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        ddl-auto: update
+        default_schema: actionexporter
+
+  sleuth:
+    sampler:
+      percentage: 10
+
+  zipkin:
+    enabled: false
+
+data-grid:
+  address: localhost:6379
+  lock-time-to-live-seconds: 3600
+
+export-schedule:
+  cron-expression: "0 * * * * ?"
+
+sftp:
+  directory: .
+
+freemarker:
+  delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
+
+redelivery-policy:
+  maxRedeliveries: 10
+  initialRedeliveryDelay: 1000
+  redeliveryDelay: 1000
+
+# queue service related
+rabbitmq:
+  username: ${cloud.services.rabbitmq.connection.username}
+  password: ${cloud.services.rabbitmq.connection.password}
+  host: ${cloud.services.rabbitmq.connection.host}
+  port: ${cloud.services.rabbitmq.connection.port}
+  virtualhost: ${cloud.services.rabbitmq.connection.virtualhost}
+
+
+messaging:
+  consumingThreads: 1
+  pubMaxAttempts: 3
+  conMaxAttempts: 1
+  prefetchCount: 10
+  txSize: 1
