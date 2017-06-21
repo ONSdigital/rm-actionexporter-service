@@ -114,9 +114,9 @@ spring:
     enabled: false
 
 data-grid:
-  address: localhost:6379
-  lock-time-to-live-seconds: 3600
-
+  address: ${cloud.services.redis.connection.host}:${cloud.services.redis.connection.port}
+  list-time-to-live-seconds: 600
+  
 export-schedule:
   cron-expression: "0 * * * * ?"
 
