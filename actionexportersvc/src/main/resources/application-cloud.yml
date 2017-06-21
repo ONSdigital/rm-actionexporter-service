@@ -86,15 +86,14 @@ spring:
     name: ONS ActionExporterSvc
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: actionexportersvc
-    password: actionexportersvc
     driverClassName: org.postgresql.Driver
     tomcat:
       initial-size: 5
       max-active: 10
       max-idle: 5
       min-idle: 3
+    continue-on-error: true
+    schema: classpath:/schema-cloud.sql
 
   freemarker:
     checkTemplateLocation: false
