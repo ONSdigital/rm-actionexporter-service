@@ -18,7 +18,7 @@ liquibase:
   user: ${cloud.services.postgresql.connection.username}
   password: ${cloud.services.postgresql.connection.password}
   default-schema: actionexporter
-  url: jdbc:postgresql://localhost:5432/postgres
+  url: ${cloud.services.postgresql.connection.jdbcurl}
   changeLog: classpath:/database/changelog-master.yml
 
 security:
