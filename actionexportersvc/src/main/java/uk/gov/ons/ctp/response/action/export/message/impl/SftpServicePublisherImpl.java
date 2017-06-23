@@ -84,7 +84,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       batch.forEach((actionId) -> {
         actionIds.add(UUID.fromString(actionId));
       });
-      //int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
+      int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
       if (actionIds.size() == 1) {
         sendFeedbackMessage(actionRequestService.retrieveResponseRequiredByActionId(actionIds), dateStr);
       } else {
@@ -93,9 +93,9 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       actionIds.clear();
     });
 
-    ExportReport exportReport = new ExportReport(
-        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
-    exportReportService.save(exportReport);
+//    ExportReport exportReport = new ExportReport(
+//        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
+//    exportReportService.save(exportReport);
 
     log.info("Sftp transfer complete for file {}", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE));
     exportInfo.addOutcome((String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE) + " transferred with "
@@ -112,8 +112,8 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
         .get(ACTION_LIST);
     log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
     exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
-    ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
-    exportReportService.save(exportReport);
+ //  ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
+//    exportReportService.save(exportReport);
   }
 
   /**
