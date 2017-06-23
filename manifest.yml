@@ -1,7 +1,6 @@
 ---
 applications:
 - name: actionexportersvc
-  buildpack: https://github.com/cloudfoundry/java-buildpack.git
   instances: 1
   host: actionexportersvc
   memory: 1024M
@@ -11,4 +10,3 @@ applications:
     - rm-pg-db
     - rm-redis
     - rm-rabbitmq
-    - samplesvc-moveit
