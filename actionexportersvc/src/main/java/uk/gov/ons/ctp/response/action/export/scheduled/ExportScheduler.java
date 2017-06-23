@@ -137,8 +137,7 @@ public class ExportScheduler implements HealthIndicator {
               try {
                 transformationService.processActionRequests(message, requests);
               } catch (CTPException e) {
-                // Error retrieving TemplateMapping in
-                // transformationService
+                // Error retrieving TemplateMapping in transformationService
                 log.error("Scheduled run error transforming ActionRequests");
               }
             }
