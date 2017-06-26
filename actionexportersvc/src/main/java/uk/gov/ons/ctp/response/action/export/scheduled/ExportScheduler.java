@@ -103,7 +103,6 @@ public class ExportScheduler implements HealthIndicator {
    */
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
-
     log.info("Scheduled run start");
 
     // Warn if Mapping document cannot deal with all ActionRequests stored
