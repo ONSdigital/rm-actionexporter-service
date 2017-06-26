@@ -70,7 +70,7 @@ public class ActionExporterApplication {
   }
 
   /**
-   * Bean used to access Distributed Excution Lock Manager
+   * Bean used to access Distributed Execution Lock Manager
    *
    * @param redissonClient Redisson Client
    * @return the Distributed Lock Manager

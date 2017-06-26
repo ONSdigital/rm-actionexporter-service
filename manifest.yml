@@ -1,14 +1,13 @@
 ---
 applications:
 - name: actionexportersvc
-  buildpack: https://github.com/cloudfoundry/java-buildpack.git
   instances: 1
   host: actionexportersvc
   memory: 1024M
+  health-check-type: none
   path: actionexportersvc/target/actionexportersvc.jar
   timeout: 180
   services:
     - rm-pg-db
     - rm-redis
     - rm-rabbitmq
-    - samplesvc-moveit

@@ -79,8 +79,7 @@ public class TransformationServiceImpl implements TransformationService {
             addActionIds.add(actionRequest.getActionId());
           });
         } catch (CTPException e) {
-          // catch failure for templateService stream operation for that
-          // actionType but try others, if any.
+          // catch failure for templateService stream operation for that actionType but try others, if any.
           log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
         }
       } else {
