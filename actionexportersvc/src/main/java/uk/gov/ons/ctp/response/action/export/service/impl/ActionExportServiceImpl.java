@@ -83,13 +83,13 @@ public class ActionExportServiceImpl implements ActionExportService {
         // Address should never change so do not save if already exists
         addressRepo.persist(actionRequestDoc.getAddress());
       }
-//      if (actionRequestRepo.tupleExists(actionRequestDoc.getActionId())) {
-//        // ActionRequests should never be sent twice with same actionId but...
-//        log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
-//        actionRequestRepo.save(actionRequestDoc);
-//      } else {
+
+      if (actionRequestRepo.tupleExists(actionRequestDoc.getActionId())) {
+        // ActionRequests should never be sent twice with same actionId but...
+        log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
+      } else {
         actionRequestRepo.persist(actionRequestDoc);
-//      }
+      }
     });
 
     String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(now);

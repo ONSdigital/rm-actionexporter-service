@@ -103,7 +103,6 @@ public class ExportScheduler implements HealthIndicator {
    */
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
-
     log.info("Scheduled run start");
 
     // Warn if Mapping document cannot deal with all ActionRequests stored
@@ -137,8 +136,7 @@ public class ExportScheduler implements HealthIndicator {
               try {
                 transformationService.processActionRequests(message, requests);
               } catch (CTPException e) {
-                // Error retrieving TemplateMapping in
-                // transformationService
+                // Error retrieving TemplateMapping in transformationService
                 log.error("Scheduled run error transforming ActionRequests");
               }
             }

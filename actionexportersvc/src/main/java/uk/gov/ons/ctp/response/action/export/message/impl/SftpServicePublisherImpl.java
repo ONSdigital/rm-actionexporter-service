@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
-import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
@@ -32,8 +31,8 @@ import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
 /**
- * Service implementation responsible for publishing transformed ActionRequests
- * via sftp. See Spring Integration flow for details of sftp outbound channel.
+ * Service implementation responsible for publishing transformed ActionRequests via sftp.
+ * See Spring Integration flow for details of sftp outbound channel.
  *
  */
 @MessageEndpoint
@@ -59,15 +58,13 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @Override
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(@Header(FileHeaders.REMOTE_FILE) String filename,
-      @Header(ACTION_LIST) List<String> actionIds,
-      ByteArrayOutputStream stream) {
+                            @Header(ACTION_LIST) List<String> actionIds, ByteArrayOutputStream stream) {
     return stream.toByteArray();
   }
 
   /**
    * Using JPA entities to update repository for actionIds exported was slow.
-   * JPQL queries used for performance reasons. To increase performance updates
-   * batched with IN clause.
+   * JPQL queries used for performance reasons. To increase performance updates batched with IN clause.
    *
    * @param message Spring integration message sent
    */
@@ -75,16 +72,17 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @Override
   @ServiceActivator(inputChannel = "sftpSuccessProcess")
   public void sftpSuccessProcess(GenericMessage<GenericMessage<byte[]>> message) {
-    List<String> actionList = (List<String>) message.getPayload().getHeaders().get(ACTION_LIST);
-    Set<UUID> actionIds = new HashSet<UUID>();
     Timestamp now = DateTimeUtil.nowUTC();
     String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
+
+    List<String> actionList = (List<String>) message.getPayload().getHeaders().get(ACTION_LIST);
     List<List<String>> subLists = Lists.partition(actionList, BATCH_SIZE);
+    Set<UUID> actionIds = new HashSet<UUID>();
     subLists.forEach((batch) -> {
       batch.forEach((actionId) -> {
         actionIds.add(UUID.fromString(actionId));
       });
-      int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
+      actionRequestService.updateDateSentByActionId(actionIds, now);
       if (actionIds.size() == 1) {
         sendFeedbackMessage(actionRequestService.retrieveResponseRequiredByActionId(actionIds), dateStr);
       } else {
@@ -123,7 +121,6 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
    * @param dateStr when actioned.
    */
   private void sendFeedbackMessage(List<UUID> actionIds, String dateStr) {
-
     actionIds.forEach((actionId) -> {
       ActionFeedback actionFeedback = new ActionFeedback(actionId.toString(),
           "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);

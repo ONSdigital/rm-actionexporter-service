@@ -42,11 +42,8 @@ public class ActionRequestInstruction {
   @Column(name = "actionrequestpk")
   private Integer actionrequestPK;
 
-
   @Column(name = "actionid")
   private UUID actionId;
-
-
 
   @Column(name = "responserequired")
   private boolean responseRequired;
@@ -84,5 +81,4 @@ public class ActionRequestInstruction {
 
   @Column(name = "datesent")
   private Timestamp dateSent;
-
 }
