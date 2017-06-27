@@ -4,7 +4,7 @@ applications:
   instances: 1
   host: actionexportersvc-int
   memory: 1024M
-  health-check-type: none
+  health-check-type: process
   path: actionexportersvc/target/actionexportersvc.jar
   timeout: 180
   services:
