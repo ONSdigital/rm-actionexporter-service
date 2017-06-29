@@ -31,6 +31,11 @@
 
     <dependency>
       <groupId>uk.gov.ons.ctp.common</groupId>
+      <artifactId>framework</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.gov.ons.ctp.common</groupId>
       <artifactId>test-framework</artifactId>
       <scope>test</scope>
     </dependency>
@@ -71,6 +76,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
     <dependency>
