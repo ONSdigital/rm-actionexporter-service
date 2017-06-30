@@ -1,18 +1,16 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+
+import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * JPA repository for ActionRequest entities
@@ -37,6 +35,13 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    */
   @Query("SELECT DISTINCT(r.actionType) FROM ActionRequestInstruction r")
   List<String> findAllActionType();
+
+  /**
+   * Retrieve an ActionRequestInstruction by actionId
+   * @param actionId ActionRequestInstruction actionId to be retrieved
+   * @return ActionRequestInstruction object
+   */
+  ActionRequestInstruction findByActionId(@Param("actionId") UUID actionId);
 
   /**
    * Update action request date sent for List of actionIds.
