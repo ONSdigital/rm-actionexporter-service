@@ -1,16 +1,16 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * The implementation of ActionRequestService
@@ -29,7 +29,7 @@ public class ActionRequestServiceImpl implements ActionRequestService {
 
   @Override
   public ActionRequestInstruction retrieveActionRequest(UUID actionId) {
-    return repository.findOne(actionId);
+    return repository.findByActionId(actionId);
   }
 
   @Override
