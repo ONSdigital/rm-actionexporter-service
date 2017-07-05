@@ -55,7 +55,7 @@
         </property>
         <property name="retryStateGenerator"> <!-- Important to make it a Stateful Retry -->
             <bean class="org.springframework.integration.handler.advice.SpelExpressionRetryStateGenerator">
-                <constructor-arg value="headers.ID"/> <!-- TODO Once we deal with 1 small msg at a time (CTPA-1375), use payload.actionId -->
+                <constructor-arg value="headers.ID"/>
             </bean>
         </property>
         <property name="retryTemplate" ref="retryTemplate" />
