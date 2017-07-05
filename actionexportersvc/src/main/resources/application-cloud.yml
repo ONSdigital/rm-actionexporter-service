@@ -116,12 +116,12 @@ spring:
 data-grid:
   address: ${cloud.services.redis.connection.host}:${cloud.services.redis.connection.port}
   list-time-to-live-seconds: 600
-  
+
 export-schedule:
   cron-expression: "0 * * * * ?"
 
 sftp:
-  directory: .
+  directory: BSD/
 
 freemarker:
   delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
