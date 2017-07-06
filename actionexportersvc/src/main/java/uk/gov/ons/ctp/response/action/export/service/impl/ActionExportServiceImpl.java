@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.response.action.export.service.impl;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,78 +52,74 @@ public class ActionExportServiceImpl implements ActionExportService {
   @Transactional(propagation = Propagation.REQUIRED, readOnly = false, timeout = TRANSACTION_TIMEOUT)
   @Override
   public void acceptInstruction(ActionInstruction instruction) {
-    if ((instruction.getActionRequests() != null)
-        && (instruction.getActionRequests().getActionRequests().size() > 0)) {
-      processActionRequests(instruction.getActionRequests().getActionRequests());
+    if (instruction.getActionRequest() != null) {
+      processActionRequest(instruction.getActionRequest());
     } else {
-      log.info("No ActionRequests to process");
+      log.info("No ActionRequest to process");
+      if (instruction.getActionCancel() != null) {
+        processActionCancel(instruction.getActionCancel());
+      } else {
+        log.info("No ActionCancel to process");
+      }
     }
-    if ((instruction.getActionCancels() != null)
-       && (instruction.getActionCancels().getActionCancels().size() > 0)) {
-      processActionCancels(instruction.getActionCancels().getActionCancels());
-    } else {
-      log.info("No ActionCancels to process");
-    }
+
   }
 
   /**
-   * To process a list of actionRequests
+   * To process an ActionRequest
    *
-   * @param actionRequests list to be processed
+   * @param actionRequest to be processed
    */
-  private void processActionRequests(List<ActionRequest> actionRequests) {
-    log.debug("Saving {} actionRequests", actionRequests.size());
-    List<ActionRequestInstruction> actionRequestDocs = mapperFacade.mapAsList(actionRequests,
-        ActionRequestInstruction.class);
+  private void processActionRequest(ActionRequest actionRequest) {
+    log.debug("Saving {} actionRequest", actionRequest);
+    ActionRequestInstruction actionRequestDoc = mapperFacade.map(actionRequest, ActionRequestInstruction.class);
+
     Timestamp now = DateTimeUtil.nowUTC();
-    actionRequestDocs.forEach(actionRequestDoc -> {
-      actionRequestDoc.setDateStored(now);
-      if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRef())) {
-        // Address should never change so do not save if already exists
-        addressRepo.persist(actionRequestDoc.getAddress());
-      }
+    actionRequestDoc.setDateStored(now);
 
-      if (actionRequestRepo.tupleExists(actionRequestDoc.getActionId())) {
-        // ActionRequests should never be sent twice with same actionId but...
-        log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
-      } else {
-        actionRequestRepo.persist(actionRequestDoc);
-      }
-    });
+    if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRef())) {
+      // Address should never change so do not save if already exists
+      addressRepo.persist(actionRequestDoc.getAddress());
+    }
 
-    String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(now);
-    actionRequestDocs.forEach(actionRequestDoc -> {
-      if (actionRequestDoc.isResponseRequired()) {
-        ActionFeedback actionFeedback = new ActionFeedback(actionRequestDoc.getActionId().toString(),
+    if (actionRequestRepo.tupleExists(actionRequestDoc.getActionId())) {
+      // ActionRequests should never be sent twice with same actionId but...
+      log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
+    } else {
+      actionRequestRepo.persist(actionRequestDoc);
+    }
+
+    if (actionRequestDoc.isResponseRequired()) {
+      String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(now);
+      ActionFeedback actionFeedback = new ActionFeedback(actionRequestDoc.getActionId().toString(),
             "ActionExport Stored: " + timeStamp, Outcome.REQUEST_ACCEPTED);
-        actionFeedbackPubl.sendActionFeedback(actionFeedback);
-      }
-    });
+      actionFeedbackPubl.sendActionFeedback(actionFeedback);
+    }
   }
 
   /**
-   * To process a list of actionCancels
+   * To process an ActionCancel
    *
-   * @param actionCancels list to be processed
+   * @param actionCancel to be processed
    */
-  private void processActionCancels(List<ActionCancel> actionCancels) {
-    log.debug("Processing {} actionCancels", actionCancels.size());
-    String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+  private void processActionCancel(ActionCancel actionCancel) {
+    log.debug("Processing {} actionCancel", actionCancel);
+    ActionRequestInstruction actionRequest = actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
+
     boolean cancelled = false;
-    for (ActionCancel actionCancel : actionCancels) {
-      ActionRequestInstruction actionRequest = actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
-      if (actionRequest != null && actionRequest.getDateSent() == null) {
-        actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
-        cancelled = true;
-      } else {
-        cancelled = false;
-      }
-      if (actionCancel.isResponseRequired()) {
-        ActionFeedback actionFeedback = new ActionFeedback(actionCancel.getActionId(),
-            "ActionExport Cancelled: " + timeStamp,
-            cancelled ? Outcome.CANCELLATION_COMPLETED : Outcome.CANCELLATION_FAILED);
-        actionFeedbackPubl.sendActionFeedback(actionFeedback);
-      }
+    if (actionRequest != null && actionRequest.getDateSent() == null) {
+      actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
+      cancelled = true;
+    } else {
+      cancelled = false;
+    }
+
+    if (actionCancel.isResponseRequired()) {
+      String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+      ActionFeedback actionFeedback = new ActionFeedback(actionCancel.getActionId(),
+              "ActionExport Cancelled: " + timeStamp,
+              cancelled ? Outcome.CANCELLATION_COMPLETED : Outcome.CANCELLATION_FAILED);
+      actionFeedbackPubl.sendActionFeedback(actionFeedback);
     }
   }
 }
