@@ -1,4 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5c09319b89ca4d0f8d9b88ed11c936e4)](https://www.codacy.com/app/sdcplatform/rm-actionexporter-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/rm-actionexporter-service&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5c09319b89ca4d0f8d9b88ed11c936e4)](https://www.codacy.com/app/sdcplatform/rm-actionexporter-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/rm-actionexporter-service&amp;utm_campaign=Badge_Grade) [![Docker Pulls](https://img.shields.io/docker/pulls/sdcplatform/actionexportersvc.svg)]()
 
 # Action Exporter Service
 This repository contains the Action Exporter service. This microservice is a RESTful web service implemented using [Spring Boot](http://projects.spring.io/spring-boot/).
