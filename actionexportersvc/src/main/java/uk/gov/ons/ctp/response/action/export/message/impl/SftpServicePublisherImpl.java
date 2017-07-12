@@ -91,6 +91,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       actionIds.clear();
     });
 
+    // TODO CTPA-1409
 //    ExportReport exportReport = new ExportReport(
 //        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
 //    exportReportService.save(exportReport);
@@ -110,6 +111,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
         .get(ACTION_LIST);
     log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
     exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
+    // TODO CTPA-1409
  //  ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
 //    exportReportService.save(exportReport);
   }
