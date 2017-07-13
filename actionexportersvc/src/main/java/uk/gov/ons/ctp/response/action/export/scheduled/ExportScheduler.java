@@ -129,7 +129,7 @@ public class ExportScheduler implements HealthIndicator {
           // process Collection of templateMappings
           templatemappings.forEach((templateMapping) -> {
             List<ActionRequestInstruction> requests = actionRequestService
-                .findByDateSentIsNullAndActionType(templateMapping.getActionType());
+                    .findByDateSentIsNullAndActionType(templateMapping.getActionType());
             if (requests.isEmpty()) {
               log.info("No requests for actionType {} to process", templateMapping.getActionType());
             } else {
