@@ -7,22 +7,22 @@ import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 
 /**
- * The implementation of ExportReportService
+ * The implementation of FileRowCountService
  */
 @Service
 public class ExportReportServiceImpl implements ExportReportService {
 
   @Autowired
   private ExportReportRepository exportReportRepo;
-// TODO CTPA-1409
-//  @Override
-//  public ExportReport save(ExportReport exportReport) {
-//    return exportReportRepo.save(exportReport);
-//  }
 
-//  @Override
-//  public boolean createReport() {
-//    return exportReportRepo.createReport();
-//}
+  @Override
+  public ExportReport save(ExportReport exportReport) {
+    return exportReportRepo.save(exportReport);
+  }
+
+  @Override
+  public boolean createReport() {
+    return exportReportRepo.createReport();
+}
 
 }
