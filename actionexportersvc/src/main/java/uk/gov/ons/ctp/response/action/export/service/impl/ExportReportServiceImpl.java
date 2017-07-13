@@ -14,15 +14,15 @@ public class ExportReportServiceImpl implements ExportReportService {
 
   @Autowired
   private ExportReportRepository exportReportRepo;
-//TODO:
-//  @Override
-//  public ExportReport save(ExportReport exportReport) {
-//    return exportReportRepo.save(exportReport);
-//  }
 
-//  @Override
-//  public boolean createReport() {
-//    return exportReportRepo.createReport();
-//}
+  @Override
+  public ExportReport save(ExportReport exportReport) {
+    return exportReportRepo.save(exportReport);
+  }
+
+  @Override
+  public boolean createReport() {
+    return exportReportRepo.createReport();
+}
 
 }

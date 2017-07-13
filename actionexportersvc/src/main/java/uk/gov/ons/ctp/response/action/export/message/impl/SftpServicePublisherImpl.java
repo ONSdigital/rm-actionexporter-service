@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
+import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
@@ -91,9 +92,9 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       actionIds.clear();
     });
 
-//    ExportReport exportReport = new ExportReport(
-//        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
-//    exportReportService.save(exportReport);
+    ExportReport exportReport = new ExportReport(
+        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, false);
+    exportReportService.save(exportReport);
 
     log.info("Sftp transfer complete for file {}", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE));
     exportInfo.addOutcome((String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE) + " transferred with "
@@ -110,8 +111,8 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
         .get(ACTION_LIST);
     log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
     exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
- //  ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
-//    exportReportService.save(exportReport);
+   ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false);
+   exportReportService.save(exportReport);
   }
 
   /**
