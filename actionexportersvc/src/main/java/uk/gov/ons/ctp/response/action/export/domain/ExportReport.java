@@ -36,9 +36,6 @@ public class ExportReport {
   @Column(name = "datesent")
   private Timestamp dateSent;
 
-//  @Column(name = "sendresult")
-//  private boolean sendResult;
-
   private boolean reported;
 
 }
