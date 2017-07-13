@@ -3,5 +3,8 @@
 # Action Exporter Service
 This repository contains the Action Exporter service. This microservice is a RESTful web service implemented using [Spring Boot](http://projects.spring.io/spring-boot/).
 
+## API
+See [API.md](https://github.com/ONSdigital/rm-actionexporter-service/blob/master/API.md) for API documentation.
+
 ## Copyright
 Copyright (C) 2017 Crown Copyright (Office for National Statistics)

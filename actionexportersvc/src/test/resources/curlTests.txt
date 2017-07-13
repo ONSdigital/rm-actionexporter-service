@@ -2,7 +2,7 @@
 ## Curl tests
 #######################################################################################################################
 ## To test the health endpoint without credentials
-curl http://localhost:8241/mgmt/health -v -X GET
+curl http://localhost:8241/health -v -X GET
 200 {"status":"UP"}
 
 
