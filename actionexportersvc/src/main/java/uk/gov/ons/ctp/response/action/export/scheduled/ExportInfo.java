@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Info returned to Spring boot actuator available at health endpoint as
- * configured in application under management e.g. /mgmt/health
+ * configured in application under management e.g. /health
  *
  */
 @Component
