@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.config;
 
-import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -57,7 +56,7 @@ public class SwaggerConfig {
 
     return new Docket(DocumentationType.SWAGGER_2)
             .select()
-            .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
+            .apis(RequestHandlerSelectors.basePackage("uk.gov.ons.ctp.response.action.export.endpoint"))
             .paths(pathSelector::test)
             .build()
             .groupName(swaggerSettings.getGroupName())
