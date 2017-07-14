@@ -58,6 +58,10 @@ public class TemplateEndpoint {
       throws CTPException {
     log.debug("Entering findTemplate with {}", templateName);
     TemplateExpression result = templateService.retrieveTemplate(templateName);
+    if(result == null){
+      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Template not found for name %s", templateName);
+    }
+    
     return mapperFacade.map(result, TemplateExpressionDTO.class);
   }
 

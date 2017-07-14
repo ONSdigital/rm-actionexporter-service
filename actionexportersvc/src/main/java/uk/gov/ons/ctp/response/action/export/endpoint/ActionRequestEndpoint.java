@@ -71,9 +71,8 @@ public class ActionRequestEndpoint {
       throws CTPException {
     log.debug("Entering findActionRequest with {}", actionId);
     ActionRequestInstruction result = actionRequestService.retrieveActionRequest(actionId);
-    if (result == null) {
-      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND,
-          String.format("%s %s", ACTION_REQUEST_NOT_FOUND, actionId.toString()));
+    if(result == null){
+      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "ActionRequest not found for actionId %s", actionId.toString());
     }
     return mapperFacade.map(result, ActionRequestInstructionDTO.class);
   }
