@@ -12,6 +12,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
@@ -22,6 +23,9 @@ import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -107,6 +111,7 @@ public class ExportScheduler implements HealthIndicator {
 
     // Warn if Mapping document cannot deal with all ActionRequests stored
     List<String> storedActionTypes = actionRequestService.retrieveActionTypes();
+    actionRequestService
     List<String> mappedActionTypes = templateMappingService.retrieveActionTypes();
     storedActionTypes.forEach((actionType) -> {
       if (!mappedActionTypes.contains(actionType)) {
@@ -120,6 +125,7 @@ public class ExportScheduler implements HealthIndicator {
     String timeStamp = new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
     actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+   
     templateMappingService.retrieveAllTemplateMappingsByFilename()
       .forEach((fileName, templatemappings) -> {
         log.info("Lock test {} {}", fileName, actionExportLockManager.isLocked(fileName));
@@ -134,7 +140,11 @@ public class ExportScheduler implements HealthIndicator {
               log.info("No requests for actionType {} to process", templateMapping.getActionType());
             } else {
               try {
-                transformationService.processActionRequests(message, requests);
+            	  Map<UUID, List<ActionRequestInstruction>> actionsById = requests.stream().collect(Collectors.groupingBy(ActionRequestInstruction::getActionId));
+            	  actionsById.forEach((aid, as)->{
+            		  transformationService.processActionRequests(message, as);
+            		  
+            	  });
               } catch (CTPException e) {
                 // Error retrieving TemplateMapping in transformationService
                 log.error("Scheduled run error transforming ActionRequests");
@@ -142,7 +152,7 @@ public class ExportScheduler implements HealthIndicator {
             }
           });
           if (!message.isEmpty()) {
-            sftpService.sendMessage(fileName + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
+            sftpService.sendMessage(fileName + "_" + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
                 message.getMergedOutputStreams());
           }
         }
