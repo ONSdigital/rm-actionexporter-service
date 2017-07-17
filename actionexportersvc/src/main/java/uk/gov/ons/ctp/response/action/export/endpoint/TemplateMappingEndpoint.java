@@ -62,8 +62,9 @@ public class TemplateMappingEndpoint {
       @PathVariable("actionType") final String actionType) throws CTPException {
     log.debug("Entering findTemplateMapping with {}", actionType);
     TemplateMapping result = templateMappingService.retrieveTemplateMappingByActionType(actionType);
-    if(result == null){
-      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Template Mapping not found for action type %s", actionType);
+    if (result == null) {
+      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Template Mapping not found for action type %s",
+          actionType);
     }
     return mapperFacade.map(result, TemplateMappingDTO.class);
   }
@@ -76,7 +77,8 @@ public class TemplateMappingEndpoint {
    * @throws CTPException if the TemplateMapping can't be stored
    */
   @RequestMapping(method = RequestMethod.POST, consumes = "multipart/form-data")
-  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMapping(@RequestParam("file") MultipartFile file) throws CTPException {
+  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMapping(@RequestParam("file") MultipartFile file)
+      throws CTPException {
     log.debug("Entering storeTemplateMapping");
     try {
       List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(file.getInputStream());

@@ -49,6 +49,7 @@ public class ActionRequestEndpoint {
 
   /**
    * To retrieve all ActionRequests
+   * 
    * @return a list of ActionRequests
    */
   @RequestMapping(method = RequestMethod.GET)
@@ -62,6 +63,7 @@ public class ActionRequestEndpoint {
 
   /**
    * To retrieve a specific ActionRequest
+   * 
    * @param actionId for the specific ActionRequest to retrieve
    * @return the specific ActionRequest
    * @throws CTPException if no ActionRequest found
@@ -71,20 +73,23 @@ public class ActionRequestEndpoint {
       throws CTPException {
     log.debug("Entering findActionRequest with {}", actionId);
     ActionRequestInstruction result = actionRequestService.retrieveActionRequest(actionId);
-    if(result == null){
-      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "ActionRequest not found for actionId %s", actionId.toString());
+    if (result == null) {
+      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "ActionRequest not found for actionId %s",
+          actionId.toString());
     }
     return mapperFacade.map(result, ActionRequestInstructionDTO.class);
   }
 
   /**
    * To export a specific ActionRequest
+   * 
    * @param actionId the actionId of the specific ActionRequest
    * @return 201 if successful
    * @throws CTPException if specific ActionRequest not found
    */
   @RequestMapping(value = "/{actionId}", method = RequestMethod.POST)
-  public ResponseEntity<ActionRequestInstructionDTO> export(@PathVariable("actionId") final UUID actionId) throws CTPException {
+  public ResponseEntity<ActionRequestInstructionDTO> export(@PathVariable("actionId") final UUID actionId)
+      throws CTPException {
     log.debug("Entering export with actionId {}", actionId);
     ActionRequestInstruction actionRequest = actionRequestService.retrieveActionRequest(actionId);
     if (actionRequest == null) {
