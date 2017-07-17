@@ -15,6 +15,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
+import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
 
@@ -62,8 +63,8 @@ public class ExportScheduler implements HealthIndicator {
   @Autowired
   private DistributedLatchManager actionExportLatchManager;
 
-//  @Autowired
-//  private ExportReportService exportReportService;
+  @Autowired
+  private ExportReportService exportReportService;
 
   @Autowired
   private ExportInfo exportInfo;
@@ -135,7 +136,7 @@ public class ExportScheduler implements HealthIndicator {
           // process Collection of templateMappings
           templatemappings.forEach((templateMapping) -> {
             List<ActionRequestInstruction> requests = actionRequestService
-                .findByDateSentIsNullAndActionType(templateMapping.getActionType());
+                    .findByDateSentIsNullAndActionType(templateMapping.getActionType());
             if (requests.isEmpty()) {
               log.info("No requests for actionType {} to process", templateMapping.getActionType());
             } else {
@@ -192,14 +193,14 @@ public class ExportScheduler implements HealthIndicator {
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
     if (!actionExportLockManager.isLocked(DISTRIBUTED_OBJECT_KEY_REPORT)) {
       if (actionExportLockManager.lock(DISTRIBUTED_OBJECT_KEY_REPORT)) {
-        // TODO CTPA-1409
-        //result = exportReportService.createReport();
+        result = exportReportService.createReport();
       } else {
         result = true;
       }
     } else {
       result = true;
     }
+
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH)) {
@@ -212,6 +213,7 @@ public class ExportScheduler implements HealthIndicator {
       actionExportLockManager.unlock(DISTRIBUTED_OBJECT_KEY_REPORT);
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);
     }
+
     return result;
   }
 }

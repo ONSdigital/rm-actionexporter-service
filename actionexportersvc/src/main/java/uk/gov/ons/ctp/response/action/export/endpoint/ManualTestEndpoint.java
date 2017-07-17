@@ -43,7 +43,7 @@ public class ManualTestEndpoint {
    * @throws UnsupportedEncodingException if issue encountered during the FreeMarker templating
    */
   @RequestMapping(value = "/{templateName}", method = RequestMethod.GET)
-  public final ResponseEntity<?> testingFreeMarkerTemplating(@PathVariable("templateName") final String templateName)
+  public final ResponseEntity<String> testingFreeMarkerTemplating(@PathVariable("templateName") final String templateName)
           throws CTPException, UnsupportedEncodingException {
     log.debug("Entering testingFreeMarkerTemplating ...");
     ByteArrayOutputStream result = templateService.stream(buildMeListOfActionRequests(), templateName);
