@@ -112,7 +112,6 @@ public class ExportScheduler implements HealthIndicator {
 
     // Warn if Mapping document cannot deal with all ActionRequests stored
     List<String> storedActionTypes = actionRequestService.retrieveActionTypes();
-    actionRequestService
     List<String> mappedActionTypes = templateMappingService.retrieveActionTypes();
     storedActionTypes.forEach((actionType) -> {
       if (!mappedActionTypes.contains(actionType)) {
@@ -126,34 +125,36 @@ public class ExportScheduler implements HealthIndicator {
     String timeStamp = new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
     actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
-   
     templateMappingService.retrieveAllTemplateMappingsByFilename()
       .forEach((fileName, templatemappings) -> {
         log.info("Lock test {} {}", fileName, actionExportLockManager.isLocked(fileName));
         if (!actionExportLockManager.isLocked(fileName) && actionExportLockManager.lock(fileName)) {
           log.info("Lock file {} {}", fileName, actionExportLockManager.isLocked(fileName));
           ExportMessage message = new ExportMessage();
+          StringBuilder collectionExerciseRef = new StringBuilder();
           // process Collection of templateMappings
+         
           templatemappings.forEach((templateMapping) -> {
-            List<ActionRequestInstruction> requests = actionRequestService
-                    .findByDateSentIsNullAndActionType(templateMapping.getActionType());
+        	  List<ActionRequestInstruction> requests = actionRequestService.findByDateSentIsNullAndActionType(templateMapping.getActionType());
             if (requests.isEmpty()) {
               log.info("No requests for actionType {} to process", templateMapping.getActionType());
-            } else {
-              try {
-            	  Map<UUID, List<ActionRequestInstruction>> actionsById = requests.stream().collect(Collectors.groupingBy(ActionRequestInstruction::getActionId));
-            	  actionsById.forEach((aid, as)->{
-            		  transformationService.processActionRequests(message, as);
-            		  
-            	  });
-              } catch (CTPException e) {
-                // Error retrieving TemplateMapping in transformationService
-                log.error("Scheduled run error transforming ActionRequests");
+            } else {   
+                Map<String, List<ActionRequestInstruction>> exceriseRef = requests.stream().collect(Collectors.groupingBy(ActionRequestInstruction::getExerciseRef));                
+            	exceriseRef.forEach((aid, as)->{
+            	if (collectionExerciseRef.length()==0)
+            		collectionExerciseRef.append(as.get(0).getExerciseRef());
+                  try {
+				    transformationService.processActionRequests(message, as);
+				  } catch (CTPException e) {
+				    log.error("Scheduled run error transforming ActionRequests");
+					e.printStackTrace();
+				  }
+                });
               }
-            }
           });
+          
           if (!message.isEmpty()) {
-            sftpService.sendMessage(fileName + "_" + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
+            sftpService.sendMessage(fileName + "_"+ collectionExerciseRef.toString() + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
                 message.getMergedOutputStreams());
           }
         }
