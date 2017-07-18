@@ -13,6 +13,7 @@ import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.Publisher;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.file.FileHeaders;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.support.ErrorMessage;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
+import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
@@ -91,9 +93,9 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       actionIds.clear();
     });
 
-//    ExportReport exportReport = new ExportReport(
-//        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
-//    exportReportService.save(exportReport);
+    ExportReport exportReport = new ExportReport(
+        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, false);
+    exportReportService.save(exportReport);
 
     log.info("Sftp transfer complete for file {}", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE));
     exportInfo.addOutcome((String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE) + " transferred with "
@@ -104,14 +106,13 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @Override
   @ServiceActivator(inputChannel = "sftpFailedProcess")
   public void sftpFailedProcess(ErrorMessage message) {
-    String fileName = (String) ((MessagingException) message.getPayload()).getFailedMessage()
-        .getHeaders().get(FileHeaders.REMOTE_FILE);
-    List<String> actionList = (List<String>) ((MessagingException) message.getPayload()).getFailedMessage().getHeaders()
-        .get(ACTION_LIST);
+    MessageHeaders headers = ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
+    String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
+    List<String> actionList = (List<String>) headers.get(ACTION_LIST);
     log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
     exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
- //  ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
-//    exportReportService.save(exportReport);
+   ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false);
+   exportReportService.save(exportReport);
   }
 
   /**

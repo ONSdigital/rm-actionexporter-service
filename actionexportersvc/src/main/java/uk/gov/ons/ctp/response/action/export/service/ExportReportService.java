@@ -6,22 +6,17 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
  * Service responsible for dealing with ExportReports
  */
 public interface ExportReportService {
-
-	//TODO:  
-	/**
+  /**
    * Save an ExportReport
    *
    * @param exportReport the ExportReport to save.
    * @return the ExportReport saved.
    */
- // ExportReport save(final ExportReport exportReport);
+  ExportReport save(final ExportReport exportReport);
 
-
-
-//TODO:
-//  /**
-//   * Create a report entry for files created since last report run.
-//   *
-//   */
-//  boolean createReport();
+  /**
+   * Create a report entry for files created since last report run.
+   *
+   */
+  boolean createReport();
 }

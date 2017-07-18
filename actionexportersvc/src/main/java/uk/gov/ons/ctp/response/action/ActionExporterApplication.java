@@ -23,6 +23,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLatchManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLatchManagerRedissonImpl;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManagerRedissonImpl;
+import uk.gov.ons.ctp.common.error.RestExceptionHandler;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 
@@ -79,6 +80,16 @@ public class ActionExporterApplication {
   public DistributedLockManager actionExportExecutionLockManager(RedissonClient redissonClient) {
     return new DistributedLockManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient,
         appConfig.getDataGrid().getLockTimeToLiveSeconds());
+  }
+  
+  /**
+   * Rest Exception Handler
+   *
+   * @return a Rest Exception Handler
+   */
+  @Bean
+  public RestExceptionHandler restExceptionHandler() {
+    return new RestExceptionHandler();
   }
 
   /**

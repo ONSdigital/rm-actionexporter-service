@@ -16,4 +16,5 @@ import lombok.Data;
 public class AppConfig {
   private ExportSchedule exportSchedule;
   private DataGrid dataGrid;
+  private SwaggerSettings swaggerSettings;
 }

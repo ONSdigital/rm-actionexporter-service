@@ -1,9 +1,10 @@
 info:
-  contactEmail: philippe.brossier@ons.gov.uk
+  name: ${project.artifactId}
   version: ${project.version}
+  origin: ${scm.url}
   commit: ${buildNumber}
   branch: ${scmBranch}
-  buildTime: ${timestamp}
+  built: ${timestamp}
 
 # logging config here as a reminder as to how to override logback from cmd line
 # ie -Dlogging.level.org.springframework=DEBUG
@@ -32,8 +33,6 @@ security:
 
 
 management:
-  port: 8241
-  context-path: /mgmt
   security:
     role: SUPERUSER
     enabled: true
@@ -65,7 +64,7 @@ endpoints:
     sensitive: true
   info:
     enabled: true
-    sensitive: true
+    sensitive: false
   metrics:
     enabled: true
     sensitive: true
@@ -150,3 +149,10 @@ messaging:
   conMaxAttempts: 3
   prefetchCount: 10
   txSize: 1
+
+swagger-settings:
+  swagger-ui-active: true
+  group-name: actionexporter-api
+  title: Action Exporter API
+  description: API for ${project.artifactId}
+  version: ${project.version}
