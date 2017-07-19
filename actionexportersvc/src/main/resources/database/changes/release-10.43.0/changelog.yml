@@ -29,3 +29,13 @@ databaseChangeLog:
             path: add_actionrequest_exerciseref.sql
             relativeToChangelogFile: true
             splitStatements: false
+
+  - changeSet:
+      id: 10.43.0-4
+      author: Sarah Radford
+      changes:
+        - sqlFile:
+            comment: Update contents field on template table
+            path: update_template_contents.sql
+            relativeToChangelogFile: true
+            splitStatements: false
