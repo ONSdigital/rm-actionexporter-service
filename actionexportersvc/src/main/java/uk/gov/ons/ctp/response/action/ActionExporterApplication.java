@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,6 +25,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLatchManagerRedissonImpl;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManagerRedissonImpl;
 import uk.gov.ons.ctp.common.error.RestExceptionHandler;
+import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 
@@ -90,6 +92,16 @@ public class ActionExporterApplication {
   @Bean
   public RestExceptionHandler restExceptionHandler() {
     return new RestExceptionHandler();
+  }
+
+  /**
+   * Custom Object Mapper
+   *
+   * @return a customer object mapper
+   */
+  @Bean @Primary
+  public CustomObjectMapper customObjectMapper() {
+    return new CustomObjectMapper();
   }
 
   /**

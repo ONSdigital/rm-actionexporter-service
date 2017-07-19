@@ -106,12 +106,6 @@ public class ExportScheduler implements HealthIndicator {
    * Carry out scheduled actions according to configured cron expression
    *
    */
-  @Scheduled(cron = " 0 * * * * ?")
-  public void test()
-  {
-	log.info("Hello");  
-  }
-  
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
     log.info("Scheduled run start");
