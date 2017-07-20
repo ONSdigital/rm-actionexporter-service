@@ -60,7 +60,7 @@ An `HTTP 404 Not Found` status code is returned if the Action Exporter template 
 }
 ```
 
-An `HTTP 201 Created` status code is returned if the FreeMarker template update was a success. An `HTTP 400 Bad Request` is returned if the input data was invalid.
+An `HTTP 201 Created` status code is returned if the FreeMarker template upload was a success. An `HTTP 400 Bad Request` is returned if the input data was invalid.
 
 ## List Template Mappings
 * `GET /templatemappings` will return a list of all mappings for Action Exporter templates.
@@ -83,4 +83,36 @@ An `HTTP 201 Created` status code is returned if the FreeMarker template update 
 ]
 ```
 
-An `HTTP 204 No Content` status code is returned if there are no Action Exporter templates.
+An `HTTP 204 No Content` status code is returned if there are no mappings.
+
+## Get Template Mapping
+* `GET /templatemappings/BSNOT` will return the details of the mapping with the action type `BSNOT`.
+
+### Example JSON Response
+```json
+{
+    "actionType": "BSNOT",
+    "template": "initialPrint",
+    "file": "BSNOT",
+    "dateModified": "2017-07-14T12:00:00Z"
+}
+```
+
+An `HTTP 404 Not Found` status code is return if the mapping with the specified action type could not be found.
+
+## Create Template Mapping
+* `POST /templatemappings/BSNOT` will upload a FreeMarker template to the mapping with the action type `BSNOT`.
+
+**Required parameters**: `file` as the FreeMarker template form-data.
+
+### Example JSON Response
+```json
+{
+    "actionType": "BSNOT",
+    "template": "initialPrint",
+    "file": "BSNOT",
+    "dateModified": "2017-07-14T12:00:00Z"
+}
+```
+
+An `HTTP 201 Created` status code is returned if the FreeMarker template upload was a success. An `HTTP 400 Bad Request` is returned if the input data was invalid.
