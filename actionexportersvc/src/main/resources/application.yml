@@ -120,7 +120,7 @@ data-grid:
   lock-time-to-live-seconds: 3600
 
 export-schedule:
-  cron-expression: "0 * * * * ?"
+  cron-expression: "* * * * * ?"
 
 sftp:
   host: localhost
