@@ -1,14 +1,11 @@
-#######################################################################################################################
-## Curl tests
-#######################################################################################################################
-## To test the health endpoint without credentials
-curl http://localhost:8241/health -v -X GET
-200 {"status":"UP"}
+## To test the info endpoint
+curl http://localhost:8141/info -v -X GET
+200 {"name":"actionexportersvc","version":"10.44.0-SNAPSHOT","origin":"git@github.com:ONSdigital/rm-actionexporter-service.git","commit":"a21fac784b746598791e54da1e53f5c91f3073e2","branch":"master","built":"2017-08-01T16:56:35Z"}
 
 
 ## To retrieve a Template that does NOT exist
 curl http://localhost:8141/templates/donotexist -v -X GET
-200
+404 {"error":{"code":"RESOURCE_NOT_FOUND","timestamp":"20170801171323295","message":"Template not found for name donotexist"}}
 
 
 ## To store an empty Template
@@ -29,7 +26,7 @@ curl http://localhost:8141/templates/curltest -v -X GET
 
 
 ## To retrieve all Templates
-curl http://localhost:8141/templates/ -u actionexporter:ctp -v -X GET
+curl http://localhost:8141/templates/ -v -X GET
 200 [{"name":"curltest","content":"=================================  File for the Printer ==================================ActionId, ResponseRequired, ActionType, IAC, Line1, Town, Postcode<#list actionRequests as actionRequest>\t${actionRequest.actionId}, ${actionRequest.actionType}, ${actionRequest.iac}, ${actionRequest.address.line1}, ${actionRequest.address.townName}, ${actionRequest.address.postcode}</#list>","dateModified":1474080646781}]
 
 
@@ -65,10 +62,10 @@ curl http://localhost:8141/actionrequests/ -v -X GET
 
 
 ## To retrieve an ActionRequest that does not exist
-curl http://localhost:8141/actionrequests/1 -v -X GET
-404 {"error":{"code":"RESOURCE_NOT_FOUND","timestamp":"20161026154956023","message":"ActionRequest not found for actionId 1"}}
+curl http://localhost:8141/actionrequests/3b136c4b-7a14-4904-9e01-13364dd7b972 -v -X GET
+404 {"error":{"code":"RESOURCE_NOT_FOUND","timestamp":"20170801171603112","message":"ActionRequest not found for actionId 3b136c4b-7a14-4904-9e01-13364dd7b972"}}
 
 
 ## To export an ActionRequest that does not exist
-curl http://localhost:8141/actionrequests/1 -v -X POST
-404 {"error":{"code":"RESOURCE_NOT_FOUND","timestamp":"20161026154956023","message":"ActionRequest not found for actionId 1"}}
+curl http://localhost:8141/actionrequests/3b136c4b-7a14-4904-9e01-13364dd7b972 -v -X POST
+404 {"error":{"code":"RESOURCE_NOT_FOUND","timestamp":"20170801171634884","message":"ActionRequest not found for actionId 3b136c4b-7a14-4904-9e01-13364dd7b972"}}
