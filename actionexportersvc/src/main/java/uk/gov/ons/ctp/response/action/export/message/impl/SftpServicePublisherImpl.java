@@ -84,8 +84,8 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
       batch.forEach((actionId) -> {
         actionIds.add(UUID.fromString(actionId));
       });
-      actionRequestService.updateDateSentByActionId(actionIds, now);
-      if (actionIds.size() == 1) {
+      int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
+      if (actionIds.size() == saved) {
         sendFeedbackMessage(actionRequestService.retrieveResponseRequiredByActionId(actionIds), dateStr);
       } else {
         log.error("ActionRequests {} failed to update DateSent", actionIds);
