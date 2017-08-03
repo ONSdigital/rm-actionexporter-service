@@ -7,12 +7,12 @@ This page documents the Action Exporter service API endpoints. All endpoints ret
 ### Example JSON Response
 ```json
 {
-    "name": "actionexportersvc",
-    "version": "10.42.0",
-    "origin": "git@github.com:ONSdigital/rm-actionexporter-service.git",
-    "commit": "a59450c6b028824bc59ef33be6d697f1a75262ac",
-    "branch": "master",
-    "built": "2017-07-12T15:20:07Z"
+  "name": "actionexportersvc",
+  "version": "10.42.0",
+  "origin": "git@github.com:ONSdigital/rm-actionexporter-service.git",
+  "commit": "a59450c6b028824bc59ef33be6d697f1a75262ac",
+  "branch": "master",
+  "built": "2017-07-12T15:20:07Z"
 }
 ```
 
@@ -22,11 +22,11 @@ This page documents the Action Exporter service API endpoints. All endpoints ret
 ### Example JSON Response
 ```json
 [
-    {
-        "name": "initialPrint",
-        "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
-        "dateModified": "2017-07-14T12:00:00Z"
-    }
+  {
+    "name": "initialPrint",
+    "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
+    "dateModified": "2017-07-14T12:00:00Z"
+  }
 ]
 ```
 
@@ -38,9 +38,9 @@ An `HTTP 204 No Content` status code is returned if there are no Action Exporter
 ### Example JSON Response
 ```json
 {
-    "name": "initialPrint",
-    "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
-    "dateModified": "2017-07-14T12:00:00Z"
+  "name": "initialPrint",
+  "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
+  "dateModified": "2017-07-14T12:00:00Z"
 }
 ```
 
@@ -54,9 +54,9 @@ An `HTTP 404 Not Found` status code is returned if the Action Exporter template 
 ### Example JSON Response
 ```json
 {
-    "name": "initialPrint",
-    "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
-    "dateModified": "2017-07-14T12:00:00Z"
+  "name": "initialPrint",
+  "content": "<#list actionRequests as actionRequest>\n  ${(actionRequest.address.sampleUnitRef)!}|${actionRequest.iac?trim}|${(actionRequest.contact.forename?trim)!}|${(actionRequest.contact.emailaddress)!}\n  </#list>",
+  "dateModified": "2017-07-14T12:00:00Z"
 }
 ```
 
@@ -68,18 +68,18 @@ An `HTTP 201 Created` status code is returned if the FreeMarker template upload 
 ### Example JSON Response
 ```json
 [
-    {
-        "actionType": "BSNOT",
-        "template": "initialPrint",
-        "file": "BSNOT",
-        "dateModified": "2017-07-14T12:00:00Z"
-    },
-    {
-        "actionType": "BSREM",
-        "template": "initialPrint",
-        "file": "BSREM",
-        "dateModified": "2017-07-14T12:00:00Z"
-    }
+  {
+    "actionType": "BSNOT",
+    "template": "initialPrint",
+    "file": "BSNOT",
+    "dateModified": "2017-07-14T12:00:00Z"
+  },
+  {
+    "actionType": "BSREM",
+    "template": "initialPrint",
+    "file": "BSREM",
+    "dateModified": "2017-07-14T12:00:00Z"
+  }
 ]
 ```
 
@@ -91,10 +91,10 @@ An `HTTP 204 No Content` status code is returned if there are no mappings.
 ### Example JSON Response
 ```json
 {
-    "actionType": "BSNOT",
-    "template": "initialPrint",
-    "file": "BSNOT",
-    "dateModified": "2017-07-14T12:00:00Z"
+  "actionType": "BSNOT",
+  "template": "initialPrint",
+  "file": "BSNOT",
+  "dateModified": "2017-07-14T12:00:00Z"
 }
 ```
 
@@ -108,11 +108,27 @@ An `HTTP 404 Not Found` status code is return if the mapping with the specified 
 ### Example JSON Response
 ```json
 {
-    "actionType": "BSNOT",
-    "template": "initialPrint",
-    "file": "BSNOT",
-    "dateModified": "2017-07-14T12:00:00Z"
+  "actionType": "BSNOT",
+  "template": "initialPrint",
+  "file": "BSNOT",
+  "dateModified": "2017-07-14T12:00:00Z"
 }
 ```
 
 An `HTTP 201 Created` status code is returned if the FreeMarker template upload was a success. An `HTTP 400 Bad Request` is returned if the input data was invalid.
+
+## List Report Types
+* `GET /reports/types` will return a list of all Action Exporter report types.
+
+### Example JSON Response
+```json
+[
+  {
+    "reportTypePk": "PRINT_VOLUMES",
+    "displayOrder": 10,
+    "displayName": "Print Volumes"
+  }
+]
+```
+
+An `HTTP 204 No Content` status code is returned if there are no report types.
