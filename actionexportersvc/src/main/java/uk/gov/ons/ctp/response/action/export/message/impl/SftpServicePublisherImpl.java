@@ -14,10 +14,10 @@ import org.springframework.integration.annotation.Publisher;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.file.FileHeaders;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
+import org.springframework.messaging.MessagingException;
 
 import com.google.common.collect.Lists;
 
@@ -33,8 +33,8 @@ import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
 /**
- * Service implementation responsible for publishing transformed ActionRequests via sftp.
- * See Spring Integration flow for details of sftp outbound channel.
+ * Service implementation responsible for publishing transformed ActionRequests
+ * via sftp. See Spring Integration flow for details of sftp outbound channel.
  *
  */
 @MessageEndpoint
@@ -60,13 +60,14 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @Override
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(@Header(FileHeaders.REMOTE_FILE) String filename,
-                            @Header(ACTION_LIST) List<String> actionIds, ByteArrayOutputStream stream) {
+      @Header(ACTION_LIST) List<String> actionIds, ByteArrayOutputStream stream) {
     return stream.toByteArray();
   }
 
   /**
    * Using JPA entities to update repository for actionIds exported was slow.
-   * JPQL queries used for performance reasons. To increase performance updates batched with IN clause.
+   * JPQL queries used for performance reasons. To increase performance updates
+   * batched with IN clause.
    *
    * @param message Spring integration message sent
    */
@@ -107,12 +108,12 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @ServiceActivator(inputChannel = "sftpFailedProcess")
   public void sftpFailedProcess(ErrorMessage message) {
     MessageHeaders headers = ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
-    String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
-    List<String> actionList = (List<String>) headers.get(ACTION_LIST);
-    log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
-    exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
-   ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false);
-   exportReportService.save(exportReport);
+    //String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
+    //List<String> actionList = (List<String>) headers.get(ACTION_LIST);
+    //log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
+    //exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
+   //ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false);
+   //exportReportService.save(exportReport);
   }
 
   /**

@@ -1,32 +1,30 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import lombok.extern.slf4j.Slf4j;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.distributed.DistributedInstanceManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLatchManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -119,46 +117,72 @@ public class ExportScheduler implements HealthIndicator {
       }
     });
 
-    // Process templateMappings by file, have to as may be many actionTypes in
-    // one file. Does not assume actionTypes in the same file use the same
-    // template even so.
+    List<String> exerciseRefs = actionRequestService.retrieveExerciseRefs();
+    exerciseRefs.forEach((exerciseRef) -> {
+      sendExport(exerciseRef);
+    });
+
+    if (!createReport()) {
+      log.error("Scheduled run error creating report");
+    }
+
+  }
+
+  /**
+   * Deal with actionRequests for a collection exercise. Lock on file being
+   * created so only one instance can write to an SFTP file. Deal with
+   * exerciseRefs separately as a file is created for each collection exercise
+   * with filename from the lookup table as a prefix and exerciseRef
+   *
+   * @param exerciseRef collection exercise to deal with.
+   */
+  private void sendExport(String exerciseRef) {
+
+    // Process templateMappings by file to be created, have to as may be many
+    // actionTypes in one file. Does not assume actionTypes in the same file use
+    // the same template even so.
     String timeStamp = new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
     actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
     templateMappingService.retrieveAllTemplateMappingsByFilename()
-      .forEach((fileName, templatemappings) -> {
-        log.info("Lock test {} {}", fileName, actionExportLockManager.isLocked(fileName));
-        if (!actionExportLockManager.isLocked(fileName) && actionExportLockManager.lock(fileName)) {
-          log.info("Lock file {} {}", fileName, actionExportLockManager.isLocked(fileName));
-          ExportMessage message = new ExportMessage();
-          StringBuilder collectionExerciseRef = new StringBuilder();
-          // process Collection of templateMappings
-         
-          templatemappings.forEach((templateMapping) -> {
-        	  List<ActionRequestInstruction> requests = actionRequestService.findByDateSentIsNullAndActionType(templateMapping.getActionType());
-            if (requests.isEmpty()) {
-              log.info("No requests for actionType {} to process", templateMapping.getActionType());
-            } else {   
-                Map<String, List<ActionRequestInstruction>> exceriseRef = requests.stream().collect(Collectors.groupingBy(ActionRequestInstruction::getExerciseRef));                
-            	exceriseRef.forEach((aid, as)->{
-            	if (collectionExerciseRef.length()==0)
-            		collectionExerciseRef.append(as.get(0).getExerciseRef());
-                  try {
-				    transformationService.processActionRequests(message, as);
-				  } catch (CTPException e) {
-				    log.error("Scheduled run error transforming ActionRequests");
-					e.printStackTrace();
-				  }
-                });
+        .forEach((fileName, templatemappings) -> {
+
+          String fileNameWithExerciseRef = fileName + "_" + exerciseRef;
+          log.info("Lock test {} {}", fileNameWithExerciseRef,
+              actionExportLockManager.isLocked(fileNameWithExerciseRef));
+
+          if (!actionExportLockManager.isLocked(fileNameWithExerciseRef)
+              && actionExportLockManager.lock(fileNameWithExerciseRef)) {
+
+            log.info("Lock file {} {}", fileNameWithExerciseRef,
+                actionExportLockManager.isLocked(fileNameWithExerciseRef));
+            ExportMessage message = new ExportMessage();
+
+            // process Collection of templateMappings
+            templatemappings.forEach((templateMapping) -> {
+
+              List<ActionRequestInstruction> requests = actionRequestService
+                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), exerciseRef);
+              if (requests.isEmpty()) {
+                log.info("No requests for actionType {}, exerciseRef {} to process", templateMapping.getActionType(),
+                    exerciseRef);
+              } else {
+                try {
+                  transformationService.processActionRequests(message, requests);
+                } catch (CTPException e) {
+                  log.error("Scheduled run error transforming ActionRequests");
+                  e.printStackTrace();
+                }
               }
-          });
-          
-          if (!message.isEmpty()) {
-            sftpService.sendMessage(fileName + "_"+ collectionExerciseRef.toString() + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
-                message.getMergedOutputStreams());
+            });
+
+            if (!message.isEmpty()) {
+              sftpService.sendMessage(fileNameWithExerciseRef + "_" + timeStamp + ".csv",
+                  message.getMergedActionRequestIdsAsStrings(),
+                  message.getMergedOutputStreams());
+            }
           }
-        }
-      });
+        });
     // Wait for all instances to finish to synchronise the removal of locks
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
@@ -171,9 +195,6 @@ public class ExportScheduler implements HealthIndicator {
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      if (!createReport()) {
-        log.error("Scheduled run error creating report");
-      }
       log.info("{} {} instance/s running",
           actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
           DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
@@ -186,6 +207,7 @@ public class ExportScheduler implements HealthIndicator {
    * calling this method to produce a report. Also have to synchronise all
    * potential services creating report to ensure only one report created per
    * scheduled run so need a latch for this purpose.
+   *
    * @return boolean whether or not report has been created successfully.
    */
   private boolean createReport() {

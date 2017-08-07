@@ -35,16 +35,24 @@ public interface ActionRequestService {
   ActionRequestInstruction save(ActionRequestInstruction actionRequest);
 
   /**
-   * Retrieve all ActionRequests not sent for an actionType.
+   * Retrieve all ActionRequests not sent for an actionType and exerciseRef.
    *
    * @param actionType actionType for which to retrieve ActionRequests.
-   * @return List ActionRequests not sent to external services previously for
-   *         actionType.
+   * @param exerciseRef for which to retrieve ActionRequests.
+   * @return List of ActionRequests not sent to external services previously for
+   *         actionType, exerciseRef.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionType(String actionType);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef);
 
   /**
-   * Return a list of distinct actionTypes in collection
+   * Return a list of distinct exerciseRefs
+   *
+   * @return a list of exerciseRefs.
+   */
+  List<String> retrieveExerciseRefs();
+
+  /**
+   * Return a list of distinct actionTypes
    *
    * @return a list of actionTypes.
    */

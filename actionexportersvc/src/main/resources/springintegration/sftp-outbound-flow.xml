@@ -34,7 +34,7 @@
             <bean class="org.springframework.integration.handler.advice.ExpressionEvaluatingRequestHandlerAdvice">
                 <property name="onSuccessExpression" value="#root" />
                 <property name="successChannel" ref="sftpSuccessProcess" />
-                <property name="onFailureExpression" value="#root" />
+                <property name="onFailureExpression" value="payload" />
                 <property name="failureChannel" ref="sftpFailedProcess" />
             </bean>
             <int:retry-advice>

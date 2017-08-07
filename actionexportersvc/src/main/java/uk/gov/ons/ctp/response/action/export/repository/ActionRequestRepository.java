@@ -20,13 +20,22 @@ import java.util.UUID;
 public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, UUID> {
 
   /**
+   *  Retrieve a list of collection exercise references to process.
+   *
+   * @return List of distinct exercise references.
+   */
+  @Query("SELECT DISTINCT(r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
+  List<String> findAllExerciseRefs();
+
+  /**
    * Retrieve all action export requests not done for an actionType.
    *
    * @param actionType for which to return action requests.
+   * @param exerciseRef for which to return action requests.
    * @return List ActionRequests not sent to external services previously for
    *         actionType.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionType(String actionType);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef);
 
   /**
    * Retrieve a list of actionTypes
