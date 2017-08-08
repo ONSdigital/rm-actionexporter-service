@@ -1,0 +1,13 @@
+---
+applications:
+- name: actionexportersvc-sit
+  instances: 1
+  host: actionexportersvc-sit
+  memory: 1024M
+  health-check-type: process
+  path: actionexportersvc/target/actionexportersvc.jar
+  timeout: 180
+  services:
+    - rm-pg-db
+    - rm-redis
+    - rm-rabbitmq

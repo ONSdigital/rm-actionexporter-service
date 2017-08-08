@@ -1,0 +1,31 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.44.0-1
+      author: Gareth Turner
+      changes:
+        - sqlFile:
+            comment: Remove spaces from print file.
+            path: remove_spaces_in_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            
+  - changeSet:
+      id: 10.44.0-2
+      author: Chris Hardman
+      changes:
+        - sqlFile:
+            comment: add Null values to print file
+            path: null_values_added_to_print_file.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+       id: 10.44.0-3
+       author: Kieran Wardle
+       changes:
+         - sqlFile:
+             comment: add Null values to print file
+             path: fix_print_file_template.sql
+             relativeToChangelogFile: true
+             splitStatements: false

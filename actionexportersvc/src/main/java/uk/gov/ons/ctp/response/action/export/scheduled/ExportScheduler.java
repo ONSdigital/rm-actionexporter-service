@@ -12,6 +12,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
@@ -23,6 +24,9 @@ import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -127,23 +131,30 @@ public class ExportScheduler implements HealthIndicator {
         if (!actionExportLockManager.isLocked(fileName) && actionExportLockManager.lock(fileName)) {
           log.info("Lock file {} {}", fileName, actionExportLockManager.isLocked(fileName));
           ExportMessage message = new ExportMessage();
+          StringBuilder collectionExerciseRef = new StringBuilder();
           // process Collection of templateMappings
+         
           templatemappings.forEach((templateMapping) -> {
-            List<ActionRequestInstruction> requests = actionRequestService
-                    .findByDateSentIsNullAndActionType(templateMapping.getActionType());
+        	  List<ActionRequestInstruction> requests = actionRequestService.findByDateSentIsNullAndActionType(templateMapping.getActionType());
             if (requests.isEmpty()) {
               log.info("No requests for actionType {} to process", templateMapping.getActionType());
-            } else {
-              try {
-                transformationService.processActionRequests(message, requests);
-              } catch (CTPException e) {
-                // Error retrieving TemplateMapping in transformationService
-                log.error("Scheduled run error transforming ActionRequests");
+            } else {   
+                Map<String, List<ActionRequestInstruction>> exceriseRef = requests.stream().collect(Collectors.groupingBy(ActionRequestInstruction::getExerciseRef));                
+            	exceriseRef.forEach((aid, as)->{
+            	if (collectionExerciseRef.length()==0)
+            		collectionExerciseRef.append(as.get(0).getExerciseRef());
+                  try {
+				    transformationService.processActionRequests(message, as);
+				  } catch (CTPException e) {
+				    log.error("Scheduled run error transforming ActionRequests");
+					e.printStackTrace();
+				  }
+                });
               }
-            }
           });
+          
           if (!message.isEmpty()) {
-            sftpService.sendMessage(fileName + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
+            sftpService.sendMessage(fileName + "_"+ collectionExerciseRef.toString() + "_" + timeStamp + ".csv", message.getMergedActionRequestIdsAsStrings(),
                 message.getMergedOutputStreams());
           }
         }
