@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.45.0-1
+      author: Sarah Radford
+      changes:
+        - sqlFile:
+            comment: Add success field to print volumes
+            path: print_volumes_changes.sql
+            relativeToChangelogFile: true
+            splitStatements: false
