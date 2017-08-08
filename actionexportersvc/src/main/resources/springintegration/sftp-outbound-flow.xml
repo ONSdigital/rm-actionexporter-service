@@ -36,6 +36,7 @@
                 <property name="successChannel" ref="sftpSuccessProcess" />
                 <property name="onFailureExpression" value="payload" />
                 <property name="failureChannel" ref="sftpFailedProcess" />
+                <property name="trapException" value="true" />
             </bean>
             <int:retry-advice>
                 <int:exponential-back-off initial="2000" multiplier="2" />

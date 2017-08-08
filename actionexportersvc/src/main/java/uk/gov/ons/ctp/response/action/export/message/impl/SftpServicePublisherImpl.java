@@ -95,7 +95,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
     });
 
     ExportReport exportReport = new ExportReport(
-        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, false);
+        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE), actionList.size(), now, true, false);
     exportReportService.save(exportReport);
 
     log.info("Sftp transfer complete for file {}", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE));
@@ -108,12 +108,12 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
   @ServiceActivator(inputChannel = "sftpFailedProcess")
   public void sftpFailedProcess(ErrorMessage message) {
     MessageHeaders headers = ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
-    //String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
-    //List<String> actionList = (List<String>) headers.get(ACTION_LIST);
-    //log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
-    //exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
-   //ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false);
-   //exportReportService.save(exportReport);
+    String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
+    List<String> actionList = (List<String>) headers.get(ACTION_LIST);
+    log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
+    exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
+    ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
+    exportReportService.save(exportReport);
   }
 
   /**
