@@ -8,6 +8,6 @@ applications:
   path: actionexportersvc/target/actionexportersvc.jar
   timeout: 180
   services:
-    - actionexporter-db
+    - rm-actionexporter-db
     - rm-redis
     - rm-rabbitmq
