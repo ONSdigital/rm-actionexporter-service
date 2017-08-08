@@ -1,7 +1,7 @@
 ---
 applications:
 - name: actionexportersvc-ci
-  instances: 1
+  instances: 2
   host: actionexportersvc-ci
   memory: 1024M
   health-check-type: process
