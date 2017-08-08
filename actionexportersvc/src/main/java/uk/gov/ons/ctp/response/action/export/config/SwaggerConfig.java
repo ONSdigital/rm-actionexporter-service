@@ -12,8 +12,6 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import uk.gov.ons.ctp.response.action.export.endpoint.ActionRequestEndpoint;
-import uk.gov.ons.ctp.response.action.export.endpoint.ManualTestEndpoint;
 import uk.gov.ons.ctp.response.action.export.endpoint.TemplateEndpoint;
 import uk.gov.ons.ctp.response.action.export.endpoint.TemplateMappingEndpoint;
 
@@ -24,7 +22,7 @@ import uk.gov.ons.ctp.response.action.export.endpoint.TemplateMappingEndpoint;
 @Configuration
 @EnableSwagger2
 @ComponentScan(basePackageClasses = {
-        ActionRequestEndpoint.class, TemplateEndpoint.class, TemplateMappingEndpoint.class, ManualTestEndpoint.class
+        TemplateEndpoint.class, TemplateMappingEndpoint.class
 })
 public class SwaggerConfig {
 
