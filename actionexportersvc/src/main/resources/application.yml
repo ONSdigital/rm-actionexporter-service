@@ -107,10 +107,6 @@ spring:
         ddl-auto: update
         default_schema: actionexporter
 
-
-  zipkin:
-    enabled: false
-
 data-grid:
   address: localhost:7379
   lock-time-to-live-seconds: 3600
