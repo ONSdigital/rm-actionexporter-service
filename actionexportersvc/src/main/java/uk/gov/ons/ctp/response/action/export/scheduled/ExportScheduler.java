@@ -117,10 +117,30 @@ public class ExportScheduler implements HealthIndicator {
       }
     });
 
+    actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
+        actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+
     List<String> exerciseRefs = actionRequestService.retrieveExerciseRefs();
     exerciseRefs.forEach((exerciseRef) -> {
       sendExport(exerciseRef);
     });
+
+    // Wait for all instances to finish to synchronise the removal of locks
+    try {
+      actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
+      if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
+        log.error("Scheduled run error countdownlatch timed out, should be {} instances running",
+            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+      }
+    } catch (InterruptedException e) {
+      log.error("Scheduled run error waiting for countdownlatch: {}", e.getMessage());
+    } finally {
+      actionExportLockManager.unlockInstanceLocks();
+      actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
+      log.info("{} {} instance/s running",
+          actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
+          DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
+    }
 
     if (!createReport()) {
       log.error("Scheduled run error creating report");
@@ -142,8 +162,7 @@ public class ExportScheduler implements HealthIndicator {
     // actionTypes in one file. Does not assume actionTypes in the same file use
     // the same template even so.
     String timeStamp = new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
-    actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
-        actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+
     templateMappingService.retrieveAllTemplateMappingsByFilename()
         .forEach((fileName, templatemappings) -> {
 
@@ -183,22 +202,7 @@ public class ExportScheduler implements HealthIndicator {
             }
           }
         });
-    // Wait for all instances to finish to synchronise the removal of locks
-    try {
-      actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
-        log.error("Scheduled run error countdownlatch timed out, should be {} instances running",
-            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
-      }
-    } catch (InterruptedException e) {
-      log.error("Scheduled run error waiting for countdownlatch: {}", e.getMessage());
-    } finally {
-      actionExportLockManager.unlockInstanceLocks();
-      actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      log.info("{} {} instance/s running",
-          actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
-          DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
-    }
+
   }
 
   /**
