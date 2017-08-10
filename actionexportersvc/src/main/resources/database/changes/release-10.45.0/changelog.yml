@@ -9,3 +9,13 @@ databaseChangeLog:
             path: print_volumes_changes.sql
             relativeToChangelogFile: true
             splitStatements: false
+
+  - changeSet:
+      id: 10.45.0-2
+      author: Sarah Radford
+      changes:
+        - sqlFile:
+            comment: Add Indexes
+            path: index_actionexporter_schema.sql
+            relativeToChangelogFile: true
+            splitStatements: false
