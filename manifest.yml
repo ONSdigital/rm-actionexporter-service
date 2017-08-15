@@ -5,7 +5,7 @@ applications:
   host: actionexportersvc
   memory: 1024M
   health-check-type: none
-  path: actionexportersvc/target/actionexportersvc.jar
+  path: target/actionexportersvc.jar
   timeout: 180
   services:
     - rm-pg-db
