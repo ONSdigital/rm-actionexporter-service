@@ -83,10 +83,10 @@ An `HTTP 201 Created` status code is returned if the FreeMarker template upload 
 ]
 ```
 
-An `HTTP 204 No Content` status code is returned if there are no mappings.
+An `HTTP 204 No Content` status code is returned if there are no Action Exporter template mappings.
 
 ## Get Template Mapping
-* `GET /templatemappings/BSNOT` will return the details of the mapping with the action type `BSNOT`.
+* `GET /templatemappings/BSNOT` will return the details of the Action Exporter template mapping with the action type `BSNOT`.
 
 ### Example JSON Response
 ```json
@@ -98,10 +98,10 @@ An `HTTP 204 No Content` status code is returned if there are no mappings.
 }
 ```
 
-An `HTTP 404 Not Found` status code is return if the mapping with the specified action type could not be found.
+An `HTTP 404 Not Found` status code is return if the Action Exporter template mapping with the specified action type could not be found.
 
 ## Create Template Mapping
-* `POST /templatemappings/BSNOT` will upload a FreeMarker template to the mapping with the action type `BSNOT`.
+* `POST /templatemappings/BSNOT` will upload a FreeMarker template to the Action Exporter template mapping with the action type `BSNOT`.
 
 **Required parameters**: `file` as the FreeMarker template form-data.
 
@@ -124,7 +124,7 @@ An `HTTP 201 Created` status code is returned if the FreeMarker template upload 
 ```json
 [
   {
-    "reportTypePk": "PRINT_VOLUMES",
+    "reportType": "PRINT_VOLUMES",
     "displayOrder": 10,
     "displayName": "Print Volumes"
   }
@@ -132,3 +132,35 @@ An `HTTP 201 Created` status code is returned if the FreeMarker template upload 
 ```
 
 An `HTTP 204 No Content` status code is returned if there are no report types.
+
+## List Reports by Type
+* `GET /reports/types/PRINT_VOLUMES` will return a list of all reports with the type `PRINT_VOLUMES`.
+
+### Example JSON Response
+```json
+[
+  {
+    "id": "16280cb1-a1e4-47ac-9e99-d050e6db06d3",
+    "reportType": "PRINT_VOLUMES",
+    "createdDateTime": "2017-08-04T14:19:04.707+0000"
+  }
+]
+```
+
+An `HTTP 404 Not Found` status code is returned if the report type could not be found. An `HTTP 204 No Content` status code is returned if there are no reports for the specified report type.
+
+## Get Report
+* `GET /reports/16280cb1-a1e4-47ac-9e99-d050e6db06d3` will return the details of the report with an ID of `16280cb1-a1e4-47ac-9e99-d050e6db06d3`.
+
+### Example JSON Response
+```json
+{
+  "id": "16280cb1-a1e4-47ac-9e99-d050e6db06d3",
+  "reportType": "PRINT_VOLUMES",
+  "contents": "filename,rowcount,datesent\nBSREM_221_201712_04082017_1411.csv,799,2017-08-04 14:15:25.686+00\nBSNOT_221_201712_04082017_1411.csv,399,2017-08-04 14:17:53.093+00\nBSREM_221_201711_04082017_1417.csv,100,2017-08-04 14:18:00.908+00\nBSNOT_221_201711_04082017_1417.csv,50,2017-08-04 14:18:10.514+00\nBSREM_221_201710_04082017_1418.csv,101,2017-08-04 14:18:19.205+00\nBSNOT_221_201710_04082017_1418.csv,51,2017-08-04 14:19:02.281+00",
+  "createdDateTime": "2017-08-04T14:19:04.707+0000"
+}
+```
+
+An `HTTP 404 Not Found` status code is returned if the report with the specified ID could not be found.
+

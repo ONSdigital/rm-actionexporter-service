@@ -1,0 +1,13 @@
+---
+applications:
+- name: actionexportersvc-preprod
+  instances: 1
+  host: actionexportersvc-preprod
+  memory: 1024M
+  health-check-type: process
+  path: target/actionexportersvc.jar
+  timeout: 180
+  services:
+    - rm-actionexporter-db
+    - rm-redis
+    - rm-rabbitmq
