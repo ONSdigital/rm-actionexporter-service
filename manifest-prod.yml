@@ -1,0 +1,18 @@
+---
+applications:
+- name: actionexportersvc-prod
+  instances: 1
+  host: actionexportersvc-prod
+  memory: 1024M
+  health-check-type: process
+  path: target/actionexportersvc.jar
+  timeout: 180
+  services:
+    - rm-actionexporter-db
+    - rm-redis
+    - rm-rabbitmq
+  env:
+    sftp_username: REPLACE_USER
+    sftp_port: 22
+    sftp_password: REPLACE_PASSWORD
+    sftp_url: REAPLACE_URL
