@@ -1,0 +1,13 @@
+---
+applications:
+- name: actionexportersvc-SPACE
+  instances: INSTANCES
+  host: actionexportersvc-SPACE
+  memory: 1024M
+  health-check-type: process
+  path: target/actionexportersvc.jar
+  timeout: 180
+  services:
+    - DATABASE
+    - rm-redis
+    - rm-rabbitmq
