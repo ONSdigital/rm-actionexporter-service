@@ -11,3 +11,5 @@ applications:
     - DATABASE
     - rm-redis
     - rm-rabbitmq
+  env:
+    exportSchedule_cronExpression: "REPLACE_CRON"
