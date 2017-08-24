@@ -23,12 +23,14 @@ liquibase:
   url: ${cloud.services.postgresql.connection.jdbcurl}
   changeLog: classpath:/database/changelog-master.yml
 
+
 security:
   basic:
-    enabled: false
+    enabled: true
+    realm: sdc
   user:
-    name: actionexporter
-    password: ctp
+    name: admin
+    password: secret
 
 
 management:
