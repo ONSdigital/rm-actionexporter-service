@@ -18,4 +18,3 @@ applications:
     sftp_password: REPLACE_PASSWORD
     sftp_host: REPLACE_URL
     endpoints_enabled: ENDPOINT_ENABLED
-    endpoints_info_enabled: true
