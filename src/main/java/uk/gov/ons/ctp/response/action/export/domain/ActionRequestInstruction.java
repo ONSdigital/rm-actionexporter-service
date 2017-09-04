@@ -1,7 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import java.sql.Timestamp;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,18 +20,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.gov.ons.ctp.response.action.message.instruction.Priority;
+import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Domain model object.
  */
+@CoverageIgnore
 @Entity
 @Data
 @AllArgsConstructor

@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.config;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,6 +20,7 @@ import uk.gov.ons.ctp.response.action.export.endpoint.TemplateMappingEndpoint;
 /**
  * Created by stevee on 23/06/2017.
  */
+@CoverageIgnore
 @Configuration
 @EnableSwagger2
 @ComponentScan(basePackageClasses = {
