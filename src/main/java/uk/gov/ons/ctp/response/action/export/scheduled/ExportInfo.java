@@ -1,15 +1,17 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import java.util.LinkedList;
-
 import lombok.Data;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedList;
 
 /**
  * Info returned to Spring boot actuator available at health endpoint as
  * configured in application under management e.g. /health
  *
  */
+@CoverageIgnore
 @Component
 @Data
 public class ExportInfo {

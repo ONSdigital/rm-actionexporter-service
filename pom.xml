@@ -183,6 +183,12 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.cobertura</groupId>
+      <artifactId>cobertura</artifactId>
+    </dependency>
+
   </dependencies>
 
   <scm>

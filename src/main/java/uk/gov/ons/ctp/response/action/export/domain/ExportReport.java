@@ -1,6 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,15 +13,12 @@ import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.sql.Timestamp;
 
 /**
  * Domain entity representing details of a SFTP transfer of actionRequests.
  */
+@CoverageIgnore
 @Entity
 @Data
 @Builder

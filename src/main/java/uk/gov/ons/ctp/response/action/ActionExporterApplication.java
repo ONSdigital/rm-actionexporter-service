@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -32,6 +33,7 @@ import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 /**
  * The main entry point into the Action Service SpringBoot Application.
  */
+@CoverageIgnore
 @SpringBootApplication
 @EnableTransactionManagement
 @IntegrationComponentScan

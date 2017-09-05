@@ -1,18 +1,19 @@
 package uk.gov.ons.ctp.response.action.export.representation;
 
-import java.util.Date;
-import java.util.UUID;
-
-import org.springframework.data.annotation.Id;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
+import org.springframework.data.annotation.Id;
+
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * Representation of an ActionRequest
  */
+@CoverageIgnore
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)

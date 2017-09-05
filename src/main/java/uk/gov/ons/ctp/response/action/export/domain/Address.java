@@ -1,20 +1,21 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 
 /**
  * Domain model object.
  */
+@CoverageIgnore
 @Entity
 @Data
 @Builder

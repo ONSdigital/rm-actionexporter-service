@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.templating.freemarker.config;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import freemarker.template.TemplateExceptionHandler;
 /**
  * Configuration specific to FreeMarker templating
  */
+@CoverageIgnore
 @Configuration
 public class FreeMarkerConfig {
 
