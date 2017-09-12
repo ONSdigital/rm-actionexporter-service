@@ -1,6 +1,17 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
-import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
+import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,20 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
+import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
 
 /**
  * The implementation of the TemplateMappingService
@@ -55,12 +53,15 @@ public class TemplateMappingServiceImpl implements TemplateMappingService {
       });
     } catch (JsonParseException e) {
       log.error("JsonParseException thrown while parsing mapping...", e.getMessage());
+      log.error("Stack trace: " + e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (JsonMappingException e) {
       log.error("JsonMappingException thrown while parsing mapping...", e.getMessage());
+      log.error("Stack trace: " + e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (IOException e) {
       log.error("IOException thrown while parsing mapping...", e.getMessage());
+      log.error("Stack trace: " + e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     }
     mapping.forEach((templateMapping) -> {
