@@ -101,18 +101,20 @@ An `HTTP 204 No Content` status code is returned if there are no Action Exporter
 An `HTTP 404 Not Found` status code is return if the Action Exporter template mapping with the specified action type could not be found.
 
 ## Create Template Mapping
-* `POST /templatemappings/BSNOT` will upload a FreeMarker template to the Action Exporter template mapping with the action type `BSNOT`.
+* `POST /templatemappings/BSNOT` will upload FreeMarker template JSON to the Action Exporter template mapping with the action type `BSNOT`.
 
-**Required parameters**: `file` as the FreeMarker template form-data.
+**Required parameters**: `template` as the FreeMarker template name. `fileNamePrefix` as the intended prefix of the template file.
 
 ### Example JSON Response
 ```json
-{
-  "actionType": "BSNOT",
-  "template": "initialPrint",
-  "file": "BSNOT",
-  "dateModified": "2017-07-14T12:00:00Z"
-}
+[
+    {
+        "actionType": "BSNOT",
+        "template": "initialPrint",
+        "fileNamePrefix": "ICL1_2003",
+        "dateModified": "2017-09-18T15:42:41.473+0100"
+    }
+]
 ```
 
 An `HTTP 201 Created` status code is returned if the FreeMarker template upload was a success. An `HTTP 400 Bad Request` is returned if the input data was invalid.

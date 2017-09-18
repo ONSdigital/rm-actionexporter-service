@@ -1,30 +1,18 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
-import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
+import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
 /**
  * The implementation of the TemplateMappingService
@@ -41,32 +29,16 @@ public class TemplateMappingServiceImpl implements TemplateMappingService {
   private TemplateMappingRepository repository;
 
   @Override
-  public List<TemplateMapping> storeTemplateMappings(InputStream fileContents)
+  public List<TemplateMapping> storeTemplateMappings(String actionType, List<TemplateMapping> templateMappingList)
       throws CTPException {
-    List<TemplateMapping> mapping = new ArrayList<TemplateMapping>();
-    String stringValue = getStringFromInputStream(fileContents);
-    if (StringUtils.isEmpty(stringValue)) {
-      log.error(EXCEPTION_STORE_TEMPLATE_MAPPING);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, EXCEPTION_STORE_TEMPLATE_MAPPING);
-    }
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      mapping = mapper.readValue(stringValue, new TypeReference<List<TemplateMapping>>() {
-      });
-    } catch (JsonParseException e) {
-      log.error("JsonParseException thrown while parsing mapping...", e.getMessage());
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } catch (JsonMappingException e) {
-      log.error("JsonMappingException thrown while parsing mapping...", e.getMessage());
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } catch (IOException e) {
-      log.error("IOException thrown while parsing mapping...", e.getMessage());
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    }
-    mapping.forEach((templateMapping) -> {
+
+    for (TemplateMapping templateMapping: templateMappingList) {
+      templateMapping.setActionType(actionType);
       templateMapping.setDateModified(new Date());
-    });
-    return repository.save(mapping);
+      repository.save(templateMapping);
+    }
+
+    return templateMappingList;
   }
 
   @Override
@@ -88,7 +60,7 @@ public class TemplateMappingServiceImpl implements TemplateMappingService {
   @Override
   public Map<String, List<TemplateMapping>> retrieveAllTemplateMappingsByFilename() {
     return retrieveAllTemplateMappings().stream()
-        .collect(Collectors.groupingBy(TemplateMapping::getFile));
+        .collect(Collectors.groupingBy(TemplateMapping::getFileNamePrefix));
   }
 
   @Override

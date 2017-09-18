@@ -21,6 +21,6 @@ public class TemplateMappingDTO {
   @NotNull
   private String actionType;
   private String template;
-  private String file;
+  private String fileNamePrefix;
   private Date dateModified;
 }

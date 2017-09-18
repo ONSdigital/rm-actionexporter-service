@@ -1,0 +1,1 @@
+ALTER TABLE actionexporter.templatemapping RENAME COLUMN file to fileNamePrefix

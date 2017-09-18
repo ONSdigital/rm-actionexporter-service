@@ -19,3 +19,12 @@ databaseChangeLog:
             path: index_actionexporter_schema.sql
             relativeToChangelogFile: true
             splitStatements: false
+  - changeSet:
+      id: 10.45.0-3
+      author: Edward Stevens
+      changes:
+        - sqlFile:
+            comment: Change file to fileNamePrefix
+            path: change_file_to_file_name_prefix.sql
+            relativeToChangelogFile: true
+            splitStatements: false

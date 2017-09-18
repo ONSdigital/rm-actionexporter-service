@@ -30,7 +30,8 @@ public class TemplateMapping {
   @Column(name = "templatenamefk")
   private String template;
 
-  private String file;
+  @Column(name = "filenameprefix")
+  private String fileNamePrefix;
 
   @Column(name = "datemodified")
   private Date dateModified;

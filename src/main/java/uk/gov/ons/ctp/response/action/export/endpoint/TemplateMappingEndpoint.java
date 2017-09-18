@@ -7,17 +7,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateMappingDTO;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -72,21 +70,20 @@ public class TemplateMappingEndpoint {
   /**
    * To store TemplateMappings
    *
-   * @param file the TemplateMapping content
+   * @param templateMappingDTOList the TemplateMapping content
    * @return 201 if created
    * @throws CTPException if the TemplateMapping can't be stored
    */
-  @RequestMapping(method = RequestMethod.POST, consumes = "multipart/form-data")
-  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMapping(@RequestParam("file") MultipartFile file)
+  @RequestMapping(value = "/{actionType}", method = RequestMethod.POST, consumes = "application/json")
+  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMappings(@PathVariable("actionType") final String actionType, @RequestBody final List<TemplateMappingDTO> templateMappingDTOList)
       throws CTPException {
     log.debug("Entering storeTemplateMapping");
-    try {
-      List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(file.getInputStream());
 
-      List<TemplateMappingDTO> results = mapperFacade.mapAsList(mappings, TemplateMappingDTO.class);
-      return ResponseEntity.created(URI.create("TODO")).body(results);
-    } catch (IOException e) {
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed reading the provided template mapping file.");
-    }
+    List<TemplateMapping> mappingtemp = mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
+
+    List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(actionType, mappingtemp);
+
+    return ResponseEntity.created(URI.create("TODO")).body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
   }
+
 }
