@@ -79,9 +79,14 @@ public class TemplateMappingEndpoint {
       throws CTPException {
     log.debug("Entering storeTemplateMapping");
 
-    List<TemplateMapping> mappingtemp = mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
+    List<TemplateMapping> templateMappings = mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
 
-    List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(actionType, mappingtemp);
+    if (templateMappings.size() == 0) {
+      throw new CTPException(CTPException.Fault.BAD_REQUEST, "Template Mappings not created for action type %s",
+          actionType);
+    }
+
+    List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(actionType, templateMappings);
 
     return ResponseEntity.created(URI.create("TODO")).body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
   }
