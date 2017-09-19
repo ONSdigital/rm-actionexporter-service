@@ -107,5 +107,5 @@ public class TemplateMappingServiceImplTest {
     templateMappingService.storeTemplateMappings("BSNOT", myObjects);
     verify(repository, times(19)).save(any(TemplateMapping.class));
   }
-  
+
 }

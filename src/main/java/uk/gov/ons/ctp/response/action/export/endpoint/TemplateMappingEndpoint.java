@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateMappingDTO;
@@ -88,7 +89,10 @@ public class TemplateMappingEndpoint {
 
     List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(actionType, templateMappings);
 
-    return ResponseEntity.created(URI.create("TODO")).body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
+    String newResourceUrl = ServletUriComponentsBuilder
+        .fromCurrentRequest().buildAndExpand(actionType).toUri().toString();
+
+    return ResponseEntity.created(URI.create(newResourceUrl)).body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
   }
 
 }
