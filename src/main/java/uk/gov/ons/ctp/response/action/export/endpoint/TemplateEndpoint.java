@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateExpressionDTO;
@@ -83,7 +84,11 @@ public class TemplateEndpoint {
       TemplateExpression template = templateService.storeTemplate(templateName, file.getInputStream());
 
       TemplateExpressionDTO templateDTO = mapperFacade.map(template, TemplateExpressionDTO.class);
-      return ResponseEntity.created(URI.create("TODO")).body(templateDTO);
+
+      String newResourceUrl = ServletUriComponentsBuilder
+          .fromCurrentRequest().buildAndExpand(templateName).toUri().toString();
+
+      return ResponseEntity.created(URI.create(newResourceUrl)).body(templateDTO);
     } catch (IOException e) {
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed reading the provided template file.");
     }
