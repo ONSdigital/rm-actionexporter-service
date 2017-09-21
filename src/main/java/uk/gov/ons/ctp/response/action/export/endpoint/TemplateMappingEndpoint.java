@@ -82,7 +82,7 @@ public class TemplateMappingEndpoint {
 
     List<TemplateMapping> templateMappings = mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
 
-    if (templateMappings.size() == 0) {
+    if (templateMappings.isEmpty()) {
       throw new CTPException(CTPException.Fault.BAD_REQUEST, "Template Mappings not created for action type %s",
           actionType);
     }
