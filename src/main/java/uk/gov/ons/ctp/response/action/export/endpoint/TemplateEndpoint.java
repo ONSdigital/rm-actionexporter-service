@@ -38,7 +38,7 @@ public class TemplateEndpoint {
 
   /**
    * To retrieve all Templates
-   * 
+   *
    * @return a list of Templates
    */
   @RequestMapping(method = RequestMethod.GET)

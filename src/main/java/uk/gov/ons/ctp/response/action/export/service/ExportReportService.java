@@ -12,11 +12,12 @@ public interface ExportReportService {
    * @param exportReport the ExportReport to save.
    * @return the ExportReport saved.
    */
-  ExportReport save(final ExportReport exportReport);
+  ExportReport save(ExportReport exportReport);
 
   /**
    * Create a report entry for files created since last report run.
    *
+   * @return boolean whether or not successful
    */
   boolean createReport();
 }

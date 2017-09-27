@@ -81,7 +81,7 @@ public class ActionRequestInstruction {
 
   @Column(name = "datesent")
   private Timestamp dateSent;
-  
+
   @Column(name = "exerciseref")
   private String exerciseRef;
 }

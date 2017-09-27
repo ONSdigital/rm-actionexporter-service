@@ -2,7 +2,6 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import freemarker.template.Template;
 import junit.framework.TestCase;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -62,6 +61,9 @@ public class TemplateServiceImplTest {
     verify(configuration, times(0)).clearTemplateCache();
   }
 
+  /**
+   * Tests store with an empty template
+   */
   @Test
   public void testStoreEmptyTemplate() {
     boolean exceptionThrown = false;
@@ -129,7 +131,7 @@ public class TemplateServiceImplTest {
       templateService.stream(buildListOfActionRequests(), TEMPLATE_NAME);
     } catch (CTPException e) {
       exceptionThrown = true;
-      Assert.assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
+      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
     }
     TestCase.assertTrue(exceptionThrown);
   }
@@ -142,7 +144,7 @@ public class TemplateServiceImplTest {
       templateService.stream(buildListOfActionRequests(), TEMPLATE_NAME);
     } catch (CTPException e) {
       exceptionThrown = true;
-      Assert.assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
+      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
       assertEquals(ERROR_RETRIEVING_FREEMARKER_TEMPLATE, e.getMessage());
     }
     TestCase.assertTrue(exceptionThrown);

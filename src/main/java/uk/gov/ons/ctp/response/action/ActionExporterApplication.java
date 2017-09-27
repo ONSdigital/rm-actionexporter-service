@@ -85,7 +85,7 @@ public class ActionExporterApplication {
     return new DistributedLockManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient,
         appConfig.getDataGrid().getLockTimeToLiveSeconds());
   }
-  
+
   /**
    * Rest Exception Handler
    *

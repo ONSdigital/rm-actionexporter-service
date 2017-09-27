@@ -71,7 +71,8 @@ public class TemplateMappingServiceImplTest {
     List<TemplateMapping> myObjects = new ArrayList<>();
 
     try {
-      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/empty_template_mapping.json"), new TypeReference<List<TemplateMapping>>(){});
+      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/empty_template_mapping.json"),
+          new TypeReference<List<TemplateMapping>>() {});
     } catch (IOException e) {
       exceptionThrown = true;
       assertThat(e.getMessage(), CoreMatchers.containsString(EXCEPTION_TEMPLATE_MAPPING_EMPTY));
@@ -90,6 +91,8 @@ public class TemplateMappingServiceImplTest {
 
   /**
    * Tests store with template mapping as valid
+   *
+   * @throws CTPException Exception thrown
    */
   @Test
   public void testStoreValidTemplateMapping() throws CTPException {
@@ -98,11 +101,11 @@ public class TemplateMappingServiceImplTest {
     List<TemplateMapping> myObjects = new ArrayList<>();
 
     try {
-      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/valid_template_mapping.json"), new TypeReference<List<TemplateMapping>>(){});
+      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/valid_template_mapping.json"),
+          new TypeReference<List<TemplateMapping>>() {});
     } catch (IOException e) {
       System.out.println(e.getLocalizedMessage());
     }
-
 
     templateMappingService.storeTemplateMappings("BSNOT", myObjects);
     verify(repository, times(19)).save(any(TemplateMapping.class));

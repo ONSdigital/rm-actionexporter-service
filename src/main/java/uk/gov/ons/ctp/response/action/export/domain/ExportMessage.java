@@ -9,7 +9,11 @@ import net.sourceforge.cobertura.CoverageIgnore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Representation of a message being sent.

@@ -71,12 +71,14 @@ public class TemplateMappingEndpoint {
   /**
    * To store TemplateMappings
    *
+   * @param actionType the Action Type
    * @param templateMappingDTOList the TemplateMapping content
    * @return 201 if created
    * @throws CTPException if the TemplateMapping can't be stored
    */
   @RequestMapping(value = "/{actionType}", method = RequestMethod.POST, consumes = "application/json")
-  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMappings(@PathVariable("actionType") final String actionType, @RequestBody final List<TemplateMappingDTO> templateMappingDTOList)
+  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMappings(@PathVariable("actionType")
+    final String actionType, @RequestBody final List<TemplateMappingDTO> templateMappingDTOList)
       throws CTPException {
     log.debug("Entering storeTemplateMapping");
 
@@ -92,7 +94,8 @@ public class TemplateMappingEndpoint {
     String newResourceUrl = ServletUriComponentsBuilder
         .fromCurrentRequest().buildAndExpand(actionType).toUri().toString();
 
-    return ResponseEntity.created(URI.create(newResourceUrl)).body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
+    return ResponseEntity.created(URI.create(newResourceUrl)).body(mapperFacade.mapAsList(mappings,
+        TemplateMappingDTO.class));
   }
 
 }
