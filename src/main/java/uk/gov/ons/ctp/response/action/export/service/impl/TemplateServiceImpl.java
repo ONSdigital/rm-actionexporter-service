@@ -1,6 +1,18 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
 
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
+import uk.gov.ons.ctp.response.action.export.service.TemplateService;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,19 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
-import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
 import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
 
@@ -85,9 +84,11 @@ public class TemplateServiceImpl implements TemplateService {
       template.process(buildDataModel(actionRequestList), fileWriter);
     } catch (IOException e) {
       log.error("IOException thrown while templating for file...", e.getMessage());
+      log.error("Stack trace: " + e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
       log.error("TemplateException thrown while templating for file...", f.getMessage());
+      log.error("Stack trace: " + f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (fileWriter != null) {
@@ -95,6 +96,7 @@ public class TemplateServiceImpl implements TemplateService {
           fileWriter.close();
         } catch (IOException e) {
           log.error("IOException thrown while closing the file writer...", e.getMessage());
+          log.error("Stack trace: " + e);
         }
       }
     }
@@ -114,9 +116,11 @@ public class TemplateServiceImpl implements TemplateService {
       outputStreamWriter.close();
     } catch (IOException e) {
       log.error("IOException thrown while templating for stream... {}", e.getMessage());
+      log.error("Stack trace: " + e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
       log.error("TemplateException thrown while templating for stream... {}", f.getMessage());
+      log.error("Stack trace: " + f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (outputStreamWriter != null) {
@@ -124,6 +128,7 @@ public class TemplateServiceImpl implements TemplateService {
           outputStreamWriter.close();
         } catch (IOException e) {
           log.error("IOException thrown while closing the output stream writer...", e.getMessage());
+          log.error("Stack trace: " + e);
         }
       }
     }

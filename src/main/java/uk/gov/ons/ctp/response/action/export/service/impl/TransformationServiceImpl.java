@@ -1,15 +1,8 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
@@ -17,6 +10,12 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of TransformationService
@@ -81,6 +80,7 @@ public class TransformationServiceImpl implements TransformationService {
         } catch (CTPException e) {
           // catch failure for templateService stream operation for that actionType but try others, if any.
           log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
+          log.error("Stack trace: " + e);
         }
       } else {
         log.warn("No mapping for actionType : {}.", actionType);

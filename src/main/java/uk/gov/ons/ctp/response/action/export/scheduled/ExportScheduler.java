@@ -1,19 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.distributed.DistributedInstanceManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLatchManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
@@ -25,6 +17,12 @@ import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -134,6 +132,7 @@ public class ExportScheduler implements HealthIndicator {
       }
     } catch (InterruptedException e) {
       log.error("Scheduled run error waiting for countdownlatch: {}", e.getMessage());
+      log.error("Stack trace: " + e);
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
@@ -190,7 +189,7 @@ public class ExportScheduler implements HealthIndicator {
                   transformationService.processActionRequests(message, requests);
                 } catch (CTPException e) {
                   log.error("Scheduled run error transforming ActionRequests");
-                  e.printStackTrace();
+                  log.error("Stack trace: " + e);
                 }
               }
             });
@@ -236,6 +235,7 @@ public class ExportScheduler implements HealthIndicator {
       }
     } catch (InterruptedException e) {
       log.error("Report run error waiting for countdownlatch: {}", e.getMessage());
+      log.error("Stack trace: " + e);
     } finally {
       actionExportLockManager.unlock(DISTRIBUTED_OBJECT_KEY_REPORT);
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);
