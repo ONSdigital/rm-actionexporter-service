@@ -84,11 +84,11 @@ public class TemplateServiceImpl implements TemplateService {
       template.process(buildDataModel(actionRequestList), fileWriter);
     } catch (IOException e) {
       log.error("IOException thrown while templating for file...", e.getMessage());
-      log.error("Stack trace: " + e);
+      log.error("Stacktrace: ", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
       log.error("TemplateException thrown while templating for file...", f.getMessage());
-      log.error("Stack trace: " + f);
+      log.error("Stacktrace: ", f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (fileWriter != null) {
@@ -96,7 +96,7 @@ public class TemplateServiceImpl implements TemplateService {
           fileWriter.close();
         } catch (IOException e) {
           log.error("IOException thrown while closing the file writer...", e.getMessage());
-          log.error("Stack trace: " + e);
+          log.error("Stacktrace: ", e);
         }
       }
     }
@@ -116,11 +116,11 @@ public class TemplateServiceImpl implements TemplateService {
       outputStreamWriter.close();
     } catch (IOException e) {
       log.error("IOException thrown while templating for stream... {}", e.getMessage());
-      log.error("Stack trace: " + e);
+      log.error("Stacktrace: ", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
       log.error("TemplateException thrown while templating for stream... {}", f.getMessage());
-      log.error("Stack trace: " + f);
+      log.error("Stacktrace: ", f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (outputStreamWriter != null) {
@@ -128,7 +128,7 @@ public class TemplateServiceImpl implements TemplateService {
           outputStreamWriter.close();
         } catch (IOException e) {
           log.error("IOException thrown while closing the output stream writer...", e.getMessage());
-          log.error("Stack trace: " + e);
+          log.error("Stacktrace: ", e);
         }
       }
     }
