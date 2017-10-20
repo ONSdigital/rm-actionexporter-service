@@ -12,6 +12,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
@@ -62,6 +63,9 @@ public class ExportScheduler implements HealthIndicator {
   @Autowired
   private ExportReportService exportReportService;
 
+  @Autowired
+  private EventPublisher eventPublisher;
+  
   @Autowired
   private ExportInfo exportInfo;
 
@@ -121,6 +125,7 @@ public class ExportScheduler implements HealthIndicator {
     List<String> exerciseRefs = actionRequestService.retrieveExerciseRefs();
     exerciseRefs.forEach((exerciseRef) -> {
       sendExport(exerciseRef);
+      eventPublisher.publishEvent("Print file");
     });
 
     // Wait for all instances to finish to synchronise the removal of locks
@@ -144,7 +149,6 @@ public class ExportScheduler implements HealthIndicator {
     if (!createReport()) {
       log.error("Scheduled run error creating report");
     }
-
   }
 
   /**

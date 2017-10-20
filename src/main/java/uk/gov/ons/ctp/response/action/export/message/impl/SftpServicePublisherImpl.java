@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
+import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
@@ -56,11 +57,12 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
 
   @Autowired
   private ExportInfo exportInfo;
-
+  
   @Override
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(@Header(FileHeaders.REMOTE_FILE) String filename,
       @Header(ACTION_LIST) List<String> actionIds, ByteArrayOutputStream stream) {
+    
     return stream.toByteArray();
   }
 

@@ -12,7 +12,6 @@
 							   virtual-host="${rabbitmq.virtualhost}"
 	                           password="${rabbitmq.password}"/>
 
-	<rabbit:template id="amqpTemplate" connection-factory="connectionFactory"  retry-template="retryTemplate"/>
 	<rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
 
 	<!-- Retry policy for a failed publish -->
@@ -52,6 +51,9 @@
 	<!-- End of Queues -->
 
 	<!-- Start of Exchanges -->
+	
+	<rabbit:fanout-exchange name="event-message-outbound-exchange"></rabbit:fanout-exchange>
+	
 	<rabbit:direct-exchange name="action-outbound-exchange">
 		<rabbit:bindings>
 			<rabbit:binding queue="Action.Feedback" key="Action.Feedback.binding" />

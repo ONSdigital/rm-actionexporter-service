@@ -13,6 +13,8 @@
     <import resource="sftp-outbound-flow.xml"/>
 
     <import resource="action-feedback-outbound-flow.xml"/>
+    
+    <import resource="action-exporter-event-messager.xml"/>
 
 </beans>
 
