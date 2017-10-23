@@ -72,7 +72,7 @@ public class TemplateMappingServiceImplTest {
 
     try {
       myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/empty_template_mapping.json"),
-          new TypeReference<List<TemplateMapping>>() {});
+          new TypeReference<List<TemplateMapping>>() {} );
     } catch (IOException e) {
       exceptionThrown = true;
       assertThat(e.getMessage(), CoreMatchers.containsString(EXCEPTION_TEMPLATE_MAPPING_EMPTY));

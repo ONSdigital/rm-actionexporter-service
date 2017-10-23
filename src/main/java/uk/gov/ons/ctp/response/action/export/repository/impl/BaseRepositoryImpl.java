@@ -17,8 +17,8 @@ import uk.gov.ons.ctp.response.action.export.repository.BaseRepository;
  * @param <T> the type of the entity to handle.
  * @param <ID> the type of the entity's identifier.
  */
-public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
-    implements BaseRepository<T, ID> {
+public class BaseRepositoryImpl<T, I extends Serializable> extends SimpleJpaRepository<T, I>
+    implements BaseRepository<T, I> {
 
   private final EntityManager entityManager;
 
@@ -29,7 +29,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
    * @param entityInformation on entities managed in the persistence context.
    * @param entityManager for the persistence context.
    */
-  public BaseRepositoryImpl(JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
+  public BaseRepositoryImpl(JpaEntityInformation<T, I> entityInformation, EntityManager entityManager) {
     super(entityInformation, entityManager);
     this.entityManager = entityManager;
   }

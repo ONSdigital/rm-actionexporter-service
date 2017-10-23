@@ -80,6 +80,10 @@ public class TemplateServiceImplTest {
     verify(configuration, times(0)).clearTemplateCache();
   }
 
+
+  /**
+   * Tests store with an valid template
+   */
   @Test
   public void testStoreValidTemplate() throws CTPException {
     templateService.storeTemplate(TEMPLATE_NAME, getClass().getResourceAsStream(
@@ -88,6 +92,10 @@ public class TemplateServiceImplTest {
     verify(configuration, times(1)).clearTemplateCache();
   }
 
+
+  /**
+   * Tests file issue retrieving template
+   */
   @Test
   public void testFileIssueRetrievingTemplate() throws IOException {
     Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenThrow(new IOException());
@@ -101,6 +109,9 @@ public class TemplateServiceImplTest {
     TestCase.assertTrue(exceptionThrown);
   }
 
+  /**
+   * Tests file null retrieving template
+   */
   @Test
   public void testFileNullRetrievedTemplate() throws IOException {
     Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(null);
@@ -115,14 +126,20 @@ public class TemplateServiceImplTest {
     TestCase.assertTrue(exceptionThrown);
   }
 
-  @Test
-  public void testFile() throws CTPException, IOException {
-    Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(Mockito.mock(Template.class));
-    // TODO
+  /**
+   * Tests file
+   */
+//  @Test
+//  public void testFile() throws CTPException, IOException {
+//    Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(Mockito.mock(Template.class));
+//
 //    File result = templateService.file(buildListOfActionRequests(), TEMPLATE_NAME, TEST_FILE_PATH);
 //    assertNotNull(result);
-  }
+//  }
 
+  /**
+   * Tests stream issue retrieving 
+   */
   @Test
   public void testStreamIssueRetrievingTemplate() throws IOException {
     Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenThrow(new IOException());
@@ -136,6 +153,9 @@ public class TemplateServiceImplTest {
     TestCase.assertTrue(exceptionThrown);
   }
 
+  /**
+   * Tests stream null retrieving 
+   */
   @Test
   public void testStreamNullRetrievedTemplate() throws IOException {
     Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(null);
@@ -150,6 +170,9 @@ public class TemplateServiceImplTest {
     TestCase.assertTrue(exceptionThrown);
   }
 
+  /**
+   * Tests stream
+   */
   @Test
   public void testStream() throws CTPException, IOException {
     Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(Mockito.mock(Template.class));
