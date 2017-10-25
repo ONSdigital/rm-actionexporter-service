@@ -51,7 +51,7 @@ public class TemplateEndpoint {
 
   /**
    * To retrieve a specific Template
-   * 
+   *
    * @param templateName for the specific Template to retrieve
    * @return the specific Template
    * @throws CTPException if no Template found

@@ -137,7 +137,7 @@ public class ExportScheduler implements HealthIndicator {
       }
     } catch (InterruptedException e) {
       log.error("Scheduled run error waiting for countdownlatch: {}", e.getMessage());
-      log.error("Stack trace: " + e);
+      log.error("Stacktrace: ", e);
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
@@ -193,7 +193,7 @@ public class ExportScheduler implements HealthIndicator {
                   transformationService.processActionRequests(message, requests);
                 } catch (CTPException e) {
                   log.error("Scheduled run error transforming ActionRequests");
-                  log.error("Stack trace: " + e);
+                  log.error("Stacktrace: ", e);
                 }
               }
             });
@@ -239,7 +239,7 @@ public class ExportScheduler implements HealthIndicator {
       }
     } catch (InterruptedException e) {
       log.error("Report run error waiting for countdownlatch: {}", e.getMessage());
-      log.error("Stack trace: " + e);
+      log.error("Stacktrace: ", e);
     } finally {
       actionExportLockManager.unlock(DISTRIBUTED_OBJECT_KEY_REPORT);
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);

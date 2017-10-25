@@ -80,7 +80,7 @@ public class TransformationServiceImpl implements TransformationService {
         } catch (CTPException e) {
           // catch failure for templateService stream operation for that actionType but try others, if any.
           log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
-          log.error("Stack trace: " + e);
+          log.error("Stacktrace: ", e);
         }
       } else {
         log.warn("No mapping for actionType : {}.", actionType);

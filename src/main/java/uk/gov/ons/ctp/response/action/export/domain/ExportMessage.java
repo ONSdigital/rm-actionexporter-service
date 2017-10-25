@@ -79,6 +79,7 @@ public class ExportMessage {
         mergedStream.write(outputStream.getValue().toByteArray());
       } catch (IOException ex) {
         log.error("Error merging ExportMessage ByteArrayOutputStreams: {}", ex.getMessage());
+        log.error("Stacktrace: ", ex);
         return null;
       }
     }
