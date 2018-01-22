@@ -57,6 +57,21 @@ public class ActionRequestInstruction {
   @Column(name = "questionset")
   private String questionSet;
 
+  @Column(name = "legalbasis")
+  private String legalBasis;
+
+  @Column(name = "region")
+  private String region;
+
+  @Column(name = "respondentstatus")
+  private String respondentStatus;
+
+  @Column(name = "enrolmentStatus")
+  private String enrolmentStatus;
+
+  @Column(name = "casegroupstatus")
+  private String caseGroupStatus;
+
   @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinColumn(name = "contactfk", referencedColumnName = "contactpk")
   private Contact contact;

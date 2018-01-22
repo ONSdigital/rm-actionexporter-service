@@ -1,3 +1,5 @@
+Sample Unit Ref:Enrolment Code:Survey Response Status:Account Status:First Name:Last Name:Email Address
 <#list actionRequests as actionRequest>
-${actionRequest.iac?trim}|${(actionRequest.caseRef)!}|${(actionRequest.contact.title)!}|${(actionRequest.contact.forename)!"null"}|${(actionRequest.contact.surname)!}|${(actionRequest.address.organisationName)!}|${(actionRequest.address.line1)!}|${(actionRequest.address.line2)!}|${(actionRequest.address.locality)!}|${(actionRequest.address.townName)!}|${(actionRequest.address.postcode)!}
+${(actionRequest.address.sampleUnitRef?trim)!}:${actionRequest.iac?trim}:${(actionRequest.contact.forename?trim)!"null"}:${(actionRequest.contact.surname?trim)!"null"}:${(actionRequest.contact.emailAddress)!"null"}
 </#list>
+${total}
