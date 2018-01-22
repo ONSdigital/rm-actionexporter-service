@@ -84,7 +84,7 @@ spring:
 
 data-grid:
   address: localhost:7379
-  lock-time-to-live-seconds: 45
+  lock-time-to-live-seconds: 3600
 
 export-schedule:
   cron-expression: "0 * * * * ?"
@@ -97,7 +97,7 @@ sftp:
   directory: Documents/sftp/
 
 freemarker:
-  delayfornewtemplates: 3600000  # ie 24 hours in milliseconds
+  delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
 
 redelivery-policy:
   maxRedeliveries: 10
