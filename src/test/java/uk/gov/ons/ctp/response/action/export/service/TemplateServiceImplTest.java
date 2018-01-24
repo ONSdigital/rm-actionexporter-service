@@ -108,7 +108,8 @@ public class TemplateServiceImplTest {
     Template template = cfg.getTemplate("initialPrint.ftl");
     Mockito.when(configuration.getTemplate("initialPrint")).thenReturn(template);
     ByteArrayOutputStream os = templateService.stream(testBusinessActionRequest(), "initialPrint");
-    assertEquals("Sample Unit Ref:Enrolment Code:Survey Response Status:Account Status:First Name:Last Name:Email Address\nSampleUnitRef:testIac:Richard:Weeks:richard.weeks@ons.gov.uk\n1", os.toString());
+    assertEquals("Sample Unit Ref:Enrolment Code:Survey Response Status:Account Status:First Name:Last Name:Email Address\n" +
+            "SampleUnitRef:testIac:InProgress:Pending:Created:Richard:Weeks:richard.weeks@ons.gov.uk:null\n1", os.toString());
   }
 
   private static List<ActionRequestInstruction> testBusinessActionRequest() {
@@ -119,6 +120,9 @@ public class TemplateServiceImplTest {
     result.setActionId(UUID.randomUUID());
     address.setSampleUnitRef("SampleUnitRef");
     result.setIac("testIac");
+    result.setCaseGroupStatus("InProgress");
+    result.setEnrolmentStatus("Pending");
+    result.setRespondentStatus("Created");
     contact.setForename("Richard");
     contact.setSurname("Weeks");
     contact.setEmailAddress("richard.weeks@ons.gov.uk");

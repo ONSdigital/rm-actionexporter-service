@@ -66,7 +66,7 @@ public class ActionRequestInstruction {
   @Column(name = "respondentstatus")
   private String respondentStatus;
 
-  @Column(name = "enrolmentStatus")
+  @Column(name = "enrolmentstatus")
   private String enrolmentStatus;
 
   @Column(name = "casegroupstatus")
