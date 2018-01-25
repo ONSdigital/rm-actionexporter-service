@@ -159,7 +159,19 @@ public class ExportScheduler implements HealthIndicator {
    *
    * @param exerciseRef collection exercise to deal with.
    */
-  private void sendExport(String exerciseRef) {
+  private void sendExport(String surveyRefExerciseRef) {
+
+    // This checks the format of exerciseRef if it is survey_ref + exercise_ref e.g 221_2017_12
+    // it strips the survey_ref off. This is because the exercise_ref is set incorrectly in Collection
+    // Exercise service.
+    // TODO: Remove this code when production exerciseRef data is fixed.
+
+    if (surveyRefExerciseRef.contains("_")) {
+      int i = surveyRefExerciseRef.indexOf("_");
+      surveyRefExerciseRef = surveyRefExerciseRef.substring(i+1);
+    }
+
+    final String exerciseRef = surveyRefExerciseRef;
 
     // Process templateMappings by file to be created, have to as may be many
     // actionTypes in one file. Does not assume actionTypes in the same file use

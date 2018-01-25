@@ -81,8 +81,7 @@ public class TemplateServiceImpl implements TemplateService {
     try {
       Template template = giveTemplate(templateName);
       fileWriter = new FileWriter(resultFile);
-      Integer total = new Integer(actionRequestList.size());
-      template.process(buildDataModel(actionRequestList, total), fileWriter);
+      template.process(buildDataModel(actionRequestList), fileWriter);
     } catch (IOException e) {
       log.error("IOException thrown while templating for file...", e.getMessage());
       log.error("Stacktrace: ", e);
@@ -113,8 +112,7 @@ public class TemplateServiceImpl implements TemplateService {
     try {
       Template template = giveTemplate(templateName);
       outputStreamWriter = new OutputStreamWriter(outputStream);
-      Integer total = new Integer(actionRequestList.size());
-      template.process(buildDataModel(actionRequestList, total), outputStreamWriter);
+      template.process(buildDataModel(actionRequestList), outputStreamWriter);
       outputStreamWriter.close();
     } catch (IOException e) {
       log.error("IOException thrown while templating for stream... {}", e.getMessage());
@@ -162,10 +160,9 @@ public class TemplateServiceImpl implements TemplateService {
    * @param actionRequestList the list of action requests
    * @return the data model map
    */
-  private Map<String, Object> buildDataModel(List<ActionRequestInstruction> actionRequestList, Integer total) {
+  private Map<String, Object> buildDataModel(List<ActionRequestInstruction> actionRequestList) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("actionRequests", actionRequestList);
-    result.put("total", total);
     return result;
   }
 

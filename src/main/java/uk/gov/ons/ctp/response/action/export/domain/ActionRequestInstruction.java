@@ -97,6 +97,9 @@ public class ActionRequestInstruction {
   @Column(name = "datesent")
   private Timestamp dateSent;
 
+  @Column(name = "surveyref")
+  private String surveyRef;
+
   @Column(name = "exerciseref")
   private String exerciseRef;
 }
