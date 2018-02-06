@@ -50,8 +50,7 @@ pipeline {
                 CF_USER = credentials('CF_USER')
             }
             steps {
-                echo env.CLOUDFOUNDRY_API
-                find . -type f -name "*actionexportersvc*.jar" -not -name "*docker-info*" -exec mv {} target/actionexportersvc.jar \;
+                sh 'find . -type f -name "*actionexportersvc*.jar" -not -name "*docker-info*" -exec mv {} target/actionexportersvc.jar \;'
                 sh "sed -i -- 's/SPACE/dev/g' *template.yml"
                 sh "sed -i -- 's/INSTANCES/1/g' *template.yml"
                 sh "sed -i -- 's/DATABASE/rm-pg-db/g' *template.yml"
@@ -109,8 +108,7 @@ pipeline {
                 CF_USER = credentials('CF_USER')
             }
             steps {
-                echo env.CLOUDFOUNDRY_API
-                find . -type f -name "*actionexportersvc*.jar" -not -name "*docker-info*" -exec mv {} target/actionexportersvc.jar \;
+                sh 'find . -type f -name "*actionexportersvc*.jar" -not -name "*docker-info*" -exec mv {} target/actionexportersvc.jar \;'
                 sh "sed -i -- 's/SPACE/ci/g' *template.yml"
                 sh "sed -i -- 's/INSTANCES/1/g' *template.yml"
                 sh "sed -i -- 's/DATABASE/rm-pg-db/g' *template.yml"
