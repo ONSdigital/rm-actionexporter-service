@@ -14,7 +14,7 @@ pipeline {
 
             }
             steps {
-                sh 'mvn --settings .travis.settings.xml clean install -Ddockerfile.skip'
+                sh 'mvn --settings .maven.settings.xml clean install -Ddockerfile.skip'
             }
         }
         stage('snapshot') {
@@ -28,7 +28,7 @@ pipeline {
                 ARTIFACTORY = credentials('ARTIFACTORY')
             }
             steps {
-                sh 'mvn --settings .travis.settings.xml deploy -Ddockerfile.skip'
+                sh 'mvn --settings .maven.settings.xml deploy -Ddockerfile.skip'
             }
         }
 
@@ -54,7 +54,7 @@ pipeline {
                 sh "sed -i -- 's/SPACE/dev/g' *template.yml"
                 sh "sed -i -- 's/INSTANCES/1/g' *template.yml"
                 sh "sed -i -- 's/DATABASE/rm-pg-db/g' *template.yml"
-                sh 'sed -i -- 's/REPLACE_CRON/0 0\/5 * * * ?/g' *template.yml'
+                sh "sed -i -- 's/REPLACE_CRON/0 0/5 * * * ?/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_USER/${env.DEV_SFTP_USR}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_PASSWORD/${env.DEV_SFTP_PSW}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_URL/${env.DEV_SFTP_URL}/g' *template.yml"
@@ -112,7 +112,7 @@ pipeline {
                 sh "sed -i -- 's/SPACE/ci/g' *template.yml"
                 sh "sed -i -- 's/INSTANCES/1/g' *template.yml"
                 sh "sed -i -- 's/DATABASE/rm-pg-db/g' *template.yml"
-                sh 'sed -i -- 's/REPLACE_CRON/0 0\/5 * * * ?/g' *template.yml'
+                sh "sed -i -- 's/REPLACE_CRON/0 0/5 * * * ?/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_USER/${env.DEV_SFTP_USR}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_PASSWORD/${env.DEV_SFTP_PSW}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_URL/${env.DEV_SFTP_URL}/g' *template.yml"
@@ -162,8 +162,8 @@ pipeline {
                 sh 'git tag -d $(git tag -l)'
                 sh 'git config --local user.email "jenkins@jenkins2.rmdev.onsdigital.uk"'
                 sh 'git config --local user.name "Jenkins";'
-                sh "mvn --settings .travis.settings.xml -B clean release:clean release:prepare -Dusername=${GITHUB_API_KEY} -Darguments='-Ddockerfile.skip'"
-                sh "mvn --settings .travis.settings.xml -B release:perform -Dusername=${GITHUB_API_KEY} -Darguments='-Dmaven.javadoc.skip=true -Ddockerfile.skip'"
+                sh "mvn --settings .maven.settings.xml -B clean release:clean release:prepare -Dusername=${GITHUB_API_KEY} -Darguments='-Ddockerfile.skip'"
+                sh "mvn --settings .maven.settings.xml -B release:perform -Dusername=${GITHUB_API_KEY} -Darguments='-Dmaven.javadoc.skip=true -Ddockerfile.skip'"
             }
         }
 
@@ -197,7 +197,7 @@ pipeline {
                 sh "sed -i -- 's/SPACE/test/g' *template.yml"
                 sh "sed -i -- 's/INSTANCES/1/g' *template.yml"
                 sh "sed -i -- 's/DATABASE/rm-pg-db/g' *template.yml"
-                sh 'sed -i -- 's/REPLACE_CRON/0 0\/5 * * * ?/g' *template.yml'
+                sh "sed -i -- 's/REPLACE_CRON/0 0/5 * * * ?/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_USER/${env.DEV_SFTP_USR}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_PASSWORD/${env.DEV_SFTP_PSW}/g' *template.yml"
                 sh "sed -i -- 's/REPLACE_URL/${env.DEV_SFTP_URL}/g' *template.yml"
