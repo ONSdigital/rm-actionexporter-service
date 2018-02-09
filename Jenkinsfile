@@ -166,6 +166,7 @@ pipeline {
                 environment name: 'do_release', value: 'yes'
             }
             steps {
+                git url: 'https://github.com/ONSdigital/rm-action-service.git', branch: 'jenkins-pipeline'
                 sh 'git clean -f && git reset --hard origin/jenkins-pipeline'
                 sh 'git tag -d $(git tag -l)'
                 sh 'git config --local user.email "jenkins@jenkins2.rmdev.onsdigital.uk"'
