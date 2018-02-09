@@ -166,7 +166,7 @@ pipeline {
                 environment name: 'do_release', value: 'yes'
             }
             steps {
-                git url: 'https://github.com/ONSdigital/rm-action-service.git', branch: 'master'
+                git url: 'https://github.com/ONSdigital/rm-actionexporter-servicet.git', branch: 'master'
                 sh 'git clean -f && git reset --hard origin/master'
                 sh 'git tag -d $(git tag -l)'
                 sh 'git config --local user.email "jenkins@jenkins2.rmdev.onsdigital.uk"'
@@ -199,7 +199,7 @@ pipeline {
             steps {
                 echo env.CLOUDFOUNDRY_API
                 sh 'git reset --hard'
-                sh 'rm -r target && mkdir target'
+                sh 'rm -rf target && mkdir target'
                 sh 'wget https://gist.githubusercontent.com/benjefferies/106d53e3178e1627bcad4784f6fe7fe1/raw/832c07c0f3e31933e634a9e0a2398d2845943090/artifactory-get.sh'
                 sh 'sh artifactory-get.sh -r http://artifactory-sdc.onsdigital.uk/artifactory/libs-release-local/ -g uk.gov.ons.ctp.product -a actionexportersvc > target/actionexportersvc.jar'
                 sh 'chmod 777 target/actionexportersvc.jar'
