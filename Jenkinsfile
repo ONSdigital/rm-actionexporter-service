@@ -14,6 +14,11 @@ pipeline {
 
             }
             steps {
+                result = sh (script: "git log -1 | grep '.*\\[ci skip\\].*'", returnStatus: true)
+                if (result == 0) {
+                    echo ("'ci skip' spotted in git commit. Aborting.")
+                    success ("'ci skip' spotted in git commit. Aborting.")
+                }
                 sh 'mvn --settings .maven.settings.xml clean install -Ddockerfile.skip'
             }
         }
@@ -159,6 +164,7 @@ pipeline {
                 environment name: 'do_release', value: 'yes'
             }
             steps {
+                sh 'git clean -f && git reset --hard origin/jenkins-pipeline'
                 sh 'git tag -d $(git tag -l)'
                 sh 'git config --local user.email "jenkins@jenkins2.rmdev.onsdigital.uk"'
                 sh 'git config --local user.name "Jenkins";'
