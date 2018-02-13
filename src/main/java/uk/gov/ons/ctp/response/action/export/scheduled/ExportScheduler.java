@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -25,6 +26,7 @@ import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -221,12 +223,8 @@ public class ExportScheduler implements HealthIndicator {
   // TODO: Remove this code when production exerciseRef data is fixed.
   private String correctExRefFormat(SurveyRefExerciseRef surveyRefExerciseRefTuple) {
     String exerciseRef = surveyRefExerciseRefTuple.getExerciseRef();
-
-    if (exerciseRef.contains("_")) {
-      int i = exerciseRef.indexOf("_");
-      exerciseRef = exerciseRef.substring(i+1);
-    }
-    return exerciseRef;
+    String afterUnderscore = StringUtils.substringAfterLast(exerciseRef, "_");
+    return StringUtils.defaultIfEmpty(afterUnderscore, exerciseRef);
   }
 
   /**
