@@ -19,6 +19,7 @@ import uk.gov.ons.ctp.response.action.export.service.impl.TemplateServiceImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -112,7 +113,6 @@ public class TemplateServiceImplTest {
   }
 
   private static List<ActionRequestInstruction> testBusinessActionRequest() {
-    List<ActionRequestInstruction> list = new ArrayList<>();
     ActionRequestInstruction result =  new ActionRequestInstruction();
     Contact contact = new Contact();
     Address address = new Address();
@@ -127,8 +127,7 @@ public class TemplateServiceImplTest {
     contact.setEmailAddress("richard.weeks@ons.gov.uk");
     result.setContact(contact);
     result.setAddress(address);
-    list.add(result);
-    return list;
+    return Collections.singletonList(result);
   }
 
   /**
