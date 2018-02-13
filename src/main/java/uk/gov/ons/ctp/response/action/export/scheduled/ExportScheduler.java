@@ -163,17 +163,7 @@ public class ExportScheduler implements HealthIndicator {
    */
   private void sendExport(SurveyRefExerciseRef surveyRefExerciseRefTuple) {
 
-    // This checks the format of exerciseRef if it is survey_ref + exercise_ref e.g 221_2017_12
-    // it strips the survey_ref off. This is because the exercise_ref is set incorrectly in Collection
-    // Exercise service.
-    // TODO: Remove this code when production exerciseRef data is fixed.
-
-    String exerciseRef = surveyRefExerciseRefTuple.getExerciseRef();
-
-    if (exerciseRef.contains("_")) {
-      int i = exerciseRef.indexOf("_");
-      exerciseRef = exerciseRef.substring(i+1);
-    }
+    String exerciseRef = correctExRefFormat(surveyRefExerciseRefTuple);
 
     final String surveyRefAndexerciseRef = surveyRefExerciseRefTuple.getSurveyRef() + "_" + exerciseRef;
 
@@ -222,6 +212,21 @@ public class ExportScheduler implements HealthIndicator {
           }
         });
 
+  }
+
+  // This checks the format of exerciseRef if it is survey_ref + exercise_ref e.g 221_2017_12
+  // it strips the survey_ref off. This is because the exercise_ref is set incorrectly in Collection
+  // Exercise service.
+  // This data is stored in the actionexporter.actionrequest table.
+  // TODO: Remove this code when production exerciseRef data is fixed.
+  private String correctExRefFormat(SurveyRefExerciseRef surveyRefExerciseRefTuple) {
+    String exerciseRef = surveyRefExerciseRefTuple.getExerciseRef();
+
+    if (exerciseRef.contains("_")) {
+      int i = exerciseRef.indexOf("_");
+      exerciseRef = exerciseRef.substring(i+1);
+    }
+    return exerciseRef;
   }
 
   /**
