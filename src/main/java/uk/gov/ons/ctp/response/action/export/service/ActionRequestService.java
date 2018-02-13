@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
+import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -50,6 +52,13 @@ public interface ActionRequestService {
    * @return a list of exerciseRefs.
    */
   List<String> retrieveExerciseRefs();
+
+  /**
+   * Return a list of distinct exerciseRefs with associated surveyRef
+   *
+   * @return a list of exerciseRefs with SurveyRef.
+   */
+  List<SurveyRefExerciseRef> retrieveDistinctExerciseRefsWithSurveyRef();
 
   /**
    * Return a list of distinct actionTypes

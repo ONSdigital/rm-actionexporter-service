@@ -1,3 +1,3 @@
 <#list actionRequests as actionRequest>
-${actionRequest.iac?trim}|${(actionRequest.caseRef)!}|${(actionRequest.contact.title)!}|${(actionRequest.contact.forename)!"null"}|${(actionRequest.contact.surname)!}|${(actionRequest.address.organisationName)!}|${(actionRequest.address.line1)!}|${(actionRequest.address.line2)!}|${(actionRequest.address.locality)!}|${(actionRequest.address.townName)!}|${(actionRequest.address.postcode)!}
+${(actionRequest.address.sampleUnitRef?trim)!}:${actionRequest.iac?trim}:${(actionRequest.caseGroupStatus)!"null"}:${(actionRequest.enrolmentStatus)!"null"}:${(actionRequest.respondentStatus)!"null"}:${(actionRequest.contact.forename?trim)!"null"}:${(actionRequest.contact.surname?trim)!"null"}:${(actionRequest.contact.emailAddress)!"null"}:${(actionRequest.region)!"null"}
 </#list>

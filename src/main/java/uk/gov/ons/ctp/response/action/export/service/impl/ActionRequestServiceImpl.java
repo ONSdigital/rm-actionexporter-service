@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 
@@ -47,6 +48,11 @@ public class ActionRequestServiceImpl implements ActionRequestService {
   @Override
   public List<String> retrieveExerciseRefs() {
     return repository.findAllExerciseRefs();
+  }
+
+  @Override
+  public List<SurveyRefExerciseRef> retrieveDistinctExerciseRefsWithSurveyRef() {
+    return repository.findDistinctSurveyAndExerciseRefs();
   }
 
   @Override

@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.49.0
+      author: Richard Weeks
+      changes:
+        - sqlFile:
+            comment: Add classifiers and status to actionrequest table
+            path: add_classifiers_and_status.sql
+            relativeToChangelogFile: true
+            splitStatements: false
