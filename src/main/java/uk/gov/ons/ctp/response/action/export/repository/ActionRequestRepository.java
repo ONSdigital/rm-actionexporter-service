@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
@@ -26,6 +27,14 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    */
   @Query("SELECT DISTINCT(r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
   List<String> findAllExerciseRefs();
+
+  /**
+   *  Retrieve a list of collection exercise references to process.
+   *
+   * @return List of distinct exercise references with survey reference.
+   */
+  @Query("SELECT DISTINCT new uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
+  List<SurveyRefExerciseRef> findDistinctSurveyAndExerciseRefs();
 
   /**
    * Retrieve all action export requests not done for an actionType.

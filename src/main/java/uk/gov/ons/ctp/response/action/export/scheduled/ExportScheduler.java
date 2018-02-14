@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -12,6 +13,7 @@ import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
@@ -24,6 +26,7 @@ import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class will be responsible for the scheduling of export actions
@@ -122,7 +125,8 @@ public class ExportScheduler implements HealthIndicator {
     actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
 
-    List<String> exerciseRefs = actionRequestService.retrieveExerciseRefs();
+    List<SurveyRefExerciseRef> exerciseRefs = actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef();
+
     exerciseRefs.forEach((exerciseRef) -> {
       sendExport(exerciseRef);
       eventPublisher.publishEvent("Print file");
@@ -157,9 +161,13 @@ public class ExportScheduler implements HealthIndicator {
    * exerciseRefs separately as a file is created for each collection exercise
    * with filename from the lookup table as a prefix and exerciseRef
    *
-   * @param exerciseRef collection exercise to deal with.
+   * @param surveyRefExerciseRefTuple collection exercise to deal with.
    */
-  private void sendExport(String exerciseRef) {
+  private void sendExport(SurveyRefExerciseRef surveyRefExerciseRefTuple) {
+
+    String exerciseRef = correctExRefFormat(surveyRefExerciseRefTuple);
+
+    final String surveyRefAndexerciseRef = surveyRefExerciseRefTuple.getSurveyRef() + "_" + exerciseRef;
 
     // Process templateMappings by file to be created, have to as may be many
     // actionTypes in one file. Does not assume actionTypes in the same file use
@@ -169,7 +177,7 @@ public class ExportScheduler implements HealthIndicator {
     templateMappingService.retrieveAllTemplateMappingsByFilename()
         .forEach((fileName, templatemappings) -> {
 
-          String fileNameWithExerciseRef = fileName + "_" + exerciseRef;
+          String fileNameWithExerciseRef = fileName + "_" + surveyRefAndexerciseRef;
           log.info("Lock test {} {}", fileNameWithExerciseRef,
               actionExportLockManager.isLocked(fileNameWithExerciseRef));
 
@@ -184,10 +192,10 @@ public class ExportScheduler implements HealthIndicator {
             templatemappings.forEach((templateMapping) -> {
 
               List<ActionRequestInstruction> requests = actionRequestService
-                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), exerciseRef);
+                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), surveyRefAndexerciseRef);
               if (requests.isEmpty()) {
                 log.info("No requests for actionType {}, exerciseRef {} to process", templateMapping.getActionType(),
-                    exerciseRef);
+                    surveyRefAndexerciseRef);
               } else {
                 try {
                   transformationService.processActionRequests(message, requests);
@@ -206,6 +214,17 @@ public class ExportScheduler implements HealthIndicator {
           }
         });
 
+  }
+
+  // This checks the format of exerciseRef if it is survey_ref + exercise_ref e.g 221_2017_12
+  // it strips the survey_ref off. This is because the exercise_ref is set incorrectly in Collection
+  // Exercise service.
+  // This data is stored in the actionexporter.actionrequest table.
+  // TODO: Remove this code when production exerciseRef data is fixed.
+  private String correctExRefFormat(SurveyRefExerciseRef surveyRefExerciseRefTuple) {
+    String exerciseRef = surveyRefExerciseRefTuple.getExerciseRef();
+    String afterUnderscore = StringUtils.substringAfterLast(exerciseRef, "_");
+    return StringUtils.defaultIfEmpty(afterUnderscore, exerciseRef);
   }
 
   /**
