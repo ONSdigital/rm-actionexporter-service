@@ -192,7 +192,7 @@ public class ExportScheduler implements HealthIndicator {
             templatemappings.forEach((templateMapping) -> {
 
               List<ActionRequestInstruction> requests = actionRequestService
-                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), surveyRefAndexerciseRef);
+                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), surveyRefExerciseRefTuple.getExerciseRef(), surveyRefExerciseRefTuple.getSurveyRef());
               if (requests.isEmpty()) {
                 log.info("No requests for actionType {}, exerciseRef {} to process", templateMapping.getActionType(),
                     surveyRefAndexerciseRef);

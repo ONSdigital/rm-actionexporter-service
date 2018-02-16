@@ -41,8 +41,8 @@ public class ActionRequestServiceImpl implements ActionRequestService {
 
   @Override
   public List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType,
-      String exerciseRef) {
-    return repository.findByDateSentIsNullAndActionTypeAndExerciseRef(actionType, exerciseRef);
+      String exerciseRef, String surveyRef) {
+    return repository.findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(actionType, exerciseRef, surveyRef);
   }
 
   @Override
