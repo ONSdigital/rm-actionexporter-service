@@ -194,8 +194,8 @@ public class ExportScheduler implements HealthIndicator {
               List<ActionRequestInstruction> requests = actionRequestService
                   .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), surveyRefExerciseRefTuple.getExerciseRef(), surveyRefExerciseRefTuple.getSurveyRef());
               if (requests.isEmpty()) {
-                log.info("No requests for actionType {}, exerciseRef {} to process", templateMapping.getActionType(),
-                    surveyRefAndexerciseRef);
+                log.info("No requests for actionType {}, surveyRef {} exerciseRef {} to process", templateMapping.getActionType(),
+                		surveyRefExerciseRefTuple.getExerciseRef(), surveyRefExerciseRefTuple.getSurveyRef());
               } else {
                 try {
                   transformationService.processActionRequests(message, requests);
