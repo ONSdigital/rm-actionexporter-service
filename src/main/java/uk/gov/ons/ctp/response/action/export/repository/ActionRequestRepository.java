@@ -44,7 +44,7 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @return List ActionRequests not sent to external services previously for
    *         actionType.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(String actionType, String exerciseRef, String surveyRef);
 
   /**
    * Retrieve a list of actionTypes

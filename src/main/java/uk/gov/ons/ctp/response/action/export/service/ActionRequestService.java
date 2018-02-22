@@ -44,7 +44,7 @@ public interface ActionRequestService {
    * @return List of ActionRequests not sent to external services previously for
    *         actionType, exerciseRef.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef, String surveyRef);
 
   /**
    * Return a list of distinct exerciseRefs
