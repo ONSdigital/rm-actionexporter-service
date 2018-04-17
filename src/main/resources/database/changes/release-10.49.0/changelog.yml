@@ -9,3 +9,13 @@ databaseChangeLog:
             path: add_classifiers_and_status.sql
             relativeToChangelogFile: true
             splitStatements: false
+
+  - changeSet:
+        id: 10.49.0-2
+        author: Lewis Babbage
+        changes:
+          - sqlFile:
+              comment: Update to initial print template to include 'null' for iac
+              path: update_initial_print_template.sql
+              relativeToChangelogFile: true
+              splitStatements: false
