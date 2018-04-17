@@ -19,3 +19,13 @@ databaseChangeLog:
               path: update_initial_print_template.sql
               relativeToChangelogFile: true
               splitStatements: false
+
+  - changeSet:
+        id: 10.49.0-3
+        author: Mark Price
+        changes:
+          - sqlFile:
+              comment: Fix to initial print template to have freemarker on single line
+              path: fix_print_template.sql
+              relativeToChangelogFile: true
+              splitStatements: false
