@@ -2,7 +2,6 @@
 applications:
 - name: actionexportersvc
   instances: 1
-  host: actionexportersvc
   memory: 1024M
   health-check-type: none
   path: target/actionexportersvc.jar
