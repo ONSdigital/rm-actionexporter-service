@@ -10,25 +10,15 @@ See [API.md](https://github.com/ONSdigital/rm-actionexporter-service/blob/master
 
 ## Copyright
 Copyright (C) 2017 Crown Copyright (Office for National Statistics)
-## To build
-./mvnw clean install
 
+## Running
 
-## To run
-    - Prerequisites:
-        - Start MongoDB:
-            - sudo mongod --dbpath /var/lib/mongodb
-        - Start ActiveMQ:
-            - sudo /sbin/service rabbitmq-server stop
-            - cd /opt/apache-activemq-5.13.3/bin
-            - ./activemq console
+There are two ways of running this service
 
-    - To start with default credentials:
-        ./mvnw spring-boot:run
-
-    - To start with specific credentials:
-        ./mvnw spring-boot:run -Dsecurity.user.name=tiptop -Dsecurity.user.password=override
-
-
-## To test
-See curlTests.tx under /test/resources
+* The easiest way is via docker (https://github.com/ONSdigital/ras-rm-docker-dev)
+* Alternatively running the service up in isolation
+    ```bash
+    cp .maven.settings.xml ~/.m2/settings.xml  # This only needs to be done once to set up mavens settings file
+    mvn clean install
+    mvn spring-boot:run
+    ```
