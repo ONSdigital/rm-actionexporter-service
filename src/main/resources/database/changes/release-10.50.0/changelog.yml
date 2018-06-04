@@ -1,0 +1,21 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.50.0
+      author: Emilio Ward
+      changes:
+        - sqlFile:
+            comment: Added social action types for template mapping
+            path: update_template_mapping_for_social.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 10.50.0
+      author: Emilio Ward
+      changes:
+        - sqlFile:
+            comment: Added social action types for template mapping
+            path: add_caseref_to_print_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
