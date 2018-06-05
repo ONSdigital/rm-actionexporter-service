@@ -11,11 +11,11 @@ databaseChangeLog:
             splitStatements: false
 
   - changeSet:
-      id: 10.50.0
+      id: 10.50.0-2
       author: Emilio Ward
       changes:
         - sqlFile:
-            comment: Added social action types for template mapping
+            comment: Added caseRef to print template
             path: add_caseref_to_print_template.sql
             relativeToChangelogFile: true
             splitStatements: false

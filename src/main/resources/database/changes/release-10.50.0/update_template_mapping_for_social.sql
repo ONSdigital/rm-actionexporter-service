@@ -1,5 +1,5 @@
-INSERT INTO actionexporter.templatemapping (actiontypenamepk, filenameprefix)
+INSERT INTO actionexporter.templatemapping
 VALUES
-(SOCIALNOT, SOCIALNOT),
-(SOCIALREM, SOCIALREM),
-(SOCIALSNE, SOCIALSNE);
+('SOCIALNOT','initialPrint', 'SOCIALNOT', now()),
+('SOCIALREM', 'initialPrint', 'SOCIALREM', now()),
+('SOCIALSNE', 'initialPrint', 'SOCIALSNE', now());
