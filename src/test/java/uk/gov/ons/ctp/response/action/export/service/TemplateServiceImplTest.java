@@ -139,7 +139,7 @@ public class TemplateServiceImplTest {
     Template template = cfg.getTemplate("initialPrint.ftl");
     Mockito.when(configuration.getTemplate("initialPrint")).thenReturn(template);
     ByteArrayOutputStream os = templateService.stream(testSocialActionRequest(), "initialPrint");
-    assertEquals("SampleUnitRef:testIac:InProgress:Pending:Created:Richard:Weeks:richard.weeks@ons.gov.uk:null\n", os.toString());
+    assertEquals("SampleUnitRef:testIac:InProgress:Pending:Created:Richard:Weeks:richard.weeks@ons.gov.uk:null:1000000000000001\n", os.toString());
   }
 
   private static List<ActionRequestInstruction> testSocialActionRequest() {
