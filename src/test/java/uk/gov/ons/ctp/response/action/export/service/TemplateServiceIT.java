@@ -107,7 +107,7 @@ public class TemplateServiceIT {
         String notificationFilePath = sftpPath + sftpList[sftpList.length - 1].getFilename();
         InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
-        CSVRecord templateRow = readFirstCvRow(inputSteam);
+        CSVRecord templateRow = readFirstCsvRow(inputSteam);
 
         assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.get(0));
         assertEquals(actionRequest.getAddress().getLine1(), templateRow.get(1));
@@ -121,7 +121,7 @@ public class TemplateServiceIT {
 
     }
 
-    private CSVRecord readFirstCvRow(InputStream inputStream) throws IOException {
+    private CSVRecord readFirstCsvRow(InputStream inputStream) throws IOException {
         Reader reader = new InputStreamReader(inputStream);
         CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'));
         try {
