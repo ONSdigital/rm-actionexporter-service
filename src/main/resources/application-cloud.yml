@@ -66,7 +66,7 @@ spring:
     schema: classpath:/schema-cloud.sql
     user: ${cloud.services.postgresql.connection.username}
     password: ${cloud.services.postgresql.connection.password}
-    default-schema: action-exporter
+    default-schema: actionexporter
     url: ${cloud.services.postgresql.connection.jdbcurl}
 
   freemarker:
