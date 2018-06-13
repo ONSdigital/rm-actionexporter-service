@@ -35,7 +35,7 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.common</groupId>
       <artifactId>framework</artifactId>
-      <version>10.49.8</version>
+      <version>10.49.12</version>
     </dependency>
 
     <dependency>
@@ -169,6 +169,26 @@
     </dependency>
 
     <dependency>
+      <groupId>com.mashape.unirest</groupId>
+      <artifactId>unirest-java</artifactId>
+      <version>1.4.9</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>net.sourceforge.cobertura</groupId>
       <artifactId>cobertura</artifactId>
     </dependency>
@@ -218,6 +238,24 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.18.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <phase>integration-test</phase>
+            <configuration>
+              <!-- rerun tests because schema isn't create successfully first time -->
+              <rerunFailingTestsCount>2</rerunFailingTestsCount>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
         <version>1.3.4</version>
@@ -232,6 +270,63 @@
               <buildArgs>
                 <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
               </buildArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.23.0</version>
+        <executions>
+          <execution>
+            <id>pre-stop</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <images>
+                <image>
+                  <external>
+                    <type>compose</type>
+                    <basedir>${project.basedir}</basedir>
+                  </external>
+                </image>
+              </images>
+            </configuration>
+          </execution>
+          <execution>
+            <id>start</id>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <showLogs>false</showLogs>
+              <images>
+                <image>
+                  <external>
+                    <type>compose</type>
+                    <basedir>${project.basedir}</basedir>
+                  </external>
+                </image>
+              </images>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <configuration>
+              <images>
+                <image>
+                  <external>
+                    <type>compose</type>
+                    <basedir>${project.basedir}</basedir>
+                  </external>
+                </image>
+              </images>
             </configuration>
           </execution>
         </executions>

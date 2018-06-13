@@ -2,20 +2,20 @@ databaseChangeLog:
 
   - changeSet:
       id: 10.50.0
-      author: Emilio Ward
+      author: Emilio Ward, Adam Hawtin
       changes:
         - sqlFile:
-            comment: Added social action types for template mapping
-            path: update_template_mapping_for_social.sql
+            comment: Added caseRef to print template
+            path: add_caseref_to_print_template.sql
             relativeToChangelogFile: true
             splitStatements: false
 
   - changeSet:
       id: 10.50.0-2
-      author: Emilio Ward
+      author: Emilio Ward, Adam Hawtin
       changes:
         - sqlFile:
-            comment: Added caseRef to print template
-            path: add_caseref_to_print_template.sql
+            comment: Added social action types for template mapping
+            path: update_template_mapping_for_social.sql
             relativeToChangelogFile: true
             splitStatements: false

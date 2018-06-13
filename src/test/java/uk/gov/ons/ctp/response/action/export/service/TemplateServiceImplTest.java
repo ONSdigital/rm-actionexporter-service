@@ -1,12 +1,13 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import freemarker.template.Configuration;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -21,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -130,36 +130,6 @@ public class TemplateServiceImplTest {
     return Collections.singletonList(result);
   }
 
-
-  @Test
-  public void testTemplateGeneratesCorrectPrintFileForSocial() throws IOException, CTPException {
-    Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
-    cfg.setClassLoaderForTemplateLoading(Thread.currentThread().getContextClassLoader(), "templates/freemarker");
-    cfg.setDefaultEncoding("UTF-8");
-    Template template = cfg.getTemplate("initialPrint.ftl");
-    Mockito.when(configuration.getTemplate("initialPrint")).thenReturn(template);
-    ByteArrayOutputStream os = templateService.stream(testSocialActionRequest(), "initialPrint");
-    assertEquals("SampleUnitRef:testIac:InProgress:Pending:Created:Richard:Weeks:richard.weeks@ons.gov.uk:null:1000000000000001\n", os.toString());
-  }
-
-  private static List<ActionRequestInstruction> testSocialActionRequest() {
-    ActionRequestInstruction result =  new ActionRequestInstruction();
-    Contact contact = new Contact();
-    Address address = new Address();
-    result.setActionId(UUID.randomUUID());
-    address.setSampleUnitRef("SampleUnitRef");
-    result.setIac("testIac");
-    result.setCaseGroupStatus("InProgress");
-    result.setEnrolmentStatus("Pending");
-    result.setRespondentStatus("Created");
-    contact.setForename("Richard");
-    contact.setSurname("Weeks");
-    contact.setEmailAddress("richard.weeks@ons.gov.uk");
-    result.setContact(contact);
-    result.setAddress(address);
-    result.setCaseRef("1000000000000001");
-    return Collections.singletonList(result);
-  }
 
   /**
    * Tests file issue retrieving template
