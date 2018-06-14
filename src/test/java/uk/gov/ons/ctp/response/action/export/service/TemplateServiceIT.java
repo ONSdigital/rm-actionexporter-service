@@ -36,10 +36,13 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -84,14 +87,10 @@ public class TemplateServiceIT {
         ActionInstruction actionInstruction = new ActionInstruction();
         actionInstruction.setActionRequest(actionRequest);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
-        StringWriter stringWriter = new StringWriter();
-        jaxbContext.createMarshaller().marshal(actionInstruction, stringWriter);
-
         simpleMessageSender.sendMessage(
                 "action-outbound-exchange",
                 "Action.Printer.binding",
-                stringWriter.toString());
+                actionInstructionToXmlString(actionInstruction));
 
         // When
         BlockingQueue<String> queue = simpleMessageListener.listen(
@@ -101,34 +100,44 @@ public class TemplateServiceIT {
         queue.take();
 
         // Then
-        final String sftpPath = "Documents/sftp/";
-        ChannelSftp.LsEntry[] sftpList = defaultSftpSessionFactory.getSession().list(sftpPath);
-        Arrays.sort(sftpList, Comparator.comparingInt(o -> o.getAttrs().getMTime()));
-        String notificationFilePath = sftpPath + sftpList[sftpList.length - 1].getFilename();
+        String notificationFilePath = getLatestSftpFileName();
         InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
-        CSVRecord templateRow = readFirstCsvRow(inputSteam);
+        Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
 
-        assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.get(0));
-        assertEquals(actionRequest.getAddress().getLine1(), templateRow.get(1));
-        assertEquals("", templateRow.get(2));
-        assertEquals(actionRequest.getAddress().getPostcode(), templateRow.get(3));
-        assertEquals(actionRequest.getAddress().getTownName(), templateRow.get(4));
-        assertEquals(actionRequest.getIac(), templateRow.get(5));
-        assertEquals(actionRequest.getCaseRef(), templateRow.get(6));
+        assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+        assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+        assertThat(templateRow.next(), isEmptyString());  // Address line 2 should be empty
+        assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+        assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+        assertEquals(actionRequest.getIac(), templateRow.next());
+        assertEquals(actionRequest.getCaseRef(), templateRow.next());
 
+        // Delete the file created in this test
         defaultSftpSessionFactory.getSession().remove(notificationFilePath);
 
     }
 
+    private String actionInstructionToXmlString(ActionInstruction actionInstruction) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
+        StringWriter stringWriter = new StringWriter();
+        jaxbContext.createMarshaller().marshal(actionInstruction, stringWriter);
+        return stringWriter.toString();
+    }
+
+    private String getLatestSftpFileName() throws IOException {
+        final String sftpPath = "Documents/sftp/";
+        ChannelSftp.LsEntry[] sftpList = defaultSftpSessionFactory.getSession().list(sftpPath);
+        Arrays.sort(sftpList, Comparator.comparingInt(o -> o.getAttrs().getMTime()));
+        return sftpPath + sftpList[sftpList.length - 1].getFilename();
+    }
+
     private CSVRecord readFirstCsvRow(InputStream inputStream) throws IOException {
-        Reader reader = new InputStreamReader(inputStream);
-        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'));
-        try {
+        try (
+                Reader reader = new InputStreamReader(inputStream);
+                CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))
+        ) {
             return parser.iterator().next();
-        } finally {
-            parser.close();
-            reader.close();
         }
     }
 
@@ -160,5 +169,4 @@ public class TemplateServiceIT {
 
         return actionRequest;
     }
-
 }

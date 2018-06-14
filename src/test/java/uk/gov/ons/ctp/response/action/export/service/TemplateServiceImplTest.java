@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.response.action.export.service;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
