@@ -57,9 +57,6 @@ public class TemplateServiceIT {
     @Autowired
     private DefaultSftpSessionFactory defaultSftpSessionFactory;
 
-    @Autowired
-    private SftpServicePublisher sftpService;
-
     private SimpleMessageSender simpleMessageSender;
     private SimpleMessageListener simpleMessageListener;
 
