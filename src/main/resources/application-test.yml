@@ -1,0 +1,27 @@
+liquibase:
+  user: postgres
+  password: postgres
+  url: jdbc:postgresql://localhost:16432/postgres
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:16432/postgres
+    username: postgres
+    password: postgres
+    port: 16432
+
+sftp:
+  port: 1122
+  host: localhost
+  username: centos
+  password: "JLibV2&XD,"
+  directory: Documents/sftp/
+
+data-grid:
+  address: localhost:17379
+
+rabbitmq:
+  port: 7672
+
+export-schedule:
+  cron-expression: "* * * * * *"

@@ -51,9 +51,8 @@
 	<!-- End of Queues -->
 
 	<!-- Start of Exchanges -->
-	
-	<rabbit:fanout-exchange name="event-message-outbound-exchange"></rabbit:fanout-exchange>
-	
+	<rabbit:fanout-exchange name="event-message-outbound-exchange"/>
+
 	<rabbit:direct-exchange name="action-outbound-exchange">
 		<rabbit:bindings>
 			<rabbit:binding queue="Action.Feedback" key="Action.Feedback.binding" />
