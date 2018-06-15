@@ -18,7 +18,6 @@ import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageBase;
 import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageListener;
 import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageSender;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
-import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionAddress;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionContact;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionEvent;
@@ -77,7 +76,7 @@ public class TemplateServiceIT {
     }
 
     @Test
-    public void testTemplateGeneratesCorrectPrintFileForSocial() throws JAXBException, InterruptedException, IOException {
+    public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
         // Given
         ActionRequest actionRequest = createSocialNotificationActionRequest();
 
