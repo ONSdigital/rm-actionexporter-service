@@ -248,10 +248,6 @@
               <goal>verify</goal>
             </goals>
             <phase>integration-test</phase>
-            <configuration>
-              <!-- rerun tests because schema isn't create successfully first time -->
-              <rerunFailingTestsCount>2</rerunFailingTestsCount>
-            </configuration>
           </execution>
         </executions>
       </plugin>
