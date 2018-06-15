@@ -102,11 +102,11 @@ public class TemplateServiceIT {
 
         Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
 
-        assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
         assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
         assertThat(templateRow.next(), isEmptyString());  // Address line 2 should be empty
         assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
         assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+        assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
         assertEquals(actionRequest.getIac(), templateRow.next());
         assertEquals(actionRequest.getCaseRef(), templateRow.next());
 
@@ -144,6 +144,7 @@ public class TemplateServiceIT {
         actionAddress.setLine1("Prem1");
         actionAddress.setPostcode("postCode");
         actionAddress.setTownName("postTown");
+        actionAddress.setLocality("locality");
 
         ActionRequest actionRequest = new ActionRequest();
         actionRequest.setActionId(UUID.randomUUID().toString());
