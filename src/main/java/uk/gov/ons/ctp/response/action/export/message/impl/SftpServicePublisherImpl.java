@@ -1,5 +1,27 @@
 package uk.gov.ons.ctp.response.action.export.message.impl;
 
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.annotation.MessageEndpoint;
+import org.springframework.integration.annotation.Publisher;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.file.FileHeaders;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.MessagingException;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.support.ErrorMessage;
+import org.springframework.messaging.support.GenericMessage;
+import uk.gov.ons.ctp.common.time.DateTimeUtil;
+import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
+import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
+import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
+import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
+import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
+import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
+import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
+
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -7,31 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.annotation.MessageEndpoint;
-import org.springframework.integration.annotation.Publisher;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.file.FileHeaders;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.support.ErrorMessage;
-import org.springframework.messaging.support.GenericMessage;
-import org.springframework.messaging.MessagingException;
-
-import com.google.common.collect.Lists;
-
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.time.DateTimeUtil;
-import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
-import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
-import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
-import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
-import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
-import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
-import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
-import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
 /**
  * Service implementation responsible for publishing transformed ActionRequests
@@ -112,7 +109,7 @@ public class SftpServicePublisherImpl implements SftpServicePublisher {
     MessageHeaders headers = ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
     List<String> actionList = (List<String>) headers.get(ACTION_LIST);
-    log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList);
+    log.error("Sftp transfer failed for file {} for action requests {}", fileName, actionList, message.getPayload());
     exportInfo.addOutcome(fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
     ExportReport exportReport = new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
     exportReportService.save(exportReport);

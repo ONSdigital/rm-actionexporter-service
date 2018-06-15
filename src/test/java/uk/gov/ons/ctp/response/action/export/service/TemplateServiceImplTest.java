@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import freemarker.template.Configuration;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -129,6 +128,7 @@ public class TemplateServiceImplTest {
     result.setAddress(address);
     return Collections.singletonList(result);
   }
+
 
   /**
    * Tests file issue retrieving template
