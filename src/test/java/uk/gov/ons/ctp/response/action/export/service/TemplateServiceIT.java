@@ -4,6 +4,7 @@ import com.jcraft.jsch.ChannelSftp;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,7 +79,7 @@ public class TemplateServiceIT {
     @Test
     public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
         // Given
-        ActionRequest actionRequest = createSocialNotificationActionRequest();
+        ActionRequest actionRequest = createSocialActionRequest("SOCIALNOT");
 
         ActionInstruction actionInstruction = new ActionInstruction();
         actionInstruction.setActionRequest(actionRequest);
@@ -114,6 +115,47 @@ public class TemplateServiceIT {
 
     }
 
+    @Test
+    public void testTemplateGeneratesCorrectPrintFileForSocialPreNotification() throws Exception {
+        // Given
+        ActionRequest actionRequest = createSocialActionRequest("SOCIALPRENOT");
+
+        ActionInstruction actionInstruction = new ActionInstruction();
+        actionInstruction.setActionRequest(actionRequest);
+
+        simpleMessageSender.sendMessage(
+                "action-outbound-exchange",
+                "Action.Printer.binding",
+                actionInstructionToXmlString(actionInstruction));
+
+        // When
+        BlockingQueue<String> queue = simpleMessageListener.listen(
+                SimpleMessageBase.ExchangeType.Fanout,
+                "event-message-outbound-exchange");
+
+        queue.take();
+
+        // Then
+        String notificationFilePath = getLatestSftpFileName();
+        InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
+
+        Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
+
+        String notificationFile = StringUtils.substringAfterLast(notificationFilePath, "/");
+        assertEquals("SOCIALPRENOT", StringUtils.substringBefore(notificationFile,"_"));
+
+        assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+        assertThat(templateRow.next(), isEmptyString());  // Address line 2 should be empty
+        assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+        assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+        assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+        assertEquals(actionRequest.getCaseRef(), templateRow.next());
+
+        // Delete the file created in this test
+        defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+
+    }
+
     private String actionInstructionToXmlString(ActionInstruction actionInstruction) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
         StringWriter stringWriter = new StringWriter();
@@ -137,7 +179,7 @@ public class TemplateServiceIT {
         }
     }
 
-    private ActionRequest createSocialNotificationActionRequest() {
+    private ActionRequest createSocialActionRequest(String actionType) {
         ActionAddress actionAddress = new ActionAddress();
         actionAddress.setSampleUnitRef("sampleUR");
         actionAddress.setLine1("Prem1");
@@ -148,7 +190,7 @@ public class TemplateServiceIT {
         ActionRequest actionRequest = new ActionRequest();
         actionRequest.setActionId(UUID.randomUUID().toString());
         actionRequest.setActionPlan("actionPlan");
-        actionRequest.setActionType("SOCIALNOT");
+        actionRequest.setActionType(actionType);
         actionRequest.setAddress(actionAddress);
         actionRequest.setQuestionSet("questions");
         actionRequest.setLegalBasis("legalBasis");
