@@ -142,7 +142,7 @@ public class TemplateServiceIT {
         Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
 
         String notificationFile = StringUtils.substringAfterLast(notificationFilePath, "/");
-        assertEquals("SOCIALPRENOT", StringUtils.substringBefore(notificationFile,"_"));
+        assertEquals("SOCIALPRENOT", StringUtils.substringBefore(notificationFile, "_"));
 
         assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
         assertThat(templateRow.next(), isEmptyString());  // Address line 2 should be empty
@@ -179,7 +179,7 @@ public class TemplateServiceIT {
         }
     }
 
-    private ActionRequest createSocialActionRequest(String actionType) {
+    private ActionRequest createSocialActionRequest(final String actionType) {
         ActionAddress actionAddress = new ActionAddress();
         actionAddress.setSampleUnitRef("sampleUR");
         actionAddress.setLine1("Prem1");
