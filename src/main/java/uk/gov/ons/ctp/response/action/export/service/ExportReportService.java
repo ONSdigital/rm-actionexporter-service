@@ -2,9 +2,7 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 
-/**
- * Service responsible for dealing with ExportReports
- */
+/** Service responsible for dealing with ExportReports */
 public interface ExportReportService {
   /**
    * Save an ExportReport

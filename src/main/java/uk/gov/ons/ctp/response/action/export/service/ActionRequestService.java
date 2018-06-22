@@ -1,17 +1,13 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
-import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 
-/**
- * Service responsible for dealing with ActionRequests
- */
+/** Service responsible for dealing with ActionRequests */
 public interface ActionRequestService {
   /**
    * To retrieve all ActionRequests
@@ -41,10 +37,11 @@ public interface ActionRequestService {
    *
    * @param actionType actionType for which to retrieve ActionRequests.
    * @param exerciseRef for which to retrieve ActionRequests.
-   * @return List of ActionRequests not sent to external services previously for
-   *         actionType, exerciseRef.
+   * @return List of ActionRequests not sent to external services previously for actionType,
+   *     exerciseRef.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType, String exerciseRef, String surveyRef);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(
+      String actionType, String exerciseRef, String surveyRef);
 
   /**
    * Return a list of distinct exerciseRefs

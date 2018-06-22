@@ -16,23 +16,18 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import uk.gov.ons.ctp.response.action.export.endpoint.TemplateEndpoint;
 import uk.gov.ons.ctp.response.action.export.endpoint.TemplateMappingEndpoint;
 
-
-/**
- * Created by stevee on 23/06/2017.
- */
+/** Created by stevee on 23/06/2017. */
 @CoverageIgnore
 @Configuration
 @EnableSwagger2
-@ComponentScan(basePackageClasses = {
-        TemplateEndpoint.class, TemplateMappingEndpoint.class
-})
+@ComponentScan(basePackageClasses = {TemplateEndpoint.class, TemplateMappingEndpoint.class})
 public class SwaggerConfig {
 
-  @Autowired
-  private AppConfig appConfig;
+  @Autowired private AppConfig appConfig;
 
   /**
    * Creates Docket for swagger ui configuration
+   *
    * @return Docket springfox api configuration object
    */
   @Bean
@@ -40,7 +35,8 @@ public class SwaggerConfig {
 
     SwaggerSettings swaggerSettings = appConfig.getSwaggerSettings();
 
-    ApiInfo apiInfo = new ApiInfoBuilder()
+    ApiInfo apiInfo =
+        new ApiInfoBuilder()
             .title(swaggerSettings.getTitle())
             .description(swaggerSettings.getDescription())
             .version(swaggerSettings.getVersion())
@@ -55,13 +51,12 @@ public class SwaggerConfig {
     }
 
     return new Docket(DocumentationType.SWAGGER_2)
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("uk.gov.ons.ctp.response.action.export.endpoint"))
-            .paths(pathSelector::test)
-            .build()
-            .groupName(swaggerSettings.getGroupName())
-            .apiInfo(apiInfo)
-            .genericModelSubstitutes(ResponseEntity.class);
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("uk.gov.ons.ctp.response.action.export.endpoint"))
+        .paths(pathSelector::test)
+        .build()
+        .groupName(swaggerSettings.getGroupName())
+        .apiInfo(apiInfo)
+        .genericModelSubstitutes(ResponseEntity.class);
   }
-
 }

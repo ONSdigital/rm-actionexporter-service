@@ -1,13 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import uk.gov.ons.ctp.response.action.message.instruction.Priority;
-
+import java.sql.Timestamp;
+import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,12 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.sql.Timestamp;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
-/**
- * Domain model object.
- */
+/** Domain model object. */
 @CoverageIgnore
 @Entity
 @Data
@@ -35,10 +32,13 @@ import java.util.UUID;
 public class ActionRequestInstruction {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "actionexportseq_gen")
-  @GenericGenerator(name = "actionexportseq_gen", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+  @GenericGenerator(
+      name = "actionexportseq_gen",
+      strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
       parameters = {
-      @Parameter(name = "sequence_name", value = "actionexporter.actionrequestpkseq"),
-      @Parameter(name = "increment_size", value = "1")})
+        @Parameter(name = "sequence_name", value = "actionexporter.actionrequestpkseq"),
+        @Parameter(name = "increment_size", value = "1")
+      })
   @Column(name = "actionrequestpk")
   private Integer actionrequestPK;
 

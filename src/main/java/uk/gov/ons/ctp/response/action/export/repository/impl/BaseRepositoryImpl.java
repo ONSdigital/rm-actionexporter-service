@@ -1,17 +1,13 @@
 package uk.gov.ons.ctp.response.action.export.repository.impl;
 
 import java.io.Serializable;
-
 import javax.persistence.EntityManager;
-
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
-
 import uk.gov.ons.ctp.response.action.export.repository.BaseRepository;
 
 /**
- *
  * Implementation of the BaseReporitory
  *
  * @param <T> the type of the entity to handle.
@@ -23,13 +19,13 @@ public class BaseRepositoryImpl<T, I extends Serializable> extends SimpleJpaRepo
   private final EntityManager entityManager;
 
   /**
-   * Creates a new SimpleJpaRepository to manage objects of the given
-   * JpaEntityInformation.
+   * Creates a new SimpleJpaRepository to manage objects of the given JpaEntityInformation.
    *
    * @param entityInformation on entities managed in the persistence context.
    * @param entityManager for the persistence context.
    */
-  public BaseRepositoryImpl(JpaEntityInformation<T, I> entityInformation, EntityManager entityManager) {
+  public BaseRepositoryImpl(
+      JpaEntityInformation<T, I> entityInformation, EntityManager entityManager) {
     super(entityInformation, entityManager);
     this.entityManager = entityManager;
   }
@@ -40,5 +36,4 @@ public class BaseRepositoryImpl<T, I extends Serializable> extends SimpleJpaRepo
     entityManager.persist(entity);
     return entity;
   }
-
 }

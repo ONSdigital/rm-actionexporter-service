@@ -1,25 +1,21 @@
 package uk.gov.ons.ctp.response.action.export.templating.freemarker.config;
 
+import freemarker.cache.TemplateLoader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-
-import freemarker.cache.TemplateLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
-/**
- * TemplateLoader to load templates stored in MongopDB
- */
+/** TemplateLoader to load templates stored in MongopDB */
 @Slf4j
 @Component
 public class FreeMarkerTemplateLoader implements TemplateLoader {
 
-  @Autowired
-  private TemplateRepository templateRepository;
+  @Autowired private TemplateRepository templateRepository;
 
   @Override
   public Object findTemplateSource(String name) throws IOException {
@@ -42,10 +38,7 @@ public class FreeMarkerTemplateLoader implements TemplateLoader {
     return new StringReader(((TemplateExpression) templateSource).getContent());
   }
 
-  /**
-   * Used to close Template Source
-   */
+  /** Used to close Template Source */
   @Override
-  public void closeTemplateSource(Object templateSource) throws IOException {
-  }
+  public void closeTemplateSource(Object templateSource) throws IOException {}
 }

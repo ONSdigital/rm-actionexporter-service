@@ -1,18 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
+import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
-import uk.gov.ons.ctp.response.action.export.service.TemplateService;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,25 +15,32 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
+import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
 /**
- * The implementation of the TemplateService TODO Specific to FreeMarker at the
- * moment with freemarker.template.Configuration, clearTemplateCache, etc.
+ * The implementation of the TemplateService TODO Specific to FreeMarker at the moment with
+ * freemarker.template.Configuration, clearTemplateCache, etc.
  */
 @Service
 @Slf4j
 public class TemplateServiceImpl implements TemplateService {
 
-  public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE = "Could not find FreeMarker template.";
-  public static final String EXCEPTION_STORE_TEMPLATE = "Issue storing template. It appears to be empty.";
+  public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE =
+      "Could not find FreeMarker template.";
+  public static final String EXCEPTION_STORE_TEMPLATE =
+      "Issue storing template. It appears to be empty.";
 
-  @Autowired
-  private TemplateRepository repository;
+  @Autowired private TemplateRepository repository;
 
-  @Autowired
-  private freemarker.template.Configuration configuration;
+  @Autowired private freemarker.template.Configuration configuration;
 
   @Override
   public TemplateExpression retrieveTemplate(String templateName) {
@@ -55,7 +53,8 @@ public class TemplateServiceImpl implements TemplateService {
   }
 
   @Override
-  public TemplateExpression storeTemplate(String templateName, InputStream fileContents) throws CTPException {
+  public TemplateExpression storeTemplate(String templateName, InputStream fileContents)
+      throws CTPException {
     String stringValue = getStringFromInputStream(fileContents);
     if (StringUtils.isEmpty(stringValue)) {
       log.error(EXCEPTION_STORE_TEMPLATE);
@@ -74,7 +73,8 @@ public class TemplateServiceImpl implements TemplateService {
   }
 
   @Override
-  public File file(List<ActionRequestInstruction> actionRequestList, String templateName, String path)
+  public File file(
+      List<ActionRequestInstruction> actionRequestList, String templateName, String path)
       throws CTPException {
     File resultFile = new File(path);
     Writer fileWriter = null;
@@ -105,8 +105,8 @@ public class TemplateServiceImpl implements TemplateService {
   }
 
   @Override
-  public ByteArrayOutputStream stream(List<ActionRequestInstruction> actionRequestList, String templateName)
-      throws CTPException {
+  public ByteArrayOutputStream stream(
+      List<ActionRequestInstruction> actionRequestList, String templateName) throws CTPException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     Writer outputStreamWriter = null;
     try {
@@ -165,5 +165,4 @@ public class TemplateServiceImpl implements TemplateService {
     result.put("actionRequests", actionRequestList);
     return result;
   }
-
 }

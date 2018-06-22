@@ -1,15 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import java.util.List;
+import java.util.Map;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 
-import java.util.List;
-import java.util.Map;
-
-/**
- * Service responsible for dealing with stored TemplateMappings.
- *
- */
+/** Service responsible for dealing with stored TemplateMappings. */
 public interface TemplateMappingService {
 
   /**
@@ -20,10 +16,8 @@ public interface TemplateMappingService {
    * @return the stored TemplateMappings
    * @throws CTPException if error storing TemplateMappings
    */
-  List<TemplateMapping> storeTemplateMappings(String actionType, List<TemplateMapping> templateMappingList)
-      throws CTPException;
-
-
+  List<TemplateMapping> storeTemplateMappings(
+      String actionType, List<TemplateMapping> templateMappingList) throws CTPException;
 
   /**
    * To retrieve a given TemplateMapping
@@ -61,5 +55,4 @@ public interface TemplateMappingService {
    * @return a list of actionTypes.
    */
   List<String> retrieveActionTypes();
-
 }

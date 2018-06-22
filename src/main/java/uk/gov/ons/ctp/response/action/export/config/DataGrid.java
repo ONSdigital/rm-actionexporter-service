@@ -3,10 +3,7 @@ package uk.gov.ons.ctp.response.action.export.config;
 import lombok.Data;
 import net.sourceforge.cobertura.CoverageIgnore;
 
-/**
- * Config POJO for action plan exec params
- *
- */
+/** Config POJO for action plan exec params */
 @CoverageIgnore
 @Data
 public class DataGrid {
@@ -14,4 +11,3 @@ public class DataGrid {
   private String password;
   private Integer lockTimeToLiveSeconds;
 }
-

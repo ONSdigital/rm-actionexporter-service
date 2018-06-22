@@ -2,14 +2,12 @@ package uk.gov.ons.ctp.response.action.export.message;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-
 import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 
 /**
- * Service responsible for publishing transformed ActionExport messages to
- * external service using SFTP.
- *
+ * Service responsible for publishing transformed ActionExport messages to external service using
+ * SFTP.
  */
 public interface SftpServicePublisher {
 
