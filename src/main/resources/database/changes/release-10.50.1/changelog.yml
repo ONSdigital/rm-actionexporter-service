@@ -1,0 +1,21 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.50.1-1
+      author: Adam Hawtin
+      changes:
+        - sqlFile:
+            comment: Added template for social pre notifications
+            path: add_social_pre_notification_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 10.50.1-2
+      author: Adam Hawtin
+      changes:
+        - sqlFile:
+            comment: Added template mapping for social pre notifications
+            path: add_social_pre_notification_template_mapping.sql
+            relativeToChangelogFile: true
+            splitStatements: false
