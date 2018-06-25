@@ -1,12 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.sourceforge.cobertura.CoverageIgnore;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,10 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 
-/**
- * Representation of a message being sent.
- */
+/** Representation of a message being sent. */
 @CoverageIgnore
 @Data
 @AllArgsConstructor
@@ -26,7 +23,8 @@ import java.util.UUID;
 public class ExportMessage {
 
   private Map<String, List<UUID>> actionRequestIds = new HashMap<String, List<UUID>>();
-  private Map<String, ByteArrayOutputStream> outputStreams = new HashMap<String, ByteArrayOutputStream>();
+  private Map<String, ByteArrayOutputStream> outputStreams =
+      new HashMap<String, ByteArrayOutputStream>();
 
   /**
    * Return actionIds for actionRequests for key.
@@ -46,29 +44,33 @@ public class ExportMessage {
 
   /**
    * Checks if list are empty
+   *
    * @return boolean
    */
   public boolean isEmpty() {
-      return actionRequestIds.isEmpty() || outputStreams.isEmpty();
+    return actionRequestIds.isEmpty() || outputStreams.isEmpty();
   }
 
   /**
    * Return all actionIds.
+   *
    * @return List of all actionIds.
    */
   public List<String> getMergedActionRequestIdsAsStrings() {
     List<String> actionIds = new ArrayList<String>();
 
-    actionRequestIds.forEach((key, mergeIds) -> {
-        for (UUID uuid : mergeIds) {
-        actionIds.add(uuid.toString());
-      }
-    });
+    actionRequestIds.forEach(
+        (key, mergeIds) -> {
+          for (UUID uuid : mergeIds) {
+            actionIds.add(uuid.toString());
+          }
+        });
     return actionIds;
   }
 
   /**
    * Return all outputStreams merged.
+   *
    * @return ByteArrayOutputStream.
    */
   public ByteArrayOutputStream getMergedOutputStreams() {

@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
+import java.net.URI;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +19,12 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateMappingDTO;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
-import java.net.URI;
-import java.util.List;
-
-/**
- * The REST endpoint controller for TemplateMappings.
- */
+/** The REST endpoint controller for TemplateMappings. */
 @RestController
 @RequestMapping(value = "/templatemappings", produces = "application/json")
 @Slf4j
 public class TemplateMappingEndpoint {
-  @Autowired
-  private TemplateMappingService templateMappingService;
+  @Autowired private TemplateMappingService templateMappingService;
 
   @Qualifier("actionExporterBeanMapper")
   @Autowired
@@ -42,10 +38,9 @@ public class TemplateMappingEndpoint {
   @RequestMapping(method = RequestMethod.GET)
   public List<TemplateMappingDTO> findAllTemplateMappings() {
     log.debug("Entering findAllTemplateMappings ...");
-    List<TemplateMapping> templateMappings = templateMappingService
-        .retrieveAllTemplateMappings();
-    List<TemplateMappingDTO> results = mapperFacade.mapAsList(templateMappings,
-        TemplateMappingDTO.class);
+    List<TemplateMapping> templateMappings = templateMappingService.retrieveAllTemplateMappings();
+    List<TemplateMappingDTO> results =
+        mapperFacade.mapAsList(templateMappings, TemplateMappingDTO.class);
     return CollectionUtils.isEmpty(results) ? null : results;
   }
 
@@ -57,12 +52,14 @@ public class TemplateMappingEndpoint {
    * @throws CTPException if no TemplateMapping found
    */
   @RequestMapping(value = "/{actionType}", method = RequestMethod.GET)
-  public TemplateMappingDTO findTemplateMapping(
-      @PathVariable("actionType") final String actionType) throws CTPException {
+  public TemplateMappingDTO findTemplateMapping(@PathVariable("actionType") final String actionType)
+      throws CTPException {
     log.debug("Entering findTemplateMapping with {}", actionType);
     TemplateMapping result = templateMappingService.retrieveTemplateMappingByActionType(actionType);
     if (result == null) {
-      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Template Mapping not found for action type %s",
+      throw new CTPException(
+          CTPException.Fault.RESOURCE_NOT_FOUND,
+          "Template Mapping not found for action type %s",
           actionType);
     }
     return mapperFacade.map(result, TemplateMappingDTO.class);
@@ -76,26 +73,36 @@ public class TemplateMappingEndpoint {
    * @return 201 if created
    * @throws CTPException if the TemplateMapping can't be stored
    */
-  @RequestMapping(value = "/{actionType}", method = RequestMethod.POST, consumes = "application/json")
-  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMappings(@PathVariable("actionType")
-    final String actionType, @RequestBody final List<TemplateMappingDTO> templateMappingDTOList)
+  @RequestMapping(
+      value = "/{actionType}",
+      method = RequestMethod.POST,
+      consumes = "application/json")
+  public ResponseEntity<List<TemplateMappingDTO>> storeTemplateMappings(
+      @PathVariable("actionType") final String actionType,
+      @RequestBody final List<TemplateMappingDTO> templateMappingDTOList)
       throws CTPException {
     log.debug("Entering storeTemplateMapping");
 
-    List<TemplateMapping> templateMappings = mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
+    List<TemplateMapping> templateMappings =
+        mapperFacade.mapAsList(templateMappingDTOList, TemplateMapping.class);
 
     if (templateMappings.isEmpty()) {
-      throw new CTPException(CTPException.Fault.BAD_REQUEST, "Template Mappings not created for action type %s",
+      throw new CTPException(
+          CTPException.Fault.BAD_REQUEST,
+          "Template Mappings not created for action type %s",
           actionType);
     }
 
-    List<TemplateMapping> mappings = templateMappingService.storeTemplateMappings(actionType, templateMappings);
+    List<TemplateMapping> mappings =
+        templateMappingService.storeTemplateMappings(actionType, templateMappings);
 
-    String newResourceUrl = ServletUriComponentsBuilder
-        .fromCurrentRequest().buildAndExpand(actionType).toUri().toString();
+    String newResourceUrl =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .buildAndExpand(actionType)
+            .toUri()
+            .toString();
 
-    return ResponseEntity.created(URI.create(newResourceUrl)).body(mapperFacade.mapAsList(mappings,
-        TemplateMappingDTO.class));
+    return ResponseEntity.created(URI.create(newResourceUrl))
+        .body(mapperFacade.mapAsList(mappings, TemplateMappingDTO.class));
   }
-
 }

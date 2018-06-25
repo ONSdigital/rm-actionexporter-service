@@ -1,5 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +26,7 @@ import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TransformationService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
-
-/**
- * This class will be responsible for the scheduling of export actions
- *
- */
+/** This class will be responsible for the scheduling of export actions */
 @Component
 @Slf4j
 public class ExportScheduler implements HealthIndicator {
@@ -42,73 +37,54 @@ public class ExportScheduler implements HealthIndicator {
   private static final String DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT = "scheduler";
   private static final String DISTRIBUTED_OBJECT_KEY_REPORT = "report";
 
-  @Autowired
-  private TransformationService transformationService;
+  @Autowired private TransformationService transformationService;
 
-  @Autowired
-  private TemplateMappingService templateMappingService;
+  @Autowired private TemplateMappingService templateMappingService;
 
-  @Autowired
-  private SftpServicePublisher sftpService;
+  @Autowired private SftpServicePublisher sftpService;
 
-  @Autowired
-  private ActionRequestService actionRequestService;
+  @Autowired private ActionRequestService actionRequestService;
 
-  @Autowired
-  private DistributedLockManager actionExportLockManager;
+  @Autowired private DistributedLockManager actionExportLockManager;
 
-  @Autowired
-  private DistributedInstanceManager actionExportInstanceManager;
+  @Autowired private DistributedInstanceManager actionExportInstanceManager;
 
-  @Autowired
-  private DistributedLatchManager actionExportLatchManager;
+  @Autowired private DistributedLatchManager actionExportLatchManager;
 
-  @Autowired
-  private ExportReportService exportReportService;
+  @Autowired private ExportReportService exportReportService;
 
-  @Autowired
-  private EventPublisher eventPublisher;
-  
-  @Autowired
-  private ExportInfo exportInfo;
+  @Autowired private EventPublisher eventPublisher;
+
+  @Autowired private ExportInfo exportInfo;
 
   @Override
   public Health health() {
-    return Health.up()
-        .withDetail("exportInfo", exportInfo)
-        .build();
+    return Health.up().withDetail("exportInfo", exportInfo).build();
   }
 
-  /**
-   * Initialise export scheduler
-   *
-   */
+  /** Initialise export scheduler */
   @PostConstruct
   public void init() {
     actionExportInstanceManager.incrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
-    log.info("{} {} instance/s running",
+    log.info(
+        "{} {} instance/s running",
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
         DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
   }
 
-  /**
-   * Clean up scheduler on bean destruction
-   *
-   */
+  /** Clean up scheduler on bean destruction */
   @PreDestroy
   public void cleanUp() {
     actionExportInstanceManager.decrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
     // Make sure no locks if interrupted in middle of run
     actionExportLockManager.unlockInstanceLocks();
-    log.info("{} {} instance/s running",
+    log.info(
+        "{} {} instance/s running",
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
         DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
   }
 
-  /**
-   * Carry out scheduled actions according to configured cron expression
-   *
-   */
+  /** Carry out scheduled actions according to configured cron expression */
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
     log.info("Scheduled run start");
@@ -116,27 +92,32 @@ public class ExportScheduler implements HealthIndicator {
     // Warn if Mapping document cannot deal with all ActionRequests stored
     List<String> storedActionTypes = actionRequestService.retrieveActionTypes();
     List<String> mappedActionTypes = templateMappingService.retrieveActionTypes();
-    storedActionTypes.forEach((actionType) -> {
-      if (!mappedActionTypes.contains(actionType)) {
-        log.warn("No mapping for actionType : {}.", actionType);
-      }
-    });
+    storedActionTypes.forEach(
+        (actionType) -> {
+          if (!mappedActionTypes.contains(actionType)) {
+            log.warn("No mapping for actionType : {}.", actionType);
+          }
+        });
 
-    actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
+    actionExportLatchManager.setCountDownLatch(
+        DISTRIBUTED_OBJECT_KEY_FILE_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
 
-    List<SurveyRefExerciseRef> exerciseRefs = actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef();
+    List<SurveyRefExerciseRef> exerciseRefs =
+        actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef();
 
-    exerciseRefs.forEach((exerciseRef) -> {
-      sendExport(exerciseRef);
-      eventPublisher.publishEvent("Print file");
-    });
+    exerciseRefs.forEach(
+        (exerciseRef) -> {
+          sendExport(exerciseRef);
+          eventPublisher.publishEvent("Print file");
+        });
 
     // Wait for all instances to finish to synchronise the removal of locks
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
-        log.error("Scheduled run error countdownlatch timed out, should be {} instances running",
+        log.error(
+            "Scheduled run error countdownlatch timed out, should be {} instances running",
             actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
       }
     } catch (InterruptedException e) {
@@ -145,7 +126,8 @@ public class ExportScheduler implements HealthIndicator {
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      log.info("{} {} instance/s running",
+      log.info(
+          "{} {} instance/s running",
           actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
           DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
     }
@@ -156,10 +138,9 @@ public class ExportScheduler implements HealthIndicator {
   }
 
   /**
-   * Deal with actionRequests for a collection exercise. Lock on file being
-   * created so only one instance can write to an SFTP file. Deal with
-   * exerciseRefs separately as a file is created for each collection exercise
-   * with filename from the lookup table as a prefix and exerciseRef
+   * Deal with actionRequests for a collection exercise. Lock on file being created so only one
+   * instance can write to an SFTP file. Deal with exerciseRefs separately as a file is created for
+   * each collection exercise with filename from the lookup table as a prefix and exerciseRef
    *
    * @param surveyRefExerciseRefTuple collection exercise to deal with.
    */
@@ -167,53 +148,66 @@ public class ExportScheduler implements HealthIndicator {
 
     String exerciseRef = correctExRefFormat(surveyRefExerciseRefTuple);
 
-    final String surveyRefAndexerciseRef = surveyRefExerciseRefTuple.getSurveyRef() + "_" + exerciseRef;
+    final String surveyRefAndexerciseRef =
+        surveyRefExerciseRefTuple.getSurveyRef() + "_" + exerciseRef;
 
     // Process templateMappings by file to be created, have to as may be many
     // actionTypes in one file. Does not assume actionTypes in the same file use
     // the same template even so.
-    String timeStamp = new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
+    String timeStamp =
+        new SimpleDateFormat(DATE_FORMAT_IN_FILE_NAMES).format(Calendar.getInstance().getTime());
 
-    templateMappingService.retrieveAllTemplateMappingsByFilename()
-        .forEach((fileName, templatemappings) -> {
+    templateMappingService
+        .retrieveAllTemplateMappingsByFilename()
+        .forEach(
+            (fileName, templatemappings) -> {
+              String fileNameWithExerciseRef = fileName + "_" + surveyRefAndexerciseRef;
+              log.info(
+                  "Lock test {} {}",
+                  fileNameWithExerciseRef,
+                  actionExportLockManager.isLocked(fileNameWithExerciseRef));
 
-          String fileNameWithExerciseRef = fileName + "_" + surveyRefAndexerciseRef;
-          log.info("Lock test {} {}", fileNameWithExerciseRef,
-              actionExportLockManager.isLocked(fileNameWithExerciseRef));
+              if (!actionExportLockManager.isLocked(fileNameWithExerciseRef)
+                  && actionExportLockManager.lock(fileNameWithExerciseRef)) {
 
-          if (!actionExportLockManager.isLocked(fileNameWithExerciseRef)
-              && actionExportLockManager.lock(fileNameWithExerciseRef)) {
+                log.info(
+                    "Lock file {} {}",
+                    fileNameWithExerciseRef,
+                    actionExportLockManager.isLocked(fileNameWithExerciseRef));
+                ExportMessage message = new ExportMessage();
 
-            log.info("Lock file {} {}", fileNameWithExerciseRef,
-                actionExportLockManager.isLocked(fileNameWithExerciseRef));
-            ExportMessage message = new ExportMessage();
+                // process Collection of templateMappings
+                templatemappings.forEach(
+                    (templateMapping) -> {
+                      List<ActionRequestInstruction> requests =
+                          actionRequestService.findByDateSentIsNullAndActionTypeAndExerciseRef(
+                              templateMapping.getActionType(),
+                              surveyRefExerciseRefTuple.getExerciseRef(),
+                              surveyRefExerciseRefTuple.getSurveyRef());
+                      if (requests.isEmpty()) {
+                        log.info(
+                            "No requests for actionType {}, surveyRef {} exerciseRef {} to process",
+                            templateMapping.getActionType(),
+                            surveyRefExerciseRefTuple.getExerciseRef(),
+                            surveyRefExerciseRefTuple.getSurveyRef());
+                      } else {
+                        try {
+                          transformationService.processActionRequests(message, requests);
+                        } catch (CTPException e) {
+                          log.error("Scheduled run error transforming ActionRequests");
+                          log.error("Stacktrace: ", e);
+                        }
+                      }
+                    });
 
-            // process Collection of templateMappings
-            templatemappings.forEach((templateMapping) -> {
-
-              List<ActionRequestInstruction> requests = actionRequestService
-                  .findByDateSentIsNullAndActionTypeAndExerciseRef(templateMapping.getActionType(), surveyRefExerciseRefTuple.getExerciseRef(), surveyRefExerciseRefTuple.getSurveyRef());
-              if (requests.isEmpty()) {
-                log.info("No requests for actionType {}, surveyRef {} exerciseRef {} to process", templateMapping.getActionType(),
-                		surveyRefExerciseRefTuple.getExerciseRef(), surveyRefExerciseRefTuple.getSurveyRef());
-              } else {
-                try {
-                  transformationService.processActionRequests(message, requests);
-                } catch (CTPException e) {
-                  log.error("Scheduled run error transforming ActionRequests");
-                  log.error("Stacktrace: ", e);
+                if (!message.isEmpty()) {
+                  sftpService.sendMessage(
+                      fileNameWithExerciseRef + "_" + timeStamp + ".csv",
+                      message.getMergedActionRequestIdsAsStrings(),
+                      message.getMergedOutputStreams());
                 }
               }
             });
-
-            if (!message.isEmpty()) {
-              sftpService.sendMessage(fileNameWithExerciseRef + "_" + timeStamp + ".csv",
-                  message.getMergedActionRequestIdsAsStrings(),
-                  message.getMergedOutputStreams());
-            }
-          }
-        });
-
   }
 
   // This checks the format of exerciseRef if it is survey_ref + exercise_ref e.g 221_2017_12
@@ -228,17 +222,17 @@ public class ExportScheduler implements HealthIndicator {
   }
 
   /**
-   * Create an entry for the report service for exports created. Have to wait
-   * for all potential service instances to finish the scheduled run prior to
-   * calling this method to produce a report. Also have to synchronise all
-   * potential services creating report to ensure only one report created per
-   * scheduled run so need a latch for this purpose.
+   * Create an entry for the report service for exports created. Have to wait for all potential
+   * service instances to finish the scheduled run prior to calling this method to produce a report.
+   * Also have to synchronise all potential services creating report to ensure only one report
+   * created per scheduled run so need a latch for this purpose.
    *
    * @return boolean whether or not report has been created successfully.
    */
   private boolean createReport() {
     boolean result = false;
-    actionExportLatchManager.setCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH,
+    actionExportLatchManager.setCountDownLatch(
+        DISTRIBUTED_OBJECT_KEY_REPORT_LATCH,
         actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
     if (!actionExportLockManager.isLocked(DISTRIBUTED_OBJECT_KEY_REPORT)) {
       if (actionExportLockManager.lock(DISTRIBUTED_OBJECT_KEY_REPORT)) {
@@ -253,7 +247,8 @@ public class ExportScheduler implements HealthIndicator {
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH)) {
-        log.error("Report run error countdownlatch timed out, should be {} instances running",
+        log.error(
+            "Report run error countdownlatch timed out, should be {} instances running",
             actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
       }
     } catch (InterruptedException e) {

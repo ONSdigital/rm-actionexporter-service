@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
-
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
@@ -22,7 +21,7 @@ public interface TemplateService {
    * @throws CTPException if the Template content is empty
    */
   TemplateExpression storeTemplate(String templateName, InputStream fileContents)
-          throws CTPException;
+      throws CTPException;
 
   /**
    * To retrieve a given Template
@@ -49,7 +48,7 @@ public interface TemplateService {
    * @return the file.
    */
   File file(List<ActionRequestInstruction> actionRequestList, String templateName, String path)
-          throws CTPException;
+      throws CTPException;
 
   /**
    * This produces a stream for all our action requests.
@@ -59,7 +58,6 @@ public interface TemplateService {
    * @throws CTPException if problem creating stream from template.
    * @return the stream.
    */
-  ByteArrayOutputStream stream(List<ActionRequestInstruction> actionRequestList, String templateName)
-          throws CTPException;
-
+  ByteArrayOutputStream stream(
+      List<ActionRequestInstruction> actionRequestList, String templateName) throws CTPException;
 }
