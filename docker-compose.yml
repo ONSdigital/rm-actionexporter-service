@@ -10,9 +10,11 @@ services:
   sftp:
     container_name: sftp-actionex
     image: atmoz/sftp
+    volumes:
+        - ~/Documents/sftp:/home/centos/Documents/sftp
     ports:
         - "1122:22"
-    command: centos:JLibV2&XD,:::Documents/sftp
+    command: centos:JLibV2&XD,:1001
 
   rabbitmq:
     container_name: rabbitmq-actionex
