@@ -1,11 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
-
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,11 +8,13 @@ import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
 
-/**
- * Domain entity representing details of a SFTP transfer of actionRequests.
- */
+/** Domain entity representing details of a SFTP transfer of actionRequests. */
 @CoverageIgnore
 @Entity
 @Data
@@ -25,12 +22,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "filerowcount", schema = "actionexporter")
-@NamedStoredProcedureQuery(name = "createReport", procedureName = "actionexporter.generate_print_volumes_mi",
-parameters = {@StoredProcedureParameter(mode = ParameterMode.OUT, type = Boolean.class)})
+@NamedStoredProcedureQuery(
+    name = "createReport",
+    procedureName = "actionexporter.generate_print_volumes_mi",
+    parameters = {@StoredProcedureParameter(mode = ParameterMode.OUT, type = Boolean.class)})
 public class ExportReport {
 
-  @Id
-  private String filename;
+  @Id private String filename;
 
   private int rowcount;
 
@@ -41,5 +39,4 @@ public class ExportReport {
   private boolean sendResult;
 
   private boolean reported;
-
 }

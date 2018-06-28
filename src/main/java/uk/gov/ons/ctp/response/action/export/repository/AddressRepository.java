@@ -1,18 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
-
+import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import uk.gov.ons.ctp.response.action.export.domain.Address;
 
-import java.util.UUID;
-
-/**
- * JPA repository for Address entities
- *
- */
+/** JPA repository for Address entities */
 @Repository
 public interface AddressRepository extends BaseRepository<Address, UUID> {
 
@@ -22,7 +16,8 @@ public interface AddressRepository extends BaseRepository<Address, UUID> {
    * @param sampleUnitRefpk to check for existence
    * @return boolean whether exists
    */
-  @Query(value = "select exists(select 1 from actionexporter.address where sampleunitrefpk=:p_surpk)",
+  @Query(
+      value = "select exists(select 1 from actionexporter.address where sampleunitrefpk=:p_surpk)",
       nativeQuery = true)
   boolean tupleExists(@Param("p_surpk") String sampleUnitRefpk);
 }

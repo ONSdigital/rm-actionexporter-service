@@ -1,7 +1,18 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl.EXCEPTION_STORE_TEMPLATE_MAPPING;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,35 +24,18 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
 import uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl.EXCEPTION_STORE_TEMPLATE_MAPPING;
-
-/**
- * To unit test TemplateMappingServiceImpl
- */
+/** To unit test TemplateMappingServiceImpl */
 @RunWith(MockitoJUnitRunner.class)
 public class TemplateMappingServiceImplTest {
 
-  @InjectMocks
-  private TemplateMappingServiceImpl templateMappingService;
+  @InjectMocks private TemplateMappingServiceImpl templateMappingService;
 
-  @Mock
-  private TemplateMappingRepository repository;
+  @Mock private TemplateMappingRepository repository;
 
-  public static final String EXCEPTION_TEMPLATE_MAPPING_EMPTY = "No content to map due to end-of-input";
+  public static final String EXCEPTION_TEMPLATE_MAPPING_EMPTY =
+      "No content to map due to end-of-input";
 
-  /**
-   * Tests store with template mapping as null
-   */
+  /** Tests store with template mapping as null */
   @Test
   public void testStoreNullTemplateMapping() {
     boolean exceptionThrown = false;
@@ -60,9 +54,7 @@ public class TemplateMappingServiceImplTest {
     verify(repository, times(0)).save(any(TemplateMapping.class));
   }
 
-  /**
-   * Tests store with template mapping empty
-   */
+  /** Tests store with template mapping empty */
   @Test
   public void testStoreEmptyTemplateMapping() {
     boolean exceptionThrown = false;
@@ -71,8 +63,10 @@ public class TemplateMappingServiceImplTest {
     List<TemplateMapping> myObjects = new ArrayList<>();
 
     try {
-      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/empty_template_mapping.json"),
-          new TypeReference<List<TemplateMapping>>() {} );
+      myObjects =
+          mapper.readValue(
+              getClass().getResourceAsStream("/templates/freemarker/empty_template_mapping.json"),
+              new TypeReference<List<TemplateMapping>>() {});
     } catch (IOException e) {
       exceptionThrown = true;
       assertThat(e.getMessage(), CoreMatchers.containsString(EXCEPTION_TEMPLATE_MAPPING_EMPTY));
@@ -101,8 +95,10 @@ public class TemplateMappingServiceImplTest {
     List<TemplateMapping> myObjects = new ArrayList<>();
 
     try {
-      myObjects = mapper.readValue(getClass().getResourceAsStream("/templates/freemarker/valid_template_mapping.json"),
-          new TypeReference<List<TemplateMapping>>() {});
+      myObjects =
+          mapper.readValue(
+              getClass().getResourceAsStream("/templates/freemarker/valid_template_mapping.json"),
+              new TypeReference<List<TemplateMapping>>() {});
     } catch (IOException e) {
       System.out.println(e.getLocalizedMessage());
     }
@@ -110,5 +106,4 @@ public class TemplateMappingServiceImplTest {
     templateMappingService.storeTemplateMappings("BSNOT", myObjects);
     verify(repository, times(19)).save(any(TemplateMapping.class));
   }
-
 }

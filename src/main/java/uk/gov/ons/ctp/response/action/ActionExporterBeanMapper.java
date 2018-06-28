@@ -14,9 +14,7 @@ import uk.gov.ons.ctp.response.action.export.representation.ActionRequestInstruc
 import uk.gov.ons.ctp.response.action.export.representation.TemplateExpressionDTO;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateMappingDTO;
 
-/**
- * The bean mapper to go from Entity objects to Presentation objects.
- */
+/** The bean mapper to go from Entity objects to Presentation objects. */
 @Component
 public class ActionExporterBeanMapper extends ConfigurableMapper {
 
@@ -36,19 +34,13 @@ public class ActionExporterBeanMapper extends ConfigurableMapper {
     ConverterFactory converterFactory = factory.getConverterFactory();
     converterFactory.registerConverter(new StringToUUIDConverter());
 
-    factory
-            .classMap(TemplateExpression.class, TemplateExpressionDTO.class)
-            .byDefault()
-            .register();
+    factory.classMap(TemplateExpression.class, TemplateExpressionDTO.class).byDefault().register();
+
+    factory.classMap(TemplateMapping.class, TemplateMappingDTO.class).byDefault().register();
 
     factory
-            .classMap(TemplateMapping.class, TemplateMappingDTO.class)
-            .byDefault()
-            .register();
-
-    factory
-            .classMap(ActionRequestInstruction.class, ActionRequestInstructionDTO.class)
-            .byDefault()
-            .register();
+        .classMap(ActionRequestInstruction.class, ActionRequestInstructionDTO.class)
+        .byDefault()
+        .register();
   }
 }

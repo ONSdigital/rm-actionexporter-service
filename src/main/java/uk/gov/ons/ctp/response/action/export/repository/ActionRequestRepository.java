@@ -1,5 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -7,21 +12,12 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 
-import javax.transaction.Transactional;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-/**
- * JPA repository for ActionRequest entities
- *
- */
+/** JPA repository for ActionRequest entities */
 @Repository
 public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, UUID> {
 
   /**
-   *  Retrieve a list of collection exercise references to process.
+   * Retrieve a list of collection exercise references to process.
    *
    * @return List of distinct exercise references.
    */
@@ -29,11 +25,13 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
   List<String> findAllExerciseRefs();
 
   /**
-   *  Retrieve a list of collection exercise references to process.
+   * Retrieve a list of collection exercise references to process.
    *
    * @return List of distinct exercise references with survey reference.
    */
-  @Query("SELECT DISTINCT new uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
+  @Query(
+      "SELECT DISTINCT new uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef"
+          + "(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
   List<SurveyRefExerciseRef> findDistinctSurveyAndExerciseRefs();
 
   /**
@@ -41,10 +39,10 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    *
    * @param actionType for which to return action requests.
    * @param exerciseRef for which to return action requests.
-   * @return List ActionRequests not sent to external services previously for
-   *         actionType.
+   * @return List ActionRequests not sent to external services previously for actionType.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(String actionType, String exerciseRef, String surveyRef);
+  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(
+      String actionType, String exerciseRef, String surveyRef);
 
   /**
    * Retrieve a list of actionTypes
@@ -56,6 +54,7 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
 
   /**
    * Retrieve an ActionRequestInstruction by actionId
+   *
    * @param actionId ActionRequestInstruction actionId to be retrieved
    * @return ActionRequestInstruction object
    */
@@ -70,18 +69,20 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    */
   @Modifying
   @Transactional
-  @Query("UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent WHERE r.actionId IN :actionIds")
-  int updateDateSentByActionId(@Param("actionIds") Set<UUID> actionIds, @Param("dateSent") Timestamp dateSent);
+  @Query(
+      "UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent WHERE r.actionId IN :actionIds")
+  int updateDateSentByActionId(
+      @Param("actionIds") Set<UUID> actionIds, @Param("dateSent") Timestamp dateSent);
 
   /**
    * Retrieve actionIds where response required is true for List of actionIds.
    *
-   * @param actionIds List of ActionRequest actionIds to check for response
-   *          required.
+   * @param actionIds List of ActionRequest actionIds to check for response required.
    * @return actionIds of those where response required.
    */
-  @Query("SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = "
-      + "TRUE AND r.actionId IN :actionIds")
+  @Query(
+      "SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = "
+          + "TRUE AND r.actionId IN :actionIds")
   List<UUID> retrieveResponseRequiredByActionId(@Param("actionIds") Set<UUID> actionIds);
 
   /**
@@ -90,8 +91,10 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @param actionId to check for existence
    * @return boolean whether exists
    */
-  @Query(value = "select exists(select 1 from actionexporter.actionrequest where "
-      + "actionid=:p_actionid)", nativeQuery = true)
+  @Query(
+      value =
+          "select exists(select 1 from actionexporter.actionrequest where "
+              + "actionid=:p_actionid)",
+      nativeQuery = true)
   boolean tupleExists(@Param("p_actionid") UUID actionId);
-
 }

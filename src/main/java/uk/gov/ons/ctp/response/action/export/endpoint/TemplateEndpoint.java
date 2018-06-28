@@ -1,5 +1,8 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +21,12 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateExpressionDTO;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
-/**
- * The REST endpoint controller for Templates.
- */
+/** The REST endpoint controller for Templates. */
 @RestController
 @RequestMapping(value = "/templates", produces = "application/json")
 @Slf4j
 public class TemplateEndpoint {
-  @Autowired
-  private TemplateService templateService;
+  @Autowired private TemplateService templateService;
 
   @Qualifier("actionExporterBeanMapper")
   @Autowired
@@ -45,7 +41,8 @@ public class TemplateEndpoint {
   public List<TemplateExpressionDTO> findAllTemplates() {
     log.debug("Entering findAllTemplates ...");
     List<TemplateExpression> templates = templateService.retrieveAllTemplates();
-    List<TemplateExpressionDTO> results = mapperFacade.mapAsList(templates, TemplateExpressionDTO.class);
+    List<TemplateExpressionDTO> results =
+        mapperFacade.mapAsList(templates, TemplateExpressionDTO.class);
     return CollectionUtils.isEmpty(results) ? null : results;
   }
 
@@ -62,7 +59,8 @@ public class TemplateEndpoint {
     log.debug("Entering findTemplate with {}", templateName);
     TemplateExpression result = templateService.retrieveTemplate(templateName);
     if (result == null) {
-      throw new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Template not found for name %s", templateName);
+      throw new CTPException(
+          CTPException.Fault.RESOURCE_NOT_FOUND, "Template not found for name %s", templateName);
     }
 
     return mapperFacade.map(result, TemplateExpressionDTO.class);
@@ -70,27 +68,37 @@ public class TemplateEndpoint {
 
   /**
    * To store a Template
-   * 
+   *
    * @param templateName the Template name
    * @param file the Template content
    * @return 201 if created
    * @throws CTPException if the Template can't be stored
    */
-  @RequestMapping(value = "/{templateName}", method = RequestMethod.POST, consumes = "multipart/form-data")
-  public ResponseEntity<TemplateExpressionDTO> storeTemplate(@PathVariable("templateName") final String templateName,
-      @RequestParam("file") MultipartFile file) throws CTPException {
+  @RequestMapping(
+      value = "/{templateName}",
+      method = RequestMethod.POST,
+      consumes = "multipart/form-data")
+  public ResponseEntity<TemplateExpressionDTO> storeTemplate(
+      @PathVariable("templateName") final String templateName,
+      @RequestParam("file") MultipartFile file)
+      throws CTPException {
     log.debug("Entering storeTemplate with templateName {}", templateName);
     try {
-      TemplateExpression template = templateService.storeTemplate(templateName, file.getInputStream());
+      TemplateExpression template =
+          templateService.storeTemplate(templateName, file.getInputStream());
 
       TemplateExpressionDTO templateDTO = mapperFacade.map(template, TemplateExpressionDTO.class);
 
-      String newResourceUrl = ServletUriComponentsBuilder
-          .fromCurrentRequest().buildAndExpand(templateName).toUri().toString();
+      String newResourceUrl =
+          ServletUriComponentsBuilder.fromCurrentRequest()
+              .buildAndExpand(templateName)
+              .toUri()
+              .toString();
 
       return ResponseEntity.created(URI.create(newResourceUrl)).body(templateDTO);
     } catch (IOException e) {
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed reading the provided template file.");
+      throw new CTPException(
+          CTPException.Fault.SYSTEM_ERROR, "Failed reading the provided template file.");
     }
   }
 }

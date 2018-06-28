@@ -8,19 +8,18 @@ import uk.gov.ons.ctp.response.action.export.service.ActionExportService;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 
 /**
- * Service implementation responsible for receipt of action export instructions.
- * See Spring Integration flow for details of InstructionTransformed inbound
- * queue.
- *
+ * Service implementation responsible for receipt of action export instructions. See Spring
+ * Integration flow for details of InstructionTransformed inbound queue.
  */
 @MessageEndpoint
 public class ActionExportReceiverImpl implements ActionExportReceiver {
 
-  @Autowired
-  private ActionExportService actionExportService;
+  @Autowired private ActionExportService actionExportService;
 
   @Override
-  @ServiceActivator(inputChannel = "actionInstructionTransformed", adviceChain = "actionInstructionRetryAdvice")
+  @ServiceActivator(
+      inputChannel = "actionInstructionTransformed",
+      adviceChain = "actionInstructionRetryAdvice")
   public void acceptInstruction(ActionInstruction instruction) {
     actionExportService.acceptInstruction(instruction);
   }

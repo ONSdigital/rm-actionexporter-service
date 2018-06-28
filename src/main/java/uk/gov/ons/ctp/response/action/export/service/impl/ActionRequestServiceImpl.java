@@ -1,5 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.service.impl;
 
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,20 +12,12 @@ import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-/**
- * The implementation of ActionRequestService
- */
+/** The implementation of ActionRequestService */
 @Service
 @Slf4j
 public class ActionRequestServiceImpl implements ActionRequestService {
 
-  @Autowired
-  private ActionRequestRepository repository;
+  @Autowired private ActionRequestRepository repository;
 
   @Override
   public List<ActionRequestInstruction> retrieveAllActionRequests() {
@@ -40,9 +36,10 @@ public class ActionRequestServiceImpl implements ActionRequestService {
   }
 
   @Override
-  public List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(String actionType,
-      String exerciseRef, String surveyRef) {
-    return repository.findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(actionType, exerciseRef, surveyRef);
+  public List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(
+      String actionType, String exerciseRef, String surveyRef) {
+    return repository.findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(
+        actionType, exerciseRef, surveyRef);
   }
 
   @Override
