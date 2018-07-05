@@ -106,7 +106,7 @@ public class TemplateServiceIT {
     assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
     assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
     assertEquals(actionRequest.getIac(), templateRow.next());
-    assertEquals(actionRequest.getCaseRef(), templateRow.next());
+    assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
 
     // Delete the file created in this test
     defaultSftpSessionFactory.getSession().remove(notificationFilePath);
@@ -146,7 +146,7 @@ public class TemplateServiceIT {
     assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
     assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
     assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
-    assertEquals(actionRequest.getCaseRef(), templateRow.next());
+    assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
 
     // Delete the file created in this test
     defaultSftpSessionFactory.getSession().remove(notificationFilePath);

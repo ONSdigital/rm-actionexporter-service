@@ -19,3 +19,13 @@ databaseChangeLog:
             path: add_social_pre_notification_template_mapping.sql
             relativeToChangelogFile: true
             splitStatements: false
+
+  - changeSet:
+      id: 10.50.1-3
+      author: Matt Innes
+      changes:
+        - sqlFile:
+            comment: Updated social template to use sampleUnitRef instead of caseRef
+            path: use_sample_unit_ref.sql
+            relativeToChangelogFile: true
+            splitStatements: false
