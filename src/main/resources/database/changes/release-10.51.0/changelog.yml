@@ -1,0 +1,22 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 10.51.0-1
+      author: Damien Lloyd
+      changes:
+        - sqlFile:
+            comment: Add lines 3 and 4 to address table
+            path: add_lines_3_4_address.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+
+  - changeSet:
+      id: 10.51.0-2
+      author: Damien Lloyd
+      changes:
+        - sqlFile:
+            comment: Add address lines 3 and 4 to social notification template
+            path: add_lines_3_4_social_notif_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
