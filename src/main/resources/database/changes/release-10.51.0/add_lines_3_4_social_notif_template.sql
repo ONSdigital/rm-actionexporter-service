@@ -9,7 +9,6 @@ SET content =
 '${(actionRequest.address.townName?trim)!}:' ||
 '${(actionRequest.address.locality?trim)!}:' ||
 '${(actionRequest.iac?trim)!"null"}:' ||
-'${(actionRequest.caseRef)!"null"}:' ||
 '${(actionRequest.address.sampleUnitRef)!"null"}' ||
 '</#list>', datemodified = now()
 where templatenamepk = 'socialNotification'
