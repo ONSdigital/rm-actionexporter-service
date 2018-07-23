@@ -102,10 +102,13 @@ public class TemplateServiceIT {
 
     assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
     assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
+    assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
+    assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
     assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
     assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
     assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
     assertEquals(actionRequest.getIac(), templateRow.next());
+    assertEquals(actionRequest.getCaseRef(), templateRow.next());
     assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
 
     // Delete the file created in this test
@@ -178,6 +181,8 @@ public class TemplateServiceIT {
     ActionAddress actionAddress = new ActionAddress();
     actionAddress.setSampleUnitRef("sampleUR");
     actionAddress.setLine1("Prem1");
+    actionAddress.setLine3("Prem3");
+    actionAddress.setLine4("Prem4");
     actionAddress.setPostcode("postCode");
     actionAddress.setTownName("postTown");
     actionAddress.setLocality("locality");
