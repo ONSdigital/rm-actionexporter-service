@@ -20,3 +20,13 @@ databaseChangeLog:
             path: add_lines_3_4_social_notif_template.sql
             relativeToChangelogFile: true
             splitStatements: false
+
+  - changeSet:
+      id: 10.51.0-3
+      author: Damien Lloyd
+      changes:
+        - sqlFile:
+            comment: Add address lines 3 and 4 to social pre-notification template
+            path: add_lines_3_4_social_pre_notif_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
