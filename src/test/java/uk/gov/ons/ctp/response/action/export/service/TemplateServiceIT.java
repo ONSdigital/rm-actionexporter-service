@@ -20,7 +20,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,20 +97,23 @@ public class TemplateServiceIT {
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
-    Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
+    try (Reader reader = new InputStreamReader(inputSteam);
+        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
+      Iterator<String> templateRow = parser.iterator().next().iterator();
+      assertEquals("\n", parser.getFirstEndOfLine());
+      assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+      assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
+      assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getIac(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
 
-    assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
-    assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
-    assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
-    assertEquals(actionRequest.getIac(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
-
-    // Delete the file created in this test
-    defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+      // Delete the file created in this test
+      defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+    }
   }
 
   @Test
@@ -138,22 +140,26 @@ public class TemplateServiceIT {
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
-    Iterator<String> templateRow = readFirstCsvRow(inputSteam).iterator();
+    try (Reader reader = new InputStreamReader(inputSteam);
+        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
 
-    String notificationFile = StringUtils.substringAfterLast(notificationFilePath, "/");
-    assertEquals("SOCIALPRENOT", StringUtils.substringBefore(notificationFile, "_"));
+      String notificationFile = StringUtils.substringAfterLast(notificationFilePath, "/");
+      assertEquals("SOCIALPRENOT", StringUtils.substringBefore(notificationFile, "_"));
 
-    assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
-    assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
-    assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
-    assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      Iterator<String> templateRow = parser.iterator().next().iterator();
+      assertEquals("\n", parser.getFirstEndOfLine());
+      assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+      assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
+      assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
 
-    // Delete the file created in this test
-    defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+      // Delete the file created in this test
+      defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+    }
   }
 
   private String actionInstructionToXmlString(ActionInstruction actionInstruction)
@@ -169,13 +175,6 @@ public class TemplateServiceIT {
     ChannelSftp.LsEntry[] sftpList = defaultSftpSessionFactory.getSession().list(sftpPath);
     Arrays.sort(sftpList, Comparator.comparingInt(o -> o.getAttrs().getMTime()));
     return sftpPath + sftpList[sftpList.length - 1].getFilename();
-  }
-
-  private CSVRecord readFirstCsvRow(InputStream inputStream) throws IOException {
-    try (Reader reader = new InputStreamReader(inputStream);
-        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
-      return parser.iterator().next();
-    }
   }
 
   private ActionRequest createSocialActionRequest(final String actionType) {
