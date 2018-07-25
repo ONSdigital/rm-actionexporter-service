@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 11
+      author: Tom Oram
+      changes:
+        - sqlFile:
+            comment: Add BNSL and BSRL template mappings
+            path: add_BSNL_and_BSRL.sql
+            relativeToChangelogFile: true
+            splitStatements: false
