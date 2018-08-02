@@ -7,7 +7,6 @@ language: java
 jdk: openjdk8
 
 before_install:
-- mkdir -p ~/Documents/sftp
 - cp .maven.settings.xml "$HOME"/.m2/settings.xml
 
 script: mvn fmt:check cobertura:cobertura-integration-test
