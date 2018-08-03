@@ -1,4 +1,4 @@
--- Need conditional test for Revoke if rolename doesn't already exist
+-- Need conditional test for Revoke if rolename doesn't already exist 
 
 DO $$
 BEGIN
