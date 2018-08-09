@@ -5,27 +5,27 @@ services:
     container_name: postgres-actionex
     image: sdcplatform/ras-rm-docker-postgres
     ports:
-     - "16432:5432"
+    - "16432:5432"
 
   sftp:
     container_name: sftp-actionex
     image: atmoz/sftp
     volumes:
-        - ~/Documents/sftp:/home/centos/Documents/sftp
+    - ~/Documents/sftp:/home/centos/Documents/sftp
     ports:
-        - "1122:22"
-    command: centos:JLibV2&XD,:1001
+    - "1122:22"
+    command: centos:JLibV2&XD,:2000
 
   rabbitmq:
     container_name: rabbitmq-actionex
     image: rabbitmq:3.6.10-management
     ports:
-      - "7672:5672"
-      - "26671:15671"
-      - "26672:15672"
+    - "7672:5672"
+    - "26671:15671"
+    - "26672:15672"
 
   redis:
     container_name: redis-actionex
     image: redis:3.2.9
     ports:
-     - "17379:6379"
+    - "17379:6379"
