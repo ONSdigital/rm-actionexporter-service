@@ -73,12 +73,12 @@ public class ActionExportServiceImpl implements ActionExportService {
     Timestamp now = DateTimeUtil.nowUTC();
     actionRequestDoc.setDateStored(now);
 
-    if (!addressRepo.tupleExists(actionRequestDoc.getAddress().getSampleUnitRef())) {
+    if (!addressRepo.existsBySampleUnitRef(actionRequestDoc.getAddress().getSampleUnitRef())) {
       // Address should never change so do not save if already exists
       addressRepo.persist(actionRequestDoc.getAddress());
     }
 
-    if (actionRequestRepo.tupleExists(actionRequestDoc.getActionId())) {
+    if (actionRequestRepo.existsByActionId(actionRequestDoc.getActionId())) {
       // ActionRequests should never be sent twice with same actionId but...
       log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
     } else {
