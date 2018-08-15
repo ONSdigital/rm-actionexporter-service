@@ -1,21 +1,21 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 
-/** Service responsible for dealing with ExportReports */
-public interface ExportReportService {
-  /**
-   * Save an ExportReport
-   *
-   * @param exportReport the ExportReport to save.
-   * @return the ExportReport saved.
-   */
-  ExportReport save(ExportReport exportReport);
+/** The implementation of FileRowCountService */
+@Service
+public class ExportReportService {
 
-  /**
-   * Create a report entry for files created since last report run.
-   *
-   * @return boolean whether or not successful
-   */
-  boolean createReport();
+  @Autowired private ExportReportRepository exportReportRepo;
+
+  public ExportReport save(ExportReport exportReport) {
+    return exportReportRepo.save(exportReport);
+  }
+
+  public boolean createReport() {
+    return exportReportRepo.createReport();
+  }
 }

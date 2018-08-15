@@ -1,34 +1,89 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 
-/** Service to transform lists of ActionRequests so they can be exported to an FTP server */
-public interface TransformationService {
+/** The implementation of TransformationService */
+@Service
+@Slf4j
+public class TransformationService {
+
+  @Autowired private TemplateService templateService;
+
+  @Autowired private TemplateMappingService templateMappingService;
+
+  public ExportMessage processActionRequests(
+      ExportMessage message, List<ActionRequestInstruction> requests) throws CTPException {
+    return buildExportMessage(message, requests);
+  }
+
+  public ExportMessage processActionRequest(
+      ExportMessage message, ActionRequestInstruction actionRequest) throws CTPException {
+    List<ActionRequestInstruction> requests = new ArrayList<>();
+    requests.add(actionRequest);
+    return buildExportMessage(message, requests);
+  }
 
   /**
-   * This produces a stream for all action requests not already sent for a particular actionType,
-   * applying the template mapped in the stored mapping document.
+   * Produces ExportMessage with stream objects and list of ActionRequest Ids. Assumes actionTypes
+   * being processed are unique and not already in ExportMessage passed in to be built, if are
+   * already present will be replaced.
    *
-   * @param message being built
-   * @param requests to process
+   * @param message to build
+   * @param actionRequestList the list to be processed
    * @return ExportMessage with stream objects and list of ActionRequest Ids.
-   * @throws CTPException if cannot retrieve TemplateMapping for ActionRequest.
+   * @throws CTPException if cannot retrieve TemplateMapping.
    */
-  ExportMessage processActionRequests(
-      ExportMessage message, List<ActionRequestInstruction> requests) throws CTPException;
+  private ExportMessage buildExportMessage(
+      ExportMessage message, List<ActionRequestInstruction> actionRequestList) throws CTPException {
 
-  /**
-   * This produces a stream for the given action request applying the template mapped in the stored
-   * mapping document
-   *
-   * @param message being built
-   * @param actionRequest the given actionRequest
-   * @return ExportMessage with stream object and the given ActionRequest Id.
-   * @throws CTPException if cannot retrieve TemplateMapping for ActionRequest.
-   */
-  ExportMessage processActionRequest(ExportMessage message, ActionRequestInstruction actionRequest)
-      throws CTPException;
+    // if nothing to process return ExportMessage
+    if (actionRequestList.isEmpty()) {
+      return message;
+    }
+
+    Map<String, TemplateMapping> mapping =
+        templateMappingService.retrieveAllTemplateMappingsByActionType();
+    Map<String, List<ActionRequestInstruction>> templateRequests =
+        actionRequestList
+            .stream()
+            .collect(Collectors.groupingBy(ActionRequestInstruction::getActionType));
+    templateRequests.forEach(
+        (actionType, actionRequests) -> {
+          if (mapping.containsKey(actionType)) {
+            try {
+              message
+                  .getOutputStreams()
+                  .put(
+                      actionType,
+                      templateService.stream(
+                          actionRequests, mapping.get(actionType).getTemplate()));
+              List<UUID> addActionIds = new ArrayList<UUID>();
+              message.getActionRequestIds().put(actionType, addActionIds);
+              actionRequests.forEach(
+                  (actionRequest) -> {
+                    addActionIds.add(actionRequest.getActionId());
+                  });
+            } catch (CTPException e) {
+              // catch failure for templateService stream operation for that actionType but try
+              // others, if any.
+              log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
+              log.error("Stacktrace: ", e);
+            }
+          } else {
+            log.warn("No mapping for actionType : {}.", actionType);
+          }
+        });
+    return message;
+  }
 }

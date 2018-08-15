@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl.EXCEPTION_STORE_TEMPLATE_MAPPING;
+import static uk.gov.ons.ctp.response.action.export.service.TemplateMappingService.EXCEPTION_STORE_TEMPLATE_MAPPING;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,13 +22,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepository;
-import uk.gov.ons.ctp.response.action.export.service.impl.TemplateMappingServiceImpl;
 
 /** To unit test TemplateMappingServiceImpl */
 @RunWith(MockitoJUnitRunner.class)
 public class TemplateMappingServiceImplTest {
 
-  @InjectMocks private TemplateMappingServiceImpl templateMappingService;
+  @InjectMocks private TemplateMappingService templateMappingService;
 
   @Mock private TemplateMappingRepository repository;
 

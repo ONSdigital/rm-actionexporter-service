@@ -10,12 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
-import uk.gov.ons.ctp.response.action.export.service.impl.TransformationServiceImpl;
 
 /** To unit test TransformationServiceImpl */
 @RunWith(MockitoJUnitRunner.class)
 public class TransformationServiceImplTest {
-  @InjectMocks private TransformationServiceImpl transformationService;
+  @InjectMocks private TransformationService transformationService;
 
   /** Tests processActionRequests if there is nothing to process. */
   @Test

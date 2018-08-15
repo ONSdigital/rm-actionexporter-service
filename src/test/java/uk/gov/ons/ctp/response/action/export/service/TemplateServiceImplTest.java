@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateServiceImpl.ERROR_RETRIEVING_FREEMARKER_TEMPLATE;
-import static uk.gov.ons.ctp.response.action.export.service.impl.TemplateServiceImpl.EXCEPTION_STORE_TEMPLATE;
+import static uk.gov.ons.ctp.response.action.export.service.TemplateService.ERROR_RETRIEVING_FREEMARKER_TEMPLATE;
+import static uk.gov.ons.ctp.response.action.export.service.TemplateService.EXCEPTION_STORE_TEMPLATE;
 import static uk.gov.ons.ctp.response.action.export.utility.ObjectBuilder.buildListOfActionRequests;
 
 import freemarker.template.Configuration;
@@ -30,7 +30,6 @@ import uk.gov.ons.ctp.response.action.export.domain.Address;
 import uk.gov.ons.ctp.response.action.export.domain.Contact;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
-import uk.gov.ons.ctp.response.action.export.service.impl.TemplateServiceImpl;
 
 /** To unit test TemplateServiceImpl */
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +37,7 @@ public class TemplateServiceImplTest {
   private static final String TEMPLATE_NAME = "testTemplate";
   private static final String TEST_FILE_PATH = "/tmp/ctp/forPrinter.csv";
 
-  @InjectMocks private TemplateServiceImpl templateService;
+  @InjectMocks private TemplateService templateService;
 
   @Mock private TemplateRepository repository;
 
