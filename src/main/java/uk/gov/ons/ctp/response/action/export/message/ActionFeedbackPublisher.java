@@ -1,13 +1,31 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.integration.annotation.MessageEndpoint;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 
-/** Service responsible for publishing an action feedback message to the action service. */
-public interface ActionFeedbackPublisher {
+/**
+ * Service implementation responsible for publishing an action feedback message to the action
+ * service.
+ */
+@MessageEndpoint
+@Slf4j
+public class ActionFeedbackPublisher {
+
+  @Qualifier("actionFeedbackRabbitTemplate")
+  @Autowired
+  private RabbitTemplate rabbitTemplate;
+
   /**
    * To publish an ActionFeedback message
    *
    * @param actionFeedback the ActionFeedback to publish.
    */
-  void sendActionFeedback(ActionFeedback actionFeedback);
+  public void sendActionFeedback(ActionFeedback actionFeedback) {
+    log.debug("Entering sendActionFeedback for actionId {} ", actionFeedback.getActionId());
+    rabbitTemplate.convertAndSend(actionFeedback);
+  }
 }
