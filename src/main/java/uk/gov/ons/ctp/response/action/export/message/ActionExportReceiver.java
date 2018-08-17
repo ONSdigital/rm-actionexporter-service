@@ -1,17 +1,24 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.annotation.MessageEndpoint;
+import org.springframework.integration.annotation.ServiceActivator;
+import uk.gov.ons.ctp.response.action.export.service.ActionExportService;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 
 /**
- * Interface for the receipt of action export messages from the Spring Integration inbound message
- * queue
+ * Service implementation responsible for receipt of action export instructions. See Spring
+ * Integration flow for details of InstructionTransformed inbound queue.
  */
-public interface ActionExportReceiver {
+@MessageEndpoint
+public class ActionExportReceiver {
 
-  /**
-   * Method called with the deserialised JMS message sent from downstream handlers
-   *
-   * @param instruction The java representation of the JMS message body
-   */
-  void acceptInstruction(ActionInstruction instruction);
+  @Autowired private ActionExportService actionExportService;
+
+  @ServiceActivator(
+      inputChannel = "actionInstructionTransformed",
+      adviceChain = "actionInstructionRetryAdvice")
+  public void acceptInstruction(ActionInstruction instruction) {
+    actionExportService.acceptInstruction(instruction);
+  }
 }

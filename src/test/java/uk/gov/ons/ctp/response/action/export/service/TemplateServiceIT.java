@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +48,7 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Slf4j
 public class TemplateServiceIT {
 
   @Autowired private AppConfig appConfig;
@@ -90,7 +93,6 @@ public class TemplateServiceIT {
     BlockingQueue<String> queue =
         simpleMessageListener.listen(
             SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-
     queue.take();
 
     // Then
@@ -110,9 +112,9 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
       assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
-
+    } finally {
       // Delete the file created in this test
-      defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+      assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
     }
   }
 
@@ -133,7 +135,6 @@ public class TemplateServiceIT {
     BlockingQueue<String> queue =
         simpleMessageListener.listen(
             SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-
     queue.take();
 
     // Then
@@ -156,9 +157,9 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
-
+    } finally {
       // Delete the file created in this test
-      defaultSftpSessionFactory.getSession().remove(notificationFilePath);
+      assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
     }
   }
 
@@ -171,10 +172,18 @@ public class TemplateServiceIT {
   }
 
   private String getLatestSftpFileName() throws IOException {
-    final String sftpPath = "Documents/sftp/";
+    Comparator<ChannelSftp.LsEntry> sortByModifiedTimeDescending =
+        (f1, f2) -> Integer.compare(f2.getAttrs().getMTime(), f1.getAttrs().getMTime());
+
+    String sftpPath = "Documents/sftp/";
     ChannelSftp.LsEntry[] sftpList = defaultSftpSessionFactory.getSession().list(sftpPath);
-    Arrays.sort(sftpList, Comparator.comparingInt(o -> o.getAttrs().getMTime()));
-    return sftpPath + sftpList[sftpList.length - 1].getFilename();
+    ChannelSftp.LsEntry latestFile =
+        Arrays.stream(sftpList)
+            .filter(f -> f.getFilename().endsWith(".csv"))
+            .min(sortByModifiedTimeDescending)
+            .orElseThrow(() -> new RuntimeException("No file on SFTP"));
+    log.info("Found latest file={}", latestFile.getFilename());
+    return sftpPath + latestFile.getFilename();
   }
 
   private ActionRequest createSocialActionRequest(final String actionType) {
