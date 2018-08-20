@@ -102,4 +102,10 @@ public class ActionRequestInstruction {
 
   @Column(name = "exerciseref")
   private String exerciseRef;
+
+  @Column(name = "returnbydate")
+  private String returnByDate;
+
+  @Column(name = "surveyabbreviation")
+  private String surveyAbbreviation;
 }
