@@ -1,10 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>actionexportersvc</artifactId>
-    <version>10.49.13-SNAPSHOT</version>
+    <version>10.49.13</version>
     <packaging>jar</packaging>
 
     <name>CTP : ActionExporterService</name>
@@ -26,7 +24,7 @@
         <developerConnection>scm:git:https://github.com/ONSdigital/rm-actionexporter-service
         </developerConnection>
         <url>https://github.com/ONSdigital/rm-actionexporter-service</url>
-        <tag>actionexportersvc-10.49.10</tag>
+        <tag>actionexportersvc-10.49.13</tag>
     </scm>
 
     <profiles>
@@ -369,7 +367,7 @@
                         <format>html</format>
                         <format>xml</format>
                     </formats>
-                    <check/>
+                    <check />
                 </configuration>
             </plugin>
         </plugins>
