@@ -91,10 +91,5 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @param actionId to check for existence
    * @return boolean whether exists
    */
-  @Query(
-      value =
-          "select exists(select 1 from actionexporter.actionrequest where "
-              + "actionid=:p_actionid)",
-      nativeQuery = true)
-  boolean tupleExists(@Param("p_actionid") UUID actionId);
+  boolean existsByActionId(UUID actionId);
 }

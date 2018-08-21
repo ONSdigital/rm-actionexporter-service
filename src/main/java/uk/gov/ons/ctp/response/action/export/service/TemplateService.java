@@ -1,63 +1,162 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
+
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
+import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
 /**
- * Service responsible for dealing with Templates (storage/retrieval in/from MongoDB, templating)
+ * The implementation of the TemplateService TODO Specific to FreeMarker at the moment with
+ * freemarker.template.Configuration, clearTemplateCache, etc.
  */
-public interface TemplateService {
-  /**
-   * To store a Template
-   *
-   * @param templateName the Template name
-   * @param fileContents the Template content
-   * @return the Template stored
-   * @throws CTPException if the Template content is empty
-   */
-  TemplateExpression storeTemplate(String templateName, InputStream fileContents)
-      throws CTPException;
+@Service
+@Slf4j
+public class TemplateService {
+
+  public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE =
+      "Could not find FreeMarker template.";
+  public static final String EXCEPTION_STORE_TEMPLATE =
+      "Issue storing template. It appears to be empty.";
+
+  @Autowired private TemplateRepository repository;
+
+  @Autowired private freemarker.template.Configuration configuration;
+
+  public TemplateExpression retrieveTemplate(String templateName) {
+    return repository.findOne(templateName);
+  }
+
+  public List<TemplateExpression> retrieveAllTemplates() {
+    return repository.findAll();
+  }
+
+  public TemplateExpression storeTemplate(String templateName, InputStream fileContents)
+      throws CTPException {
+    String stringValue = getStringFromInputStream(fileContents);
+    if (StringUtils.isEmpty(stringValue)) {
+      log.error(EXCEPTION_STORE_TEMPLATE);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, EXCEPTION_STORE_TEMPLATE);
+    }
+
+    TemplateExpression template = new TemplateExpression();
+    template.setContent(stringValue);
+    template.setName(templateName);
+    template.setDateModified(new Date());
+    template = repository.save(template);
+
+    configuration.clearTemplateCache();
+
+    return template;
+  }
+
+  public File file(
+      List<ActionRequestInstruction> actionRequestList, String templateName, String path)
+      throws CTPException {
+    File resultFile = new File(path);
+    Writer fileWriter = null;
+    try {
+      Template template = giveTemplate(templateName);
+      fileWriter = new FileWriter(resultFile);
+      template.process(buildDataModel(actionRequestList), fileWriter);
+    } catch (IOException e) {
+      log.error("IOException thrown while templating for file...", e.getMessage());
+      log.error("Stacktrace: ", e);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
+    } catch (TemplateException f) {
+      log.error("TemplateException thrown while templating for file...", f.getMessage());
+      log.error("Stacktrace: ", f);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
+    } finally {
+      if (fileWriter != null) {
+        try {
+          fileWriter.close();
+        } catch (IOException e) {
+          log.error("IOException thrown while closing the file writer...", e.getMessage());
+          log.error("Stacktrace: ", e);
+        }
+      }
+    }
+
+    return resultFile;
+  }
+
+  public ByteArrayOutputStream stream(
+      List<ActionRequestInstruction> actionRequestList, String templateName) throws CTPException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    Writer outputStreamWriter = null;
+    try {
+      Template template = giveTemplate(templateName);
+      outputStreamWriter = new OutputStreamWriter(outputStream);
+      template.process(buildDataModel(actionRequestList), outputStreamWriter);
+      outputStreamWriter.close();
+    } catch (IOException e) {
+      log.error("IOException thrown while templating for stream... {}", e.getMessage());
+      log.error("Stacktrace: ", e);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
+    } catch (TemplateException f) {
+      log.error("TemplateException thrown while templating for stream... {}", f.getMessage());
+      log.error("Stacktrace: ", f);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
+    } finally {
+      if (outputStreamWriter != null) {
+        try {
+          outputStreamWriter.close();
+        } catch (IOException e) {
+          log.error("IOException thrown while closing the output stream writer...", e.getMessage());
+          log.error("Stacktrace: ", e);
+        }
+      }
+    }
+
+    return outputStream;
+  }
 
   /**
-   * To retrieve a given Template
+   * This returns the FreeMarker template required for the transformation.
    *
-   * @param templateName the Template name to be retrieved
-   * @return the given Template
+   * @param templateName the FreeMarker template to use
+   * @return the FreeMarker template
+   * @throws IOException if issue creating the FreeMarker template
+   * @throws CTPException if problem getting Freemarker template with name given
    */
-  TemplateExpression retrieveTemplate(String templateName);
+  private Template giveTemplate(String templateName) throws CTPException, IOException {
+    log.debug("Entering giveMeTemplate with templateName {}", templateName);
+    Template template = configuration.getTemplate(templateName);
+    log.debug("template = {}", template);
+    if (template == null) {
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
+    }
+    return template;
+  }
 
   /**
-   * To retrieve all Templates
+   * This builds the data model required by FreeMarker
    *
-   * @return a list of Templates
+   * @param actionRequestList the list of action requests
+   * @return the data model map
    */
-  List<TemplateExpression> retrieveAllTemplates();
-
-  /**
-   * This produces a csv file for all our action requests.
-   *
-   * @param actionRequestList the list of action requests.
-   * @param templateName the FreeMarker template to use.
-   * @param path the full file path. An example is /tmp/csv/forPrinter.csv.
-   * @throws CTPException if problem creating file from template.
-   * @return the file.
-   */
-  File file(List<ActionRequestInstruction> actionRequestList, String templateName, String path)
-      throws CTPException;
-
-  /**
-   * This produces a stream for all our action requests.
-   *
-   * @param actionRequestList the list of action requests.
-   * @param templateName the FreeMarker template to use.
-   * @throws CTPException if problem creating stream from template.
-   * @return the stream.
-   */
-  ByteArrayOutputStream stream(
-      List<ActionRequestInstruction> actionRequestList, String templateName) throws CTPException;
+  private Map<String, Object> buildDataModel(List<ActionRequestInstruction> actionRequestList) {
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put("actionRequests", actionRequestList);
+    return result;
+  }
 }

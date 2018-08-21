@@ -4,80 +4,56 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
+import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 
-/** Service responsible for dealing with ActionRequests */
-public interface ActionRequestService {
-  /**
-   * To retrieve all ActionRequests
-   *
-   * @return a list of ActionRequests
-   */
-  List<ActionRequestInstruction> retrieveAllActionRequests();
+/** The implementation of ActionRequestService */
+@Service
+@Slf4j
+public class ActionRequestService {
 
-  /**
-   * To retrieve a given ActionRequest
-   *
-   * @param actionId the ActionRequest actionId to be retrieved
-   * @return the given ActionRequest
-   */
-  ActionRequestInstruction retrieveActionRequest(UUID actionId);
+  @Autowired private ActionRequestRepository repository;
 
-  /**
-   * Save an ActionRequest
-   *
-   * @param actionRequest the ActionRequest to save.
-   * @return the ActionRequest saved.
-   */
-  ActionRequestInstruction save(ActionRequestInstruction actionRequest);
+  public List<ActionRequestInstruction> retrieveAllActionRequests() {
+    return repository.findAll();
+  }
 
-  /**
-   * Retrieve all ActionRequests not sent for an actionType and exerciseRef.
-   *
-   * @param actionType actionType for which to retrieve ActionRequests.
-   * @param exerciseRef for which to retrieve ActionRequests.
-   * @return List of ActionRequests not sent to external services previously for actionType,
-   *     exerciseRef.
-   */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(
-      String actionType, String exerciseRef, String surveyRef);
+  public ActionRequestInstruction retrieveActionRequest(UUID actionId) {
+    return repository.findByActionId(actionId);
+  }
 
-  /**
-   * Return a list of distinct exerciseRefs
-   *
-   * @return a list of exerciseRefs.
-   */
-  List<String> retrieveExerciseRefs();
+  public ActionRequestInstruction save(final ActionRequestInstruction actionRequest) {
+    log.debug("Saving ActionRequest {}", actionRequest.getActionId());
+    return repository.save(actionRequest);
+  }
 
-  /**
-   * Return a list of distinct exerciseRefs with associated surveyRef
-   *
-   * @return a list of exerciseRefs with SurveyRef.
-   */
-  List<SurveyRefExerciseRef> retrieveDistinctExerciseRefsWithSurveyRef();
+  public List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRef(
+      String actionType, String exerciseRef, String surveyRef) {
+    return repository.findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(
+        actionType, exerciseRef, surveyRef);
+  }
 
-  /**
-   * Return a list of distinct actionTypes
-   *
-   * @return a list of actionTypes.
-   */
-  List<String> retrieveActionTypes();
+  public List<String> retrieveExerciseRefs() {
+    return repository.findAllExerciseRefs();
+  }
 
-  /**
-   * Update ActionRequest date sent for batch of actionIds.
-   *
-   * @param actionIds List of ActionRequest actionIds to update.
-   * @param dateSent to set on each ActionRequest.
-   * @return int of affected rows
-   */
-  int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent);
+  public List<SurveyRefExerciseRef> retrieveDistinctExerciseRefsWithSurveyRef() {
+    return repository.findDistinctSurveyAndExerciseRefs();
+  }
 
-  /**
-   * Retrieve actionIds where response required is true for batch of actionIds.
-   *
-   * @param actionIds ActionRequest actionIds to check for response required.
-   * @return actionIds of those where response required.
-   */
-  List<UUID> retrieveResponseRequiredByActionId(Set<UUID> actionIds);
+  public List<String> retrieveActionTypes() {
+    return repository.findAllActionType();
+  }
+
+  public int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent) {
+    return repository.updateDateSentByActionId(actionIds, dateSent);
+  }
+
+  public List<UUID> retrieveResponseRequiredByActionId(Set<UUID> actionIds) {
+    return repository.retrieveResponseRequiredByActionId(actionIds);
+  }
 }
