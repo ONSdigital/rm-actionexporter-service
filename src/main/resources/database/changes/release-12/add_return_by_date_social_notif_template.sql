@@ -7,7 +7,7 @@ ${(actionRequest.address.line1?trim)!}:' ||
 '${(actionRequest.address.townName?trim)!}:' ||
 '${(actionRequest.address.locality?trim)!}:' ||
 '${(actionRequest.iac?trim)!"null"}:' ||
-'${(actionRequest.surveyAbbreviation + actionRequest.address.sampleUnitRef)!"null"}:' ||
+'${(actionRequest.address.sampleUnitRef)!"null"}:' ||
 '${(actionRequest.returnByDate)!"null"}
 </#list>', datemodified = now()
 where templatenamepk = 'socialNotification';

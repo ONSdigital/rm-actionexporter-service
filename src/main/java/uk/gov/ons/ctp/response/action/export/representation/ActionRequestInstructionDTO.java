@@ -30,5 +30,4 @@ public class ActionRequestInstructionDTO {
   private Date dateStored;
   private Date dateSent;
   private Date returnBy;
-  private String surveyAbbreviation;
 }

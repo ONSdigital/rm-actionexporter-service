@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -112,7 +111,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
-      assertEquals(actionRequest.getSurveyAbbreviation() + actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -156,7 +155,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
-      assertEquals(actionRequest.getSurveyAbbreviation() + actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -215,9 +214,7 @@ public class TemplateServiceIT {
     actionRequest.setExerciseRef("exRef");
     actionRequest.setContact(new ActionContact());
     actionRequest.setEvents(new ActionEvent(Collections.singletonList("event1")));
-    actionRequest.setReturnByDate(
-        DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
-    actionRequest.setSurveyAbbreviation("LMS");
+    actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
 
     return actionRequest;
   }

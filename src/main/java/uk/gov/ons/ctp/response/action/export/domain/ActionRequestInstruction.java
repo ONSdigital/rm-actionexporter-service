@@ -105,7 +105,4 @@ public class ActionRequestInstruction {
 
   @Column(name = "returnbydate")
   private String returnByDate;
-
-  @Column(name = "surveyabbreviation")
-  private String surveyAbbreviation;
 }
