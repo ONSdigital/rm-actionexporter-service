@@ -2,6 +2,8 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -29,8 +30,8 @@ import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
  * freemarker.template.Configuration, clearTemplateCache, etc.
  */
 @Service
-@Slf4j
 public class TemplateService {
+  private static final Logger log = LoggerFactory.getLogger(TemplateService.class);
 
   public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE =
       "Could not find FreeMarker template.";
