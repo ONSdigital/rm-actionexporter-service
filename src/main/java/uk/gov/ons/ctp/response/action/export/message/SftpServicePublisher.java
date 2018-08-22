@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
@@ -8,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.Publisher;
@@ -32,8 +33,8 @@ import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
  * Integration flow for details of sftp outbound channel.
  */
 @MessageEndpoint
-@Slf4j
 public class SftpServicePublisher {
+  private static final Logger log = LoggerFactory.getLogger(SftpServicePublisher.class);
 
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
   private static final String ACTION_LIST = "list_actionIds";

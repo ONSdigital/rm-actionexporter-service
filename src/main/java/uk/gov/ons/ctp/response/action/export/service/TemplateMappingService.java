@@ -1,11 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -14,8 +15,8 @@ import uk.gov.ons.ctp.response.action.export.repository.TemplateMappingRepositor
 
 /** The implementation of the TemplateMappingService */
 @Service
-@Slf4j
 public class TemplateMappingService {
+  private static final Logger log = LoggerFactory.getLogger(TemplateMappingService.class);
 
   public static final String EXCEPTION_STORE_TEMPLATE_MAPPING =
       "Issue storing TemplateMapping. Appears to be empty.";
