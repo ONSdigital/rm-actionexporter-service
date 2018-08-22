@@ -1,11 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -28,8 +29,8 @@ import uk.gov.ons.ctp.response.action.export.service.TransformationService;
 
 /** This class will be responsible for the scheduling of export actions */
 @Component
-@Slf4j
 public class ExportScheduler implements HealthIndicator {
+  private static final Logger log = LoggerFactory.getLogger(ExportScheduler.class);
 
   private static final String DATE_FORMAT_IN_FILE_NAMES = "ddMMyyyy_HHmm";
   private static final String DISTRIBUTED_OBJECT_KEY_FILE_LATCH = "filelatch";
