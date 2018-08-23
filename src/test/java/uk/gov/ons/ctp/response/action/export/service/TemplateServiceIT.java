@@ -111,6 +111,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
       assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
@@ -156,8 +157,8 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
     } finally {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
