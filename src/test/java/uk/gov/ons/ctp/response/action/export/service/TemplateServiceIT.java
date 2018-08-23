@@ -5,6 +5,8 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import com.jcraft.jsch.ChannelSftp;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +51,8 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Slf4j
 public class TemplateServiceIT {
+  private static final Logger log = LoggerFactory.getLogger(TemplateServiceIT.class);
 
   @Autowired private AppConfig appConfig;
 

@@ -1,11 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -15,8 +16,8 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 
 /** The implementation of TransformationService */
 @Service
-@Slf4j
 public class TransformationService {
+  private static final Logger log = LoggerFactory.getLogger(TransformationService.class);
 
   @Autowired private TemplateService templateService;
 
