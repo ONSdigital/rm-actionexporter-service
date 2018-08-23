@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,8 +25,9 @@ import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 /** The REST endpoint controller for Templates. */
 @RestController
 @RequestMapping(value = "/templates", produces = "application/json")
-@Slf4j
 public class TemplateEndpoint {
+  private static final Logger log = LoggerFactory.getLogger(TemplateEndpoint.class);
+
   @Autowired private TemplateService templateService;
 
   @Qualifier("actionExporterBeanMapper")

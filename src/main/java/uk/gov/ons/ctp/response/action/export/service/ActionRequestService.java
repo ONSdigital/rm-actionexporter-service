@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
@@ -13,8 +14,8 @@ import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 
 /** The implementation of ActionRequestService */
 @Service
-@Slf4j
 public class ActionRequestService {
+  private static final Logger log = LoggerFactory.getLogger(ActionRequestService.class);
 
   @Autowired private ActionRequestRepository repository;
 
