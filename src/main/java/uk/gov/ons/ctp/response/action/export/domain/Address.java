@@ -41,12 +41,6 @@ public class Address {
   @Column(name = "address_line2")
   private String line2;
 
-  @Column(name = "address_line3")
-  private String line3;
-
-  @Column(name = "address_line4")
-  private String line4;
-
   private String locality;
 
   private String townName;
