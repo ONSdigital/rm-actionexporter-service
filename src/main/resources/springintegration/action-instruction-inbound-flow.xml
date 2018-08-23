@@ -55,8 +55,7 @@
         </property>
         <property name="retryStateGenerator"> <!-- Important to make it a Stateful Retry -->
             <bean class="org.springframework.integration.handler.advice.SpelExpressionRetryStateGenerator">
-                <constructor-arg value="payload.actionRequest.actionId + '|' + payload.actionRequest.contact.emailAddress"/>
-                <!-- Ensure spel expression is unique otherwise messages pertaining to this key will not be retried after {maxInterval} times -->
+                <constructor-arg value="headers.ID"/>
             </bean>
         </property>
         <property name="retryTemplate" ref="retryTemplate" />
