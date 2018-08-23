@@ -165,14 +165,14 @@ public class ExportScheduler implements HealthIndicator {
               String fileNameWithExerciseRef = fileName + "_" + surveyRefAndexerciseRef;
               log.with("filename_with_exercise_ref", fileNameWithExerciseRef)
                   .with("file_locked", actionExportLockManager.isLocked(fileNameWithExerciseRef))
-                  .info("Lock test");
+                  .debug("Lock test");
 
               if (!actionExportLockManager.isLocked(fileNameWithExerciseRef)
                   && actionExportLockManager.lock(fileNameWithExerciseRef)) {
 
                 log.with("filename_with_exercise_ref", fileNameWithExerciseRef)
                     .with("file_locked", actionExportLockManager.isLocked(fileNameWithExerciseRef))
-                    .info("Lock test");
+                    .debug("Lock test");
                 ExportMessage message = new ExportMessage();
 
                 // process Collection of templateMappings

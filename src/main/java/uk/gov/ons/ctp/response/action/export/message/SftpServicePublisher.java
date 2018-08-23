@@ -99,7 +99,7 @@ public class SftpServicePublisher {
     exportReportService.save(exportReport);
 
     log.with("file_name", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE))
-        .info("Sftp transfer complete");
+        .debug("Sftp transfer complete");
     exportInfo.addOutcome(
         (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE)
             + " transferred with "

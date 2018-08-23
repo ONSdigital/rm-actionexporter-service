@@ -128,7 +128,6 @@ public class ActionExporterApplication implements CommandLineRunner {
    * @param args These are the optional command line arguments
    */
   public static void main(final String[] args) {
-    LoggingConfigs.setCurrent(LoggingConfigs.getCurrent().useJson());
 
     SpringApplication.run(ActionExporterApplication.class, args);
   }

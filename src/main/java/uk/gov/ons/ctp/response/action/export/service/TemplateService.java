@@ -136,7 +136,9 @@ public class TemplateService {
   private Template giveTemplate(String templateName) throws CTPException, IOException {
     log.with("template_name", templateName).debug("Entering giveMeTemplate");
     Template template = configuration.getTemplate(templateName);
-    log.debug("template", template);
+
+    log.debug("Received template");
+
     if (template == null) {
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
