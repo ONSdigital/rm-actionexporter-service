@@ -96,7 +96,7 @@ public class ExportScheduler implements HealthIndicator {
     storedActionTypes.forEach(
         (actionType) -> {
           if (!mappedActionTypes.contains(actionType)) {
-            log.warn("No mapping for actionType : {}.", actionType);
+            log.with("action_type", actionType).warn("No mapping for actionType");
           }
         });
 
@@ -117,13 +117,13 @@ public class ExportScheduler implements HealthIndicator {
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
-        log.error(
-            "Scheduled run error countdownlatch timed out, should be {} instances running",
-            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+        log.with(
+                "instances_running",
+                actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+            .error("Scheduled run error countdownlatch timed out, should be instances running");
       }
     } catch (InterruptedException e) {
-      log.error("Scheduled run error waiting for countdownlatch: {}", e.getMessage());
-      log.error("Stacktrace: ", e);
+      log.error("Scheduled run error waiting for countdownlatch", e);
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
@@ -163,18 +163,16 @@ public class ExportScheduler implements HealthIndicator {
         .forEach(
             (fileName, templatemappings) -> {
               String fileNameWithExerciseRef = fileName + "_" + surveyRefAndexerciseRef;
-              log.info(
-                  "Lock test {} {}",
-                  fileNameWithExerciseRef,
-                  actionExportLockManager.isLocked(fileNameWithExerciseRef));
+              log.with("filename_with_exercise_ref", fileNameWithExerciseRef)
+                  .with("file_locked", actionExportLockManager.isLocked(fileNameWithExerciseRef))
+                  .info("Lock test");
 
               if (!actionExportLockManager.isLocked(fileNameWithExerciseRef)
                   && actionExportLockManager.lock(fileNameWithExerciseRef)) {
 
-                log.info(
-                    "Lock file {} {}",
-                    fileNameWithExerciseRef,
-                    actionExportLockManager.isLocked(fileNameWithExerciseRef));
+                log.with("filename_with_exercise_ref", fileNameWithExerciseRef)
+                    .with("file_locked", actionExportLockManager.isLocked(fileNameWithExerciseRef))
+                    .info("Lock test");
                 ExportMessage message = new ExportMessage();
 
                 // process Collection of templateMappings
@@ -186,17 +184,16 @@ public class ExportScheduler implements HealthIndicator {
                               surveyRefExerciseRefTuple.getExerciseRef(),
                               surveyRefExerciseRefTuple.getSurveyRef());
                       if (requests.isEmpty()) {
-                        log.info(
-                            "No requests for actionType {}, surveyRef {} exerciseRef {} to process",
-                            templateMapping.getActionType(),
-                            surveyRefExerciseRefTuple.getExerciseRef(),
-                            surveyRefExerciseRefTuple.getSurveyRef());
+                        log.with("action_type", templateMapping.getActionType())
+                            .with("survey_ref", surveyRefExerciseRefTuple.getExerciseRef())
+                            .with("exercise_ref", surveyRefExerciseRefTuple.getSurveyRef())
+                            .info(
+                                "No requests for actionType, surveyRef and exerciseRef to process");
                       } else {
                         try {
                           transformationService.processActionRequests(message, requests);
                         } catch (CTPException e) {
-                          log.error("Scheduled run error transforming ActionRequests");
-                          log.error("Stacktrace: ", e);
+                          log.error("Scheduled run error transforming ActionRequests", e);
                         }
                       }
                     });
@@ -248,13 +245,13 @@ public class ExportScheduler implements HealthIndicator {
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH)) {
-        log.error(
-            "Report run error countdownlatch timed out, should be {} instances running",
-            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT));
+        log.with(
+                "instances_running",
+                actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+            .error("Report run error countdownlatch timed out, should be instances running");
       }
     } catch (InterruptedException e) {
-      log.error("Report run error waiting for countdownlatch: {}", e.getMessage());
-      log.error("Stacktrace: ", e);
+      log.error("Report run error waiting for countdownlatch", e);
     } finally {
       actionExportLockManager.unlock(DISTRIBUTED_OBJECT_KEY_REPORT);
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_REPORT_LATCH);

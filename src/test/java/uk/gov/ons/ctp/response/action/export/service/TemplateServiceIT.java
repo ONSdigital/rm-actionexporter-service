@@ -183,7 +183,7 @@ public class TemplateServiceIT {
             .filter(f -> f.getFilename().endsWith(".csv"))
             .min(sortByModifiedTimeDescending)
             .orElseThrow(() -> new RuntimeException("No file on SFTP"));
-    log.info("Found latest file={}", latestFile.getFilename());
+    log.with("latest_file", latestFile.getFilename()).info("Found latest file");
     return sftpPath + latestFile.getFilename();
   }
 

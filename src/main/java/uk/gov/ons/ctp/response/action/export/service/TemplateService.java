@@ -79,20 +79,17 @@ public class TemplateService {
       fileWriter = new FileWriter(resultFile);
       template.process(buildDataModel(actionRequestList), fileWriter);
     } catch (IOException e) {
-      log.error("IOException thrown while templating for file...", e.getMessage());
-      log.error("Stacktrace: ", e);
+      log.error("IOException thrown while templating for file...", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
-      log.error("TemplateException thrown while templating for file...", f.getMessage());
-      log.error("Stacktrace: ", f);
+      log.error("TemplateException thrown while templating for file...", f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (fileWriter != null) {
         try {
           fileWriter.close();
         } catch (IOException e) {
-          log.error("IOException thrown while closing the file writer...", e.getMessage());
-          log.error("Stacktrace: ", e);
+          log.error("IOException thrown while closing the file writer...", e);
         }
       }
     }
@@ -110,20 +107,17 @@ public class TemplateService {
       template.process(buildDataModel(actionRequestList), outputStreamWriter);
       outputStreamWriter.close();
     } catch (IOException e) {
-      log.error("IOException thrown while templating for stream... {}", e.getMessage());
-      log.error("Stacktrace: ", e);
+      log.error("IOException thrown while templating for stream...", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
     } catch (TemplateException f) {
-      log.error("TemplateException thrown while templating for stream... {}", f.getMessage());
-      log.error("Stacktrace: ", f);
+      log.error("TemplateException thrown while templating for stream... ", f);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (outputStreamWriter != null) {
         try {
           outputStreamWriter.close();
         } catch (IOException e) {
-          log.error("IOException thrown while closing the output stream writer...", e.getMessage());
-          log.error("Stacktrace: ", e);
+          log.error("IOException thrown while closing the output stream writer...", e);
         }
       }
     }
@@ -140,9 +134,9 @@ public class TemplateService {
    * @throws CTPException if problem getting Freemarker template with name given
    */
   private Template giveTemplate(String templateName) throws CTPException, IOException {
-    log.debug("Entering giveMeTemplate with templateName {}", templateName);
+    log.with("template_name", templateName).debug("Entering giveMeTemplate");
     Template template = configuration.getTemplate(templateName);
-    log.debug("template = {}", template);
+    log.debug("template", template);
     if (template == null) {
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }

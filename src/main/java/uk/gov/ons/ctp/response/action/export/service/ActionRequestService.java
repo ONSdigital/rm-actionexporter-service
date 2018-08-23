@@ -28,7 +28,7 @@ public class ActionRequestService {
   }
 
   public ActionRequestInstruction save(final ActionRequestInstruction actionRequest) {
-    log.debug("Saving ActionRequest {}", actionRequest.getActionId());
+    log.with("action_request", actionRequest.getActionId()).debug("Saving ActionRequest");
     return repository.save(actionRequest);
   }
 

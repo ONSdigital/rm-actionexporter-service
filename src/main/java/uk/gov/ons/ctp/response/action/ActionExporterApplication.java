@@ -6,6 +6,7 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -44,7 +45,7 @@ import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 @EnableCaching
 @EnableScheduling
 @ImportResource("springintegration/main.xml")
-public class ActionExporterApplication {
+public class ActionExporterApplication implements CommandLineRunner {
 
   public static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
 
@@ -130,5 +131,12 @@ public class ActionExporterApplication {
     LoggingConfigs.setCurrent(LoggingConfigs.getCurrent().useJson());
 
     SpringApplication.run(ActionExporterApplication.class, args);
+  }
+
+  @Override
+  public void run(String... args) throws Exception {
+    if (appConfig.getLogging().isUseJson()) {
+      LoggingConfigs.setCurrent(LoggingConfigs.getCurrent().useJson());
+    }
   }
 }

@@ -20,7 +20,7 @@ public class FreeMarkerTemplateLoader implements TemplateLoader {
 
   @Override
   public Object findTemplateSource(String name) throws IOException {
-    log.debug("Retrieving template with name {}", name);
+    log.with("template_name", name).debug("Retrieving template");
     return templateRepository.findOne(name);
   }
 
@@ -28,7 +28,7 @@ public class FreeMarkerTemplateLoader implements TemplateLoader {
   public long getLastModified(Object templateSource) {
     TemplateExpression template = (TemplateExpression) templateSource;
     String name = template.getName();
-    log.debug("Retrieving last modified time for template with name {}", name);
+    log.with("template_name", name).debug("Retrieving last modified time for template");
     template = templateRepository.findOne(name);
     return template.getDateModified().getTime();
   }
