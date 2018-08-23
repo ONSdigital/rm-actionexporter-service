@@ -7,6 +7,6 @@ ${(actionRequest.address.line1?trim)!}:' ||
 '${(actionRequest.address.townName?trim)!}:' ||
 '${(actionRequest.address.locality?trim)!}:' ||
 '${(actionRequest.address.country?trim)!}:' ||
-'${(actionRequest.address.sampleUnitRef)!"null"}:
+'${(actionRequest.address.sampleUnitRef)!"null"}
 </#list>', datemodified = now()
 where templatenamepk = 'socialPreNotification';
