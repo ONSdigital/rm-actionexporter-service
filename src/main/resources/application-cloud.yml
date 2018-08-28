@@ -14,7 +14,7 @@ logging:
     org.springframework.retry: DEBUG
     org.springframework.integration.handler.advice: DEBUG
     org.springframework.context.annotation.ConfigurationClassPostProcessor: ERROR
-  profile: DEV
+  profile: CLOUD
   useJson: true
 liquibase:
   user: ${cloud.services.postgresql.connection.username}
