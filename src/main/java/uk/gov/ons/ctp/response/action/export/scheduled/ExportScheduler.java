@@ -67,9 +67,10 @@ public class ExportScheduler implements HealthIndicator {
   @PostConstruct
   public void init() {
     actionExportInstanceManager.incrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
-    log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
-            .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
-            .info("instance(s) running");
+    log.with(
+            DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+        .info("instance(s) running");
   }
 
   /** Clean up scheduler on bean destruction */
@@ -78,9 +79,10 @@ public class ExportScheduler implements HealthIndicator {
     actionExportInstanceManager.decrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
     // Make sure no locks if interrupted in middle of run
     actionExportLockManager.unlockInstanceLocks();
-    log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
-            .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
-            .info("instance(s) running");
+    log.with(
+            DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+            actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+        .info("instance(s) running");
   }
 
   /** Carry out scheduled actions according to configured cron expression */
@@ -125,9 +127,10 @@ public class ExportScheduler implements HealthIndicator {
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
-              .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
-              .info("instance(s) running");
+      log.with(
+              DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+              actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+          .info("instance(s) running");
     }
 
     if (!createReport()) {
