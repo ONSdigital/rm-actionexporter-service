@@ -67,10 +67,9 @@ public class ExportScheduler implements HealthIndicator {
   @PostConstruct
   public void init() {
     actionExportInstanceManager.incrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
-    log.info(
-        "{} {} instance/s running",
-        actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
-        DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
+    log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
+            .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+            .info("instance(s) running");
   }
 
   /** Clean up scheduler on bean destruction */
@@ -79,10 +78,9 @@ public class ExportScheduler implements HealthIndicator {
     actionExportInstanceManager.decrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
     // Make sure no locks if interrupted in middle of run
     actionExportLockManager.unlockInstanceLocks();
-    log.info(
-        "{} {} instance/s running",
-        actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
-        DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
+    log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
+            .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+            .info("instance(s) running");
   }
 
   /** Carry out scheduled actions according to configured cron expression */
@@ -118,7 +116,7 @@ public class ExportScheduler implements HealthIndicator {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
         log.with(
-                "instances_running",
+                DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
                 actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
             .error("Scheduled run error countdownlatch timed out, should be instances running");
       }
@@ -127,10 +125,9 @@ public class ExportScheduler implements HealthIndicator {
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      log.info(
-          "{} {} instance/s running",
-          actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT),
-          DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
+      log.with(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT, actionExportInstanceManager
+              .getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
+              .info("instance(s) running");
     }
 
     if (!createReport()) {
