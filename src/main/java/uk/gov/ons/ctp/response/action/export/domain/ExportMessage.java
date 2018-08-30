@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Representation of a message being sent. */
@@ -19,8 +20,8 @@ import net.sourceforge.cobertura.CoverageIgnore;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Slf4j
 public class ExportMessage {
+  private static final Logger log = LoggerFactory.getLogger(ExportMessage.class);
 
   private Map<String, List<UUID>> actionRequestIds = new HashMap<String, List<UUID>>();
   private Map<String, ByteArrayOutputStream> outputStreams =

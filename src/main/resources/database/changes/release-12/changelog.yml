@@ -1,0 +1,41 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 12-1
+      author: Damien Lloyd
+      changes:
+        - sqlFile:
+            comment: Add return by date to social notification template & remove redundant fields
+            path: add_return_by_date_social_notif_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 12-2
+      author: Damien Lloyd
+      changes:
+        - sqlFile:
+            comment: Add country field to social pre-notification template & remove redundant fields
+            path: add_country_field_social_pre_notif_template.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 12-3
+      author: Damien Lloyd
+      changes:
+      - sqlFile:
+          comment: Add columns to action request
+          path: add_columns_action_request.sql
+          relativeToChangelogFile: true
+          splitStatements: false
+
+  - changeSet:
+      id: 12-4
+      author: Adam Hawtin
+      changes:
+      - sqlFile:
+          comment: Drop redundant address lines 3 and 4 from address table
+          path: remove_address_line_3_and_4_columns.sql
+          relativeToChangelogFile: true
+          splitStatements: false

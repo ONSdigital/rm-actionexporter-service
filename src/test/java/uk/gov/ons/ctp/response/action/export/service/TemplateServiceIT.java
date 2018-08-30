@@ -5,12 +5,16 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import com.jcraft.jsch.ChannelSftp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +51,8 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Slf4j
 public class TemplateServiceIT {
+  private static final Logger log = LoggerFactory.getLogger(TemplateServiceIT.class);
 
   @Autowired private AppConfig appConfig;
 
@@ -105,13 +108,13 @@ public class TemplateServiceIT {
       assertEquals("\n", parser.getFirstEndOfLine());
       assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
       assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
-      assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
       assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
       assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
@@ -150,12 +153,11 @@ public class TemplateServiceIT {
       Iterator<String> templateRow = parser.iterator().next().iterator();
       assertEquals("\n", parser.getFirstEndOfLine());
       assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
-      assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
-      assertEquals(actionRequest.getAddress().getLine3(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getLine4(), templateRow.next());
+      assertThat(templateRow.next(), isEmptyString()); // Line 2 should be empty
       assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -190,8 +192,8 @@ public class TemplateServiceIT {
     ActionAddress actionAddress = new ActionAddress();
     actionAddress.setSampleUnitRef("sampleUR");
     actionAddress.setLine1("Prem1");
-    actionAddress.setLine3("Prem3");
-    actionAddress.setLine4("Prem4");
+    actionAddress.setCountry("E");
+
     actionAddress.setPostcode("postCode");
     actionAddress.setTownName("postTown");
     actionAddress.setLocality("locality");
@@ -214,6 +216,7 @@ public class TemplateServiceIT {
     actionRequest.setExerciseRef("exRef");
     actionRequest.setContact(new ActionContact());
     actionRequest.setEvents(new ActionEvent(Collections.singletonList("event1")));
+    actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
 
     return actionRequest;
   }

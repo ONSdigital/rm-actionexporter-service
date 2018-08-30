@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,8 +25,8 @@ import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 
 /** Service implementation responsible for persisting action export requests */
 @Service
-@Slf4j
 public class ActionExportService {
+  private static final Logger log = LoggerFactory.getLogger(ActionExportService.class);
 
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
 
