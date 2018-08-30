@@ -78,12 +78,9 @@ public class TemplateService {
       Template template = giveTemplate(templateName);
       fileWriter = new FileWriter(resultFile);
       template.process(buildDataModel(actionRequestList), fileWriter);
-    } catch (IOException e) {
-      log.error("IOException thrown while templating for file...", e);
+    } catch (IOException | TemplateException e) {
+      log.error("Exception thrown while templating for file...", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } catch (TemplateException f) {
-      log.error("TemplateException thrown while templating for file...", f);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (fileWriter != null) {
         try {
@@ -106,12 +103,9 @@ public class TemplateService {
       outputStreamWriter = new OutputStreamWriter(outputStream);
       template.process(buildDataModel(actionRequestList), outputStreamWriter);
       outputStreamWriter.close();
-    } catch (IOException e) {
-      log.error("IOException thrown while templating for stream...", e);
+    } catch (IOException | TemplateException e) {
+      log.error("Exception thrown while templating for stream...", e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } catch (TemplateException f) {
-      log.error("TemplateException thrown while templating for stream... ", f);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, f.getMessage());
     } finally {
       if (outputStreamWriter != null) {
         try {

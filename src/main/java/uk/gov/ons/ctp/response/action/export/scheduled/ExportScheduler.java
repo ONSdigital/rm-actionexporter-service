@@ -67,8 +67,9 @@ public class ExportScheduler implements HealthIndicator {
   @PostConstruct
   public void init() {
     actionExportInstanceManager.incrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
-    log.with(
-            DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+    log.with("instance_key", DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT)
+        .with(
+            "instance_count",
             actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
         .info("instance(s) running");
   }
@@ -79,8 +80,9 @@ public class ExportScheduler implements HealthIndicator {
     actionExportInstanceManager.decrementInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT);
     // Make sure no locks if interrupted in middle of run
     actionExportLockManager.unlockInstanceLocks();
-    log.with(
-            DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+    log.with("instance_key", DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT)
+        .with(
+            "instance_count",
             actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
         .info("instance(s) running");
   }
@@ -117,8 +119,9 @@ public class ExportScheduler implements HealthIndicator {
     try {
       actionExportLatchManager.countDown(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
       if (!actionExportLatchManager.awaitCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH)) {
-        log.with(
-                DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+        log.with("instance_key", DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT)
+            .with(
+                "instance_count",
                 actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
             .error("Scheduled run error countdownlatch timed out, should be instances running");
       }
@@ -127,8 +130,9 @@ public class ExportScheduler implements HealthIndicator {
     } finally {
       actionExportLockManager.unlockInstanceLocks();
       actionExportLatchManager.deleteCountDownLatch(DISTRIBUTED_OBJECT_KEY_FILE_LATCH);
-      log.with(
-              DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT,
+      log.with("instance_key", DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT)
+          .with(
+              "instance_count",
               actionExportInstanceManager.getInstanceCount(DISTRIBUTED_OBJECT_KEY_INSTANCE_COUNT))
           .info("instance(s) running");
     }
