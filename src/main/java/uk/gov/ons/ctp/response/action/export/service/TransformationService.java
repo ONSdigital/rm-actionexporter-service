@@ -78,11 +78,10 @@ public class TransformationService {
             } catch (CTPException e) {
               // catch failure for templateService stream operation for that actionType but try
               // others, if any.
-              log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
-              log.error("Stacktrace: ", e);
+              log.with("action_type", actionType).error("Error generating actionType", e);
             }
           } else {
-            log.warn("No mapping for actionType : {}.", actionType);
+            log.with("action_type", actionType).warn("No mapping for actionType");
           }
         });
     return message;

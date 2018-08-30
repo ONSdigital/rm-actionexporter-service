@@ -41,7 +41,7 @@ public class TemplateMappingService {
       throws CTPException {
     TemplateMapping templateMapping = repository.findOne(actionType);
     if (templateMapping == null) {
-      log.error("No template mapping for actionType {} found.", actionType);
+      log.with("action_type", actionType).error("No template mapping for actionType found.");
       throw new CTPException(
           CTPException.Fault.RESOURCE_NOT_FOUND,
           String.format("%s %s", EXCEPTION_RETRIEVING_TEMPLATE_MAPPING, actionType));

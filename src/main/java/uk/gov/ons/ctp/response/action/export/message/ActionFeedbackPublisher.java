@@ -26,7 +26,8 @@ public class ActionFeedbackPublisher {
    * @param actionFeedback the ActionFeedback to publish.
    */
   public void sendActionFeedback(ActionFeedback actionFeedback) {
-    log.debug("Entering sendActionFeedback for actionId {} ", actionFeedback.getActionId());
+    log.with("action_id", actionFeedback.getActionId())
+        .debug("Entering sendActionFeedback for actionId ");
     rabbitTemplate.convertAndSend(actionFeedback);
   }
 }
