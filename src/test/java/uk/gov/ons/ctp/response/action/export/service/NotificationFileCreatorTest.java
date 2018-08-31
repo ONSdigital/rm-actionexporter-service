@@ -93,7 +93,24 @@ public class NotificationFileCreatorTest {
   }
 
   @Test
-  public void shouldPublishMessageWhenFileUploaded() {}
+  public void shouldPublishMessageWhenFileUploaded() throws IOException {
+    // Given
+    Date now = new Date();
+    given(clock.millis()).willReturn(now.getTime());
+    ExportMessage message = new ExportMessage();
+    message.getActionRequestIds().put("BSNOT", Collections.singletonList(UUID.randomUUID()));
+    message.getOutputStreams().put("BSNOT", new ByteArrayOutputStream());
+    given(transformationService.processActionRequests(any())).willReturn(message);
+    SurveyRefExerciseRef surveyRefExerciseRef = new SurveyRefExerciseRef("1", "1");
+
+    // When
+    notificationFileCreator.publishNotificationFile(
+        surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "filename_1_1");
+
+    // Then
+    verify(eventPublisher).publishEvent("Print file");
+
+  }
 
   private static class ByteArrayOutputStreamMatcher extends ArgumentMatcher<ByteArrayOutputStream> {
 
