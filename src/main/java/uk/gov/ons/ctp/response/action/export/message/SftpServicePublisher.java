@@ -22,9 +22,9 @@ import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
@@ -42,7 +42,7 @@ public class SftpServicePublisher {
 
   @Autowired private ActionRequestService actionRequestService;
 
-  @Autowired private ExportReportService exportReportService;
+  @Autowired private ExportReportRepository exportReportRepository;
 
   @Autowired private ActionFeedbackPublisher actionFeedbackPubl;
 
@@ -96,7 +96,7 @@ public class SftpServicePublisher {
             now,
             true,
             false);
-    exportReportService.save(exportReport);
+    exportReportRepository.save(exportReport);
 
     log.with("file_name", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE))
         .debug("Sftp transfer complete");
@@ -122,7 +122,7 @@ public class SftpServicePublisher {
         fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
     ExportReport exportReport =
         new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
-    exportReportService.save(exportReport);
+    exportReportRepository.save(exportReport);
   }
 
   /**

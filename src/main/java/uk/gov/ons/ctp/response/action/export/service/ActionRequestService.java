@@ -46,10 +46,6 @@ public class ActionRequestService {
     return repository.findDistinctSurveyAndExerciseRefs();
   }
 
-  public List<String> retrieveActionTypes() {
-    return repository.findAllActionType();
-  }
-
   public int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent) {
     return repository.updateDateSentByActionId(actionIds, dateSent);
   }

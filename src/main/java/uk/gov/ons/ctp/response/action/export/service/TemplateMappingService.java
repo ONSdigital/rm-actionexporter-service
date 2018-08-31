@@ -68,8 +68,4 @@ public class TemplateMappingService {
             });
     return mappings;
   }
-
-  public List<String> retrieveActionTypes() {
-    return repository.findAllActionType();
-  }
 }
