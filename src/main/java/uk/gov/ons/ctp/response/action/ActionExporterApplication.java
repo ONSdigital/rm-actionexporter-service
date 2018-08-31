@@ -128,7 +128,6 @@ public class ActionExporterApplication {
    * @param args These are the optional command line arguments
    */
   public static void main(final String[] args) {
-
     SpringApplication.run(ActionExporterApplication.class, args);
   }
 
