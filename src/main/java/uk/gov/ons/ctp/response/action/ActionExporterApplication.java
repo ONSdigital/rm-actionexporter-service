@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.response.action;
 
 import com.godaddy.logging.LoggingConfigs;
+import javax.annotation.PostConstruct;
 import net.sourceforge.cobertura.CoverageIgnore;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -45,7 +45,7 @@ import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 @EnableCaching
 @EnableScheduling
 @ImportResource("springintegration/main.xml")
-public class ActionExporterApplication implements CommandLineRunner {
+public class ActionExporterApplication {
 
   public static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
 
@@ -132,8 +132,8 @@ public class ActionExporterApplication implements CommandLineRunner {
     SpringApplication.run(ActionExporterApplication.class, args);
   }
 
-  @Override
-  public void run(String... args) throws Exception {
+  @PostConstruct
+  public void initJsonLogging() {
     if (appConfig.getLogging().isUseJson()) {
       LoggingConfigs.setCurrent(LoggingConfigs.getCurrent().useJson());
     }
