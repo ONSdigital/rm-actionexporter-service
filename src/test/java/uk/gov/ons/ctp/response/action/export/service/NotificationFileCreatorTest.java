@@ -1,15 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
-import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
-import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
-import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static uk.gov.ons.ctp.response.action.export.ByteArraySteamHelper.baosWithData;
+import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,14 +17,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.ByteArraySteamHelper.baosWithData;
-import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
+import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
+import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationFileCreatorTest {
