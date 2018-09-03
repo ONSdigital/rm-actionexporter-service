@@ -31,7 +31,6 @@ public class NotificationFileCreator {
 
   private final Clock clock;
 
-  @Autowired
   public NotificationFileCreator(
       ActionRequestService actionRequestService,
       TransformationService transformationService,
