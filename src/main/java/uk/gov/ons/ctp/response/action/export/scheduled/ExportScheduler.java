@@ -2,6 +2,8 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.util.List;
+import java.util.function.BiConsumer;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
@@ -10,9 +12,6 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
-
-import java.util.List;
-import java.util.function.BiConsumer;
 
 /** This class will be responsible for the scheduling of export actions */
 @Component
@@ -62,9 +61,7 @@ public class ExportScheduler {
         .forEach(publishFile(surveyRefExerciseRef, surveyRefAndExerciseRef));
   }
 
-  /**
-   * Lock on file being created so only one instance can write to an SFTP file.
-   */
+  /** Lock on file being created so only one instance can write to an SFTP file. */
   private BiConsumer<String, List<TemplateMapping>> publishFile(
       final SurveyRefExerciseRef surveyRefExerciseRef, final String surveyRefAndExerciseRef) {
     return (fileName, templateMappings) -> {

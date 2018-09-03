@@ -11,6 +11,7 @@ import static uk.gov.ons.ctp.response.action.export.service.NotificationFileCrea
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,9 @@ import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationFileCreatorTest {
 
+  private static final SimpleDateFormat FILENAME_DATE_FORMAT =
+      new SimpleDateFormat("ddMMyyyy_HHmm");
+
   @Mock private Clock clock;
   @Mock private SftpServicePublisher sftpService;
   @Mock private ActionRequestService actionRequestService;
@@ -40,6 +44,31 @@ public class NotificationFileCreatorTest {
 
   @Test
   public void shouldCreateNotificationFile() throws IOException {
+    // Given
+    Date now = new Date();
+    given(clock.millis()).willReturn(now.getTime());
+    ExportMessage message = new ExportMessage();
+    UUID first = UUID.randomUUID();
+    ByteArrayOutputStream data = baosWithData("data");
+    message.getActionRequestIds().put("BSNOT", Collections.singletonList(first));
+    message.getOutputStreams().put("BSNOT", data);
+    given(transformationService.processActionRequests(any())).willReturn(message);
+    SurveyRefExerciseRef surveyRefExerciseRef = new SurveyRefExerciseRef("1", "1");
+
+    // When
+    notificationFileCreator.publishNotificationFile(
+        surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "filename_1_1");
+
+    // Then
+    List<String> ids = Collections.singletonList(first.toString());
+    String filename = String.format("filename_1_1_%s.csv", FILENAME_DATE_FORMAT.format(now));
+    verify(sftpService)
+        .sendMessage(
+            any(), eq(ids), argThat(new ByteArrayOutputStreamMatcher(data.toString())));
+  }
+
+  @Test
+  public void shouldHaveFilenameInCorrectFormatWithddMMyyyy_HHmmDateTime() throws IOException {
     // Given
     Date now = new Date();
     given(clock.millis()).willReturn(now.getTime());
@@ -109,7 +138,6 @@ public class NotificationFileCreatorTest {
 
     // Then
     verify(eventPublisher).publishEvent("Print file");
-
   }
 
   private static class ByteArrayOutputStreamMatcher extends ArgumentMatcher<ByteArrayOutputStream> {

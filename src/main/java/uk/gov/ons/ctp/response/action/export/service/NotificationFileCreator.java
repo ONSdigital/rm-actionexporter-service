@@ -2,10 +2,6 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import java.text.SimpleDateFormat;
-import java.time.Clock;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
@@ -14,12 +10,17 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.util.List;
+
 @Service
 public class NotificationFileCreator {
 
   private static final Logger log = LoggerFactory.getLogger(NotificationFileCreator.class);
 
-  static final SimpleDateFormat FILENAME_DATE_FORMAT = new SimpleDateFormat("ddMMyyyy_HHmm");
+  private static final SimpleDateFormat FILENAME_DATE_FORMAT =
+      new SimpleDateFormat("ddMMyyyy_HHmm");
 
   private final ActionRequestService actionRequestService;
 
