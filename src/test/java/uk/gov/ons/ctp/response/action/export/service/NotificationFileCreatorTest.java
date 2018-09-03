@@ -1,23 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.ByteArraySteamHelper.baosWithData;
-import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
-import static uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator.FILENAME_DATE_FORMAT;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.Clock;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
@@ -28,6 +10,24 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static uk.gov.ons.ctp.response.action.export.ByteArraySteamHelper.baosWithData;
+import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationFileCreatorTest {
@@ -63,8 +63,7 @@ public class NotificationFileCreatorTest {
     List<String> ids = Collections.singletonList(first.toString());
     String filename = String.format("filename_1_1_%s.csv", FILENAME_DATE_FORMAT.format(now));
     verify(sftpService)
-        .sendMessage(
-            any(), eq(ids), argThat(new ByteArrayOutputStreamMatcher(data.toString())));
+        .sendMessage(any(), eq(ids), argThat(new ByteArrayOutputStreamMatcher(data.toString())));
   }
 
   @Test
