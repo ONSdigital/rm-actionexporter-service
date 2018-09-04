@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
@@ -86,6 +87,9 @@ public class TemplateServiceIT {
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
 
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
@@ -93,12 +97,10 @@ public class TemplateServiceIT {
         actionInstructionToXmlString(actionInstruction));
 
     // When
-    BlockingQueue<String> queue =
-        simpleMessageListener.listen(
-            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-    queue.take();
+    String message = queue.take();
 
     // Then
+    assertThat(message, containsString("SOCIALNOT"));
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
@@ -128,6 +130,9 @@ public class TemplateServiceIT {
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
 
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
@@ -135,12 +140,10 @@ public class TemplateServiceIT {
         actionInstructionToXmlString(actionInstruction));
 
     // When
-    BlockingQueue<String> queue =
-        simpleMessageListener.listen(
-            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-    queue.take();
+    String message = queue.take();
 
     // Then
+    assertThat(message, containsString("SOCIALPRENOT"));
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 

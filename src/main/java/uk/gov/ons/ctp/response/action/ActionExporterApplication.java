@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.response.action;
 
 import com.godaddy.logging.LoggingConfigs;
+import java.time.Clock;
 import javax.annotation.PostConstruct;
 import net.sourceforge.cobertura.CoverageIgnore;
 import org.redisson.Redisson;
@@ -22,8 +23,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.gov.ons.ctp.common.distributed.DistributedInstanceManager;
 import uk.gov.ons.ctp.common.distributed.DistributedInstanceManagerRedissonImpl;
-import uk.gov.ons.ctp.common.distributed.DistributedLatchManager;
-import uk.gov.ons.ctp.common.distributed.DistributedLatchManagerRedissonImpl;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
 import uk.gov.ons.ctp.common.distributed.DistributedLockManagerRedissonImpl;
 import uk.gov.ons.ctp.common.error.RestExceptionHandler;
@@ -60,18 +59,6 @@ public class ActionExporterApplication {
   @Bean
   public DistributedInstanceManager actionExportInstanceManager(RedissonClient redissonClient) {
     return new DistributedInstanceManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient);
-  }
-
-  /**
-   * Bean used to access Distributed Latch Manager
-   *
-   * @param redissonClient Redisson Client
-   * @return the Distributed Lock Manager
-   */
-  @Bean
-  public DistributedLatchManager actionExportLatchManager(RedissonClient redissonClient) {
-    return new DistributedLatchManagerRedissonImpl(
-        ACTION_EXECUTION_LOCK, redissonClient, appConfig.getDataGrid().getLockTimeToLiveSeconds());
   }
 
   /**
@@ -120,6 +107,11 @@ public class ActionExporterApplication {
         .setAddress(appConfig.getDataGrid().getAddress())
         .setPassword(appConfig.getDataGrid().getPassword());
     return Redisson.create(config);
+  }
+
+  @Bean
+  public Clock clock() {
+    return Clock.systemDefaultZone();
   }
 
   /**
