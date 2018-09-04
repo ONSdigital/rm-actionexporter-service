@@ -23,24 +23,13 @@ import net.sourceforge.cobertura.CoverageIgnore;
 public class ExportMessage {
   private static final Logger log = LoggerFactory.getLogger(ExportMessage.class);
 
-  private Map<String, List<UUID>> actionRequestIds = new HashMap<String, List<UUID>>();
-  private Map<String, ByteArrayOutputStream> outputStreams =
-      new HashMap<String, ByteArrayOutputStream>();
+  private Map<String, List<UUID>> actionRequestIds = new HashMap<>();
+  private Map<String, ByteArrayOutputStream> outputStreams = new HashMap<>();
 
-  /**
-   * Return actionIds for actionRequests for key.
-   *
-   * @param key for which to get actionIds.
-   * @return List of actionIds for key.
-   */
-  public List<String> getActionRequestIds(String key) {
-    List<UUID> list = actionRequestIds.get(key);
-    List<String> ids = new ArrayList<String>();
-
-    for (UUID uuid : list) {
-      ids.add(uuid.toString());
-    }
-    return ids;
+  public ExportMessage merge(ExportMessage message) {
+    actionRequestIds.putAll(message.getActionRequestIds());
+    outputStreams.putAll(message.getOutputStreams());
+    return this;
   }
 
   /**
@@ -58,7 +47,7 @@ public class ExportMessage {
    * @return List of all actionIds.
    */
   public List<String> getMergedActionRequestIdsAsStrings() {
-    List<String> actionIds = new ArrayList<String>();
+    List<String> actionIds = new ArrayList<>();
 
     actionRequestIds.forEach(
         (key, mergeIds) -> {
@@ -75,14 +64,12 @@ public class ExportMessage {
    * @return ByteArrayOutputStream.
    */
   public ByteArrayOutputStream getMergedOutputStreams() {
-
     ByteArrayOutputStream mergedStream = new ByteArrayOutputStream();
-    for (Map.Entry<String, ByteArrayOutputStream> outputStream : outputStreams.entrySet()) {
+    for (ByteArrayOutputStream outputStream : outputStreams.values()) {
       try {
-        mergedStream.write(outputStream.getValue().toByteArray());
+        mergedStream.write(outputStream.toByteArray());
       } catch (IOException ex) {
-        log.error("Error merging ExportMessage ByteArrayOutputStreams: {}", ex.getMessage());
-        log.error("Stacktrace: ", ex);
+        log.error("Error merging ExportMessage ByteArrayOutputStreams", ex);
         return null;
       }
     }

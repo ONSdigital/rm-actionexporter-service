@@ -28,7 +28,7 @@ public class ActionRequestService {
   }
 
   public ActionRequestInstruction save(final ActionRequestInstruction actionRequest) {
-    log.debug("Saving ActionRequest {}", actionRequest.getActionId());
+    log.with("action_request", actionRequest.getActionId()).debug("Saving ActionRequest");
     return repository.save(actionRequest);
   }
 
@@ -44,10 +44,6 @@ public class ActionRequestService {
 
   public List<SurveyRefExerciseRef> retrieveDistinctExerciseRefsWithSurveyRef() {
     return repository.findDistinctSurveyAndExerciseRefs();
-  }
-
-  public List<String> retrieveActionTypes() {
-    return repository.findAllActionType();
   }
 
   public int updateDateSentByActionId(Set<UUID> actionIds, Timestamp dateSent) {

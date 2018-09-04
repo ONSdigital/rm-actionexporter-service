@@ -22,9 +22,9 @@ import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
 import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.ExportReportService;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
@@ -42,7 +42,7 @@ public class SftpServicePublisher {
 
   @Autowired private ActionRequestService actionRequestService;
 
-  @Autowired private ExportReportService exportReportService;
+  @Autowired private ExportReportRepository exportReportRepository;
 
   @Autowired private ActionFeedbackPublisher actionFeedbackPubl;
 
@@ -83,7 +83,8 @@ public class SftpServicePublisher {
             sendFeedbackMessage(
                 actionRequestService.retrieveResponseRequiredByActionId(actionIds), dateStr);
           } else {
-            log.error("ActionRequests {} failed to update DateSent", actionIds);
+            log.with("action_requests", actionIds)
+                .error("ActionRequests failed to update DateSent", actionIds);
           }
           actionIds.clear();
         });
@@ -95,11 +96,10 @@ public class SftpServicePublisher {
             now,
             true,
             false);
-    exportReportService.save(exportReport);
+    exportReportRepository.save(exportReport);
 
-    log.info(
-        "Sftp transfer complete for file {}",
-        message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE));
+    log.with("file_name", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE))
+        .debug("Sftp transfer complete");
     exportInfo.addOutcome(
         (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE)
             + " transferred with "
@@ -114,16 +114,15 @@ public class SftpServicePublisher {
         ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
     List<String> actionList = (List<String>) headers.get(ACTION_LIST);
-    log.error(
-        "Sftp transfer failed for file {} for action requests {}",
-        fileName,
-        actionList,
-        message.getPayload());
+    log.with("file_name", fileName)
+        .with("action_requests", actionList)
+        .with("payload", message.getPayload())
+        .error("Sftp transfer failed");
     exportInfo.addOutcome(
         fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
     ExportReport exportReport =
         new ExportReport(fileName, actionList.size(), DateTimeUtil.nowUTC(), false, false);
-    exportReportService.save(exportReport);
+    exportReportRepository.save(exportReport);
   }
 
   /**

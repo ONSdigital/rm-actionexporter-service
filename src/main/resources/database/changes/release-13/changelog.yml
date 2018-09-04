@@ -1,0 +1,32 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 13-1
+      author: Ben Jefferies
+      changes:
+        - sqlFile:
+            comment: Drop report function
+            path: drop_report_function.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+          id: 13-2
+          author: Ben Jefferies
+          changes:
+          - sqlFile:
+                  comment: Drop report table
+                  path: drop_report_table.sql
+                  relativeToChangelogFile: true
+                  splitStatements: false
+
+
+  - changeSet:
+          id: 13-3
+          author: Ben Jefferies
+          changes:
+          - sqlFile:
+                  comment: Drop report sequence
+                  path: drop_report_sequence.sql
+                  relativeToChangelogFile: true
+                  splitStatements: false

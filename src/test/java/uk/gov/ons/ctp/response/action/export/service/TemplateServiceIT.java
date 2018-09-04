@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
@@ -36,9 +37,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.ctp.common.message.rabbit.Rabbitmq;
-import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageBase;
-import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageListener;
-import uk.gov.ons.ctp.common.message.rabbit.SimpleMessageSender;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionAddress;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionContact;
@@ -46,6 +44,9 @@ import uk.gov.ons.ctp.response.action.message.instruction.ActionEvent;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 import uk.gov.ons.ctp.response.action.message.instruction.Priority;
+import uk.gov.ons.tools.rabbit.SimpleMessageBase;
+import uk.gov.ons.tools.rabbit.SimpleMessageListener;
+import uk.gov.ons.tools.rabbit.SimpleMessageSender;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
@@ -86,6 +87,9 @@ public class TemplateServiceIT {
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
 
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
@@ -93,12 +97,10 @@ public class TemplateServiceIT {
         actionInstructionToXmlString(actionInstruction));
 
     // When
-    BlockingQueue<String> queue =
-        simpleMessageListener.listen(
-            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-    queue.take();
+    String message = queue.take();
 
     // Then
+    assertThat(message, containsString("SOCIALNOT"));
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
@@ -128,6 +130,9 @@ public class TemplateServiceIT {
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
 
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
@@ -135,12 +140,10 @@ public class TemplateServiceIT {
         actionInstructionToXmlString(actionInstruction));
 
     // When
-    BlockingQueue<String> queue =
-        simpleMessageListener.listen(
-            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-    queue.take();
+    String message = queue.take();
 
     // Then
+    assertThat(message, containsString("SOCIALPRENOT"));
     String notificationFilePath = getLatestSftpFileName();
     InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
 
@@ -184,7 +187,7 @@ public class TemplateServiceIT {
             .filter(f -> f.getFilename().endsWith(".csv"))
             .min(sortByModifiedTimeDescending)
             .orElseThrow(() -> new RuntimeException("No file on SFTP"));
-    log.info("Found latest file={}", latestFile.getFilename());
+    log.with("latest_file", latestFile.getFilename()).info("Found latest file");
     return sftpPath + latestFile.getFilename();
   }
 

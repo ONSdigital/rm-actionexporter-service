@@ -56,7 +56,7 @@ public class TemplateMappingEndpoint {
   @RequestMapping(value = "/{actionType}", method = RequestMethod.GET)
   public TemplateMappingDTO findTemplateMapping(@PathVariable("actionType") final String actionType)
       throws CTPException {
-    log.debug("Entering findTemplateMapping with {}", actionType);
+    log.with("action_type", actionType).debug("Entering findTemplateMapping");
     TemplateMapping result = templateMappingService.retrieveTemplateMappingByActionType(actionType);
     if (result == null) {
       throw new CTPException(

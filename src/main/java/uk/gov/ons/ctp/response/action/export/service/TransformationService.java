@@ -2,7 +2,7 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +14,6 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 
-/** The implementation of TransformationService */
 @Service
 public class TransformationService {
   private static final Logger log = LoggerFactory.getLogger(TransformationService.class);
@@ -23,68 +22,62 @@ public class TransformationService {
 
   @Autowired private TemplateMappingService templateMappingService;
 
-  public ExportMessage processActionRequests(
-      ExportMessage message, List<ActionRequestInstruction> requests) throws CTPException {
-    return buildExportMessage(message, requests);
-  }
-
-  public ExportMessage processActionRequest(
-      ExportMessage message, ActionRequestInstruction actionRequest) throws CTPException {
-    List<ActionRequestInstruction> requests = new ArrayList<>();
-    requests.add(actionRequest);
-    return buildExportMessage(message, requests);
-  }
-
   /**
    * Produces ExportMessage with stream objects and list of ActionRequest Ids. Assumes actionTypes
    * being processed are unique and not already in ExportMessage passed in to be built, if are
    * already present will be replaced.
    *
-   * @param message to build
-   * @param actionRequestList the list to be processed
+   * @param allActionRequest the list to be processed
    * @return ExportMessage with stream objects and list of ActionRequest Ids.
-   * @throws CTPException if cannot retrieve TemplateMapping.
    */
-  private ExportMessage buildExportMessage(
-      ExportMessage message, List<ActionRequestInstruction> actionRequestList) throws CTPException {
-
-    // if nothing to process return ExportMessage
-    if (actionRequestList.isEmpty()) {
+  public ExportMessage processActionRequests(List<ActionRequestInstruction> allActionRequest) {
+    ExportMessage message = new ExportMessage();
+    if (allActionRequest.isEmpty()) {
       return message;
     }
-
     Map<String, TemplateMapping> mapping =
         templateMappingService.retrieveAllTemplateMappingsByActionType();
-    Map<String, List<ActionRequestInstruction>> templateRequests =
-        actionRequestList
+
+    Map<String, List<ActionRequestInstruction>> templateRequestsForActionType =
+        allActionRequest
             .stream()
             .collect(Collectors.groupingBy(ActionRequestInstruction::getActionType));
-    templateRequests.forEach(
-        (actionType, actionRequests) -> {
-          if (mapping.containsKey(actionType)) {
-            try {
-              message
-                  .getOutputStreams()
-                  .put(
-                      actionType,
-                      templateService.stream(
-                          actionRequests, mapping.get(actionType).getTemplate()));
-              List<UUID> addActionIds = new ArrayList<UUID>();
-              message.getActionRequestIds().put(actionType, addActionIds);
-              actionRequests.forEach(
-                  (actionRequest) -> {
-                    addActionIds.add(actionRequest.getActionId());
-                  });
-            } catch (CTPException e) {
-              // catch failure for templateService stream operation for that actionType but try
-              // others, if any.
-              log.error("Error generating actionType : {}. {}", actionType, e.getMessage());
-              log.error("Stacktrace: ", e);
-            }
-          } else {
-            log.warn("No mapping for actionType : {}.", actionType);
-          }
-        });
+
+    templateRequestsForActionType.forEach(
+        (actionType, actionRequests) ->
+            processRequestsForActionType(actionRequests, mapping, actionType, message));
     return message;
+  }
+
+  private void processRequestsForActionType(
+      List<ActionRequestInstruction> actionRequests,
+      Map<String, TemplateMapping> mapping,
+      String actionType,
+      ExportMessage message) {
+    if (!mapping.containsKey(actionType)) {
+      String actionPlanIds =
+          actionRequests
+              .stream()
+              .map(ar -> ar.getActionrequestPK().toString())
+              .collect(Collectors.joining(","));
+      log.with("action_type", actionType)
+          .with("action_plan_ids", actionPlanIds)
+          .warn("No mapping for actionType. Cannot process action requests");
+      return;
+    }
+
+    try {
+      ByteArrayOutputStream renderedTemplateStream =
+          templateService.stream(actionRequests, mapping.get(actionType).getTemplate());
+      message.getOutputStreams().put(actionType, renderedTemplateStream);
+      List<UUID> actionIds =
+          actionRequests
+              .stream()
+              .map(ActionRequestInstruction::getActionId)
+              .collect(Collectors.toList());
+      message.getActionRequestIds().put(actionType, actionIds);
+    } catch (CTPException e) {
+      log.with("action_type", actionType).error("Error generating actionType", e);
+    }
   }
 }

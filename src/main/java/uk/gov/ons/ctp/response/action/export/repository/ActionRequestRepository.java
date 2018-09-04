@@ -45,14 +45,6 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
       String actionType, String exerciseRef, String surveyRef);
 
   /**
-   * Retrieve a list of actionTypes
-   *
-   * @return List of distinct actionTypes
-   */
-  @Query("SELECT DISTINCT(r.actionType) FROM ActionRequestInstruction r")
-  List<String> findAllActionType();
-
-  /**
    * Retrieve an ActionRequestInstruction by actionId
    *
    * @param actionId ActionRequestInstruction actionId to be retrieved
