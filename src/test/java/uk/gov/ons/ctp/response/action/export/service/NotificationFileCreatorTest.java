@@ -2,9 +2,11 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.gov.ons.ctp.response.action.export.ByteArraySteamHelper.baosWithData;
 import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
 
@@ -91,7 +93,7 @@ public class NotificationFileCreatorTest {
   }
 
   @Test
-  public void shouldProduceOneFilePerActionType() throws IOException {
+  public void shouldProduceOneFilePerActionType() {
     // Given
     Date now = new Date();
     given(clock.millis()).willReturn(now.getTime());
@@ -120,7 +122,7 @@ public class NotificationFileCreatorTest {
   }
 
   @Test
-  public void shouldPublishMessageWhenFileUploaded() throws IOException {
+  public void shouldPublishMessageWhenFileUploaded() {
     // Given
     Date now = new Date();
     given(clock.millis()).willReturn(now.getTime());
@@ -138,6 +140,23 @@ public class NotificationFileCreatorTest {
     verify(eventPublisher)
         .publishEvent(
             String.format("Printed file filename_1_1_%s.csv", FILENAME_DATE_FORMAT.format(now)));
+  }
+
+  @Test
+  public void shouldNotPublishMessageWhenFileNotSent() {
+    // Given
+    Date now = new Date();
+    given(clock.millis()).willReturn(now.getTime());
+    ExportMessage message = new ExportMessage();
+    given(transformationService.processActionRequests(any())).willReturn(message);
+    SurveyRefExerciseRef surveyRefExerciseRef = new SurveyRefExerciseRef("1", "1");
+
+    // When
+    notificationFileCreator.publishNotificationFile(
+        surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "filename_1_1");
+
+    // Then
+    verify(eventPublisher, times(0)).publishEvent(anyString());
   }
 
   private static class ByteArrayOutputStreamMatcher extends ArgumentMatcher<ByteArrayOutputStream> {
