@@ -35,8 +35,8 @@ public class NotificationFileCreatorTest {
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
   @Mock private Clock clock;
-  @Mock private SftpServicePublisher sftpService;
   @Mock private ActionRequestService actionRequestService;
+  @Mock private SftpServicePublisher sftpService;
   @Mock private EventPublisher eventPublisher;
   @Mock private TransformationService transformationService;
   @InjectMocks private NotificationFileCreator notificationFileCreator;
@@ -135,7 +135,9 @@ public class NotificationFileCreatorTest {
         surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "filename_1_1");
 
     // Then
-    verify(eventPublisher).publishEvent("Print file");
+    verify(eventPublisher)
+        .publishEvent(
+            String.format("Printed file filename_1_1_%s.csv", FILENAME_DATE_FORMAT.format(now)));
   }
 
   private static class ByteArrayOutputStreamMatcher extends ArgumentMatcher<ByteArrayOutputStream> {

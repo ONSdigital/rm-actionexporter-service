@@ -50,7 +50,6 @@ public class NotificationFileCreator {
       String filenamePrefix) {
     ExportMessage dataForFile = createDataForFile(surveyRefExerciseRef, templateMappings);
     uploadFile(dataForFile, filenamePrefix);
-    eventPublisher.publishEvent("Print file");
   }
 
   private ExportMessage createDataForFile(
@@ -85,5 +84,6 @@ public class NotificationFileCreator {
         filename,
         exportData.getMergedActionRequestIdsAsStrings(),
         exportData.getMergedOutputStreams());
+    eventPublisher.publishEvent("Printed file " + filename);
   }
 }
