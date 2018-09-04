@@ -65,7 +65,7 @@ public class ActionExportService {
    * @param actionRequest to be processed
    */
   private void processActionRequest(ActionRequest actionRequest) {
-    log.debug("Saving {} actionRequest", actionRequest);
+    log.with("action_request", actionRequest).debug("Saving actionRequest");
     ActionRequestInstruction actionRequestDoc =
         mapperFacade.map(actionRequest, ActionRequestInstruction.class);
 
@@ -79,7 +79,7 @@ public class ActionExportService {
 
     if (actionRequestRepo.existsByActionId(actionRequestDoc.getActionId())) {
       // ActionRequests should never be sent twice with same actionId but...
-      log.warn("Key ActionId {} already exists", actionRequestDoc.getActionId());
+      log.with("action_id", actionRequestDoc.getActionId()).warn("Key ActionId already exists");
     } else {
       actionRequestRepo.persist(actionRequestDoc);
     }
@@ -101,7 +101,7 @@ public class ActionExportService {
    * @param actionCancel to be processed
    */
   private void processActionCancel(ActionCancel actionCancel) {
-    log.debug("Processing {} actionCancel", actionCancel);
+    log.with("action_cancel", actionCancel).debug("Processing actionCancel");
     ActionRequestInstruction actionRequest =
         actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
 

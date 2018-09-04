@@ -164,9 +164,14 @@
         <dependency>
             <groupId>uk.gov.ons.ctp.common</groupId>
             <artifactId>framework</artifactId>
-            <version>10.49.12</version>
+            <version>10.49.17</version>
         </dependency>
 
+        <dependency>
+            <groupId>uk.gov.ons.tools</groupId>
+            <artifactId>rabbit</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- ONS END -->
 
         <!-- Third party libraries -->
@@ -208,6 +213,13 @@
         <dependency>
             <groupId>uk.gov.ons.ctp.common</groupId>
             <artifactId>test-framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.gov.ons.tools</groupId>
+            <artifactId>rabbit</artifactId>
+            <version>1.0.2</version>
             <scope>test</scope>
         </dependency>
 

@@ -58,7 +58,7 @@ public class TemplateEndpoint {
   @RequestMapping(value = "/{templateName}", method = RequestMethod.GET)
   public TemplateExpressionDTO findTemplate(@PathVariable("templateName") final String templateName)
       throws CTPException {
-    log.debug("Entering findTemplate with {}", templateName);
+    log.with("template_name", templateName).debug("Entering findTemplate");
     TemplateExpression result = templateService.retrieveTemplate(templateName);
     if (result == null) {
       throw new CTPException(
@@ -84,7 +84,7 @@ public class TemplateEndpoint {
       @PathVariable("templateName") final String templateName,
       @RequestParam("file") MultipartFile file)
       throws CTPException {
-    log.debug("Entering storeTemplate with templateName {}", templateName);
+    log.with("template_name", templateName).debug("Entering storeTemplate");
     try {
       TemplateExpression template =
           templateService.storeTemplate(templateName, file.getInputStream());

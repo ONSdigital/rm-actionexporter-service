@@ -1,0 +1,1 @@
+DROP FUNCTION actionexporter.generate_print_volumes_mi();

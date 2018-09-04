@@ -15,10 +15,11 @@ logging:
     org.springframework.integration.handler.advice: DEBUG
     org.springframework.context.annotation.ConfigurationClassPostProcessor: ERROR
   profile: DEV
+  useJson: false
 
 liquibase:
-  user: actionexportersvc
-  password: actionexportersvc
+  user: postgres
+  password: postgres
   default-schema: actionexporter
   url: jdbc:postgresql://localhost:6432/postgres
   changeLog: classpath:/database/changelog-master.yml
@@ -66,8 +67,8 @@ spring:
     
   datasource:
     url: jdbc:postgresql://localhost:6432/postgres
-    username: actionexportersvc
-    password: actionexportersvc
+    username: postgres
+    password: postgres
     driverClassName: org.postgresql.Driver
     continue-on-error: true
     tomcat:
