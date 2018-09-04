@@ -40,7 +40,7 @@ public class ExportScheduler {
   /** Carry out scheduled actions according to configured cron expression */
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
-    log.info("Scheduled run start");
+    log.debug("Scheduled run start");
     final List<SurveyRefExerciseRef> exerciseRefs =
         actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef();
 
@@ -75,6 +75,9 @@ public class ExportScheduler {
         return;
       }
       try {
+        log.with("survey", surveyRefExerciseRef.getSurveyRef())
+            .with("exercise_ref", surveyRefExerciseRef.getExerciseRef())
+            .info("Publishing notification file");
         notificationFileCreator.publishNotificationFile(
             surveyRefExerciseRef, templateMappings, filenamePrefix);
       } finally {

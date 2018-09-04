@@ -80,6 +80,7 @@ public class NotificationFileCreator {
       log.with("filename", filename).info("No data to generate file");
       return;
     }
+    log.with("filename", filename).info("Uploading file");
     sftpService.sendMessage(
         filename,
         exportData.getMergedActionRequestIdsAsStrings(),
