@@ -14,13 +14,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -38,12 +34,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.ctp.common.message.rabbit.Rabbitmq;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
-import uk.gov.ons.ctp.response.action.message.instruction.ActionAddress;
-import uk.gov.ons.ctp.response.action.message.instruction.ActionContact;
-import uk.gov.ons.ctp.response.action.message.instruction.ActionEvent;
+import uk.gov.ons.ctp.response.action.export.utility.ActionRequestBuilder;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
-import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 import uk.gov.ons.tools.rabbit.SimpleMessageBase;
 import uk.gov.ons.tools.rabbit.SimpleMessageListener;
 import uk.gov.ons.tools.rabbit.SimpleMessageSender;
@@ -83,7 +76,7 @@ public class TemplateServiceIT {
   @Test
   public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
     // Given
-    ActionRequest actionRequest = createSocialActionRequest("SOCIALNOT");
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALNOT");
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
@@ -126,7 +119,7 @@ public class TemplateServiceIT {
   @Test
   public void testTemplateGeneratesCorrectPrintFileForSocialPreNotification() throws Exception {
     // Given
-    ActionRequest actionRequest = createSocialActionRequest("SOCIALPRENOT");
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALPRENOT");
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
@@ -189,38 +182,5 @@ public class TemplateServiceIT {
             .orElseThrow(() -> new RuntimeException("No file on SFTP"));
     log.with("latest_file", latestFile.getFilename()).info("Found latest file");
     return sftpPath + latestFile.getFilename();
-  }
-
-  private ActionRequest createSocialActionRequest(final String actionType) {
-    ActionAddress actionAddress = new ActionAddress();
-    actionAddress.setSampleUnitRef("sampleUR");
-    actionAddress.setLine1("Prem1");
-    actionAddress.setCountry("E");
-
-    actionAddress.setPostcode("postCode");
-    actionAddress.setTownName("postTown");
-    actionAddress.setLocality("locality");
-
-    ActionRequest actionRequest = new ActionRequest();
-    actionRequest.setActionId(UUID.randomUUID().toString());
-    actionRequest.setActionPlan("actionPlan");
-    actionRequest.setActionType(actionType);
-    actionRequest.setAddress(actionAddress);
-    actionRequest.setQuestionSet("questions");
-    actionRequest.setLegalBasis("legalBasis");
-    actionRequest.setRegion("region");
-    actionRequest.setRespondentStatus("rStatus");
-    actionRequest.setEnrolmentStatus("eStatus");
-    actionRequest.setCaseGroupStatus("cgStatus");
-    actionRequest.setCaseId(UUID.randomUUID().toString());
-    actionRequest.setPriority(Priority.HIGHEST);
-    actionRequest.setCaseRef("caseRef");
-    actionRequest.setIac("test-iac");
-    actionRequest.setExerciseRef("exRef");
-    actionRequest.setContact(new ActionContact());
-    actionRequest.setEvents(new ActionEvent(Collections.singletonList("event1")));
-    actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
-
-    return actionRequest;
   }
 }
