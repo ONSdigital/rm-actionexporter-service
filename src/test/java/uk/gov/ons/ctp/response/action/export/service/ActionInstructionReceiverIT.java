@@ -30,7 +30,7 @@ import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class ActionInstructionReceiverTest {
+public class ActionInstructionReceiverIT {
   @LocalServerPort private int port;
 
   @Autowired private MessageChannel actionInstructionTransformed;
