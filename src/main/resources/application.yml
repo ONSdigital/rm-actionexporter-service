@@ -127,10 +127,6 @@ messaging:
   prefetchCount: 10
   txSize: 1
 
-retries:
-  maxAttempts: 3
-  backoff: 5000
-
 swagger-settings:
   swagger-ui-active: true
   group-name: actionexporter-api
