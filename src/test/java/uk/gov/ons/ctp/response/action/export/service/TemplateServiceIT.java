@@ -74,6 +74,50 @@ public class TemplateServiceIT {
   }
 
   @Test
+  public void testTemplateGeneratesCorrectReminderFileForSocial() throws Exception {
+    // Given
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALREM");
+
+    ActionInstruction actionInstruction = new ActionInstruction();
+    actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
+
+    simpleMessageSender.sendMessage(
+        "action-outbound-exchange",
+        "Action.Printer.binding",
+        actionInstructionToXmlString(actionInstruction));
+
+    // When
+    String message = queue.take();
+
+    // Then
+    assertThat(message, containsString("SOCIALREM"));
+    String notificationFilePath = getLatestSftpFileName();
+    InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
+
+    try (Reader reader = new InputStreamReader(inputSteam);
+        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
+      Iterator<String> templateRow = parser.iterator().next().iterator();
+      assertEquals("\n", parser.getFirstEndOfLine());
+      assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+      assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
+      assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
+      assertEquals(actionRequest.getIac(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getOrganisationName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getReturnByDate(), templateRow.next());
+    } finally {
+      // Delete the file created in this test
+      assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
+    }
+  }
+
+  @Test
   public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
     // Given
     ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALNOT");
