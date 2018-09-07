@@ -38,15 +38,9 @@
                                discard-channel="actionInstructionInvalidXml"
                                throw-exception-on-rejection="true"/>
 
-    <int:logging-channel-adapter id="logger" level="ERROR"
-                                 expression="payload.actionRequest.iac + '|' + payload.actionRequest.caseId"/>
-
     <!-- Validated xml is transformed into the jaxb generated object model -->
     <int:channel id="actionInstructionTransformed"
                  datatype="uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction">
-        <int:interceptors>
-            <int:wire-tap channel="logger"/>
-        </int:interceptors>
     </int:channel>
 
     <int-xml:unmarshalling-transformer
