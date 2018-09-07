@@ -1,14 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +33,8 @@ public class ActionInstructionReceiverIT {
 
   @MockBean private ActionExportService actionExportService;
 
-  @Rule
-  public WireMockRule wireMockRule =
-      new WireMockRule(options().extensions(new ResponseTemplateTransformer(false)).port(18002));
-
-  @Test(expected = MessageHandlingException.class)
-  public void ensureFiniteRetriesOnFailedActionInstruction() throws Exception {
+  @Test
+  public void ensureFiniteRetriesOnFailedActionInstruction() {
     doThrow(RuntimeException.class).when(actionExportService).acceptInstruction(any());
 
     ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALPRENOT");
