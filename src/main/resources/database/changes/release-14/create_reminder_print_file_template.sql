@@ -1,4 +1,4 @@
-INSERT INTO actionexporter.template (templatenamepk, content, datemodified) VALUES ('socialRemNotification',
+INSERT INTO actionexporter.template (templatenamepk, content, datemodified) VALUES ('socialReminder',
 '<#list actionRequests as actionRequest>
 ${(actionRequest.address.line1?trim)!}:' ||
 '${(actionRequest.address.line2?trim)!}:' ||
@@ -14,4 +14,4 @@ ${(actionRequest.address.line1?trim)!}:' ||
 ,
 now());
 
-UPDATE templatemapping SET templatenamefk = 'socialRemNotification' WHERE actiontypenamepk = 'SOCIALREM';
+UPDATE actionexporter.templatemapping SET templatenamefk = 'socialReminder' WHERE actiontypenamepk = 'SOCIALREM';
