@@ -1,12 +1,16 @@
 package uk.gov.ons.ctp.response.action.export.utility;
 
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.UUID;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionAddress;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionContact;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionEvent;
+import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
@@ -42,5 +46,13 @@ public class ActionRequestBuilder {
     actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
 
     return actionRequest;
+  }
+
+  public static String actionInstructionToXmlString(ActionInstruction actionInstruction)
+      throws JAXBException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
+    StringWriter stringWriter = new StringWriter();
+    jaxbContext.createMarshaller().marshal(actionInstruction, stringWriter);
+    return stringWriter.toString();
   }
 }

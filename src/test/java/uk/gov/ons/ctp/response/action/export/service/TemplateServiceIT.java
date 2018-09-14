@@ -13,13 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +71,50 @@ public class TemplateServiceIT {
   }
 
   @Test
+  public void testTemplateGeneratesCorrectReminderFileForSocial() throws Exception {
+    // Given
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALREM");
+
+    ActionInstruction actionInstruction = new ActionInstruction();
+    actionInstruction.setActionRequest(actionRequest);
+    BlockingQueue<String> queue =
+        simpleMessageListener.listen(
+            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
+
+    simpleMessageSender.sendMessage(
+        "action-outbound-exchange",
+        "Action.Printer.binding",
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
+
+    // When
+    String message = queue.take();
+
+    // Then
+    assertThat(message, containsString("SOCIALREM"));
+    String notificationFilePath = getLatestSftpFileName();
+    InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(notificationFilePath);
+
+    try (Reader reader = new InputStreamReader(inputSteam);
+        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
+      Iterator<String> templateRow = parser.iterator().next().iterator();
+      assertEquals("\n", parser.getFirstEndOfLine());
+      assertEquals(actionRequest.getAddress().getLine1(), templateRow.next());
+      assertThat(templateRow.next(), isEmptyString()); // Address line 2 should be empty
+      assertEquals(actionRequest.getAddress().getPostcode(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
+      assertEquals(actionRequest.getIac(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getOrganisationName(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getReturnByDate(), templateRow.next());
+    } finally {
+      // Delete the file created in this test
+      assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
+    }
+  }
+
+  @Test
   public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
     // Given
     ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALNOT");
@@ -87,7 +128,7 @@ public class TemplateServiceIT {
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
         "Action.Printer.binding",
-        actionInstructionToXmlString(actionInstruction));
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
 
     // When
     String message = queue.take();
@@ -130,7 +171,7 @@ public class TemplateServiceIT {
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
         "Action.Printer.binding",
-        actionInstructionToXmlString(actionInstruction));
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
 
     // When
     String message = queue.take();
@@ -159,14 +200,6 @@ public class TemplateServiceIT {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
     }
-  }
-
-  private String actionInstructionToXmlString(ActionInstruction actionInstruction)
-      throws JAXBException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
-    StringWriter stringWriter = new StringWriter();
-    jaxbContext.createMarshaller().marshal(actionInstruction, stringWriter);
-    return stringWriter.toString();
   }
 
   private String getLatestSftpFileName() throws IOException {
