@@ -20,7 +20,7 @@ public class ActionRequestBuilder {
     actionAddress.setSampleUnitRef("sampleUR");
     actionAddress.setLine1("Prem1");
     actionAddress.setCountry("E");
-
+    actionAddress.setOrganisationName("Castle of Frankenstein");
     actionAddress.setPostcode("postCode");
     actionAddress.setTownName("postTown");
     actionAddress.setLocality("locality");

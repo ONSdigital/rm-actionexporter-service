@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 14-1
+      author: Damien Lloyd
+      changes:
+      - sqlFile:
+          comment: Create reminder letter template
+          path: create_reminder_print_file_template.sql
+          relativeToChangelogFile: true
+          splitStatements: false
