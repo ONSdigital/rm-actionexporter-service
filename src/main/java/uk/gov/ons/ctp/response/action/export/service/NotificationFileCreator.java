@@ -76,7 +76,6 @@ public class NotificationFileCreator {
     final String now = FILENAME_DATE_FORMAT.format(clock.millis());
     String filename = String.format("%s_%s.csv", filenamePrefix, now);
     if (exportData.isEmpty()) {
-      log.with("filename", filename).info("No data to generate file");
       return;
     }
     log.with("filename", filename).info("Uploading file");
