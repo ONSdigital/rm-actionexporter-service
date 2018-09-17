@@ -66,6 +66,7 @@ public class ActionExportService {
    */
   private void processActionRequest(ActionRequest actionRequest) {
     log.with("action_request", actionRequest).debug("Saving actionRequest");
+
     ActionRequestInstruction actionRequestDoc =
         mapperFacade.map(actionRequest, ActionRequestInstruction.class);
 
