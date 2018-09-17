@@ -13,13 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +84,7 @@ public class TemplateServiceIT {
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
         "Action.Printer.binding",
-        actionInstructionToXmlString(actionInstruction));
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
 
     // When
     String message = queue.take();
@@ -131,7 +128,7 @@ public class TemplateServiceIT {
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
         "Action.Printer.binding",
-        actionInstructionToXmlString(actionInstruction));
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
 
     // When
     String message = queue.take();
@@ -174,7 +171,7 @@ public class TemplateServiceIT {
     simpleMessageSender.sendMessage(
         "action-outbound-exchange",
         "Action.Printer.binding",
-        actionInstructionToXmlString(actionInstruction));
+        ActionRequestBuilder.actionInstructionToXmlString(actionInstruction));
 
     // When
     String message = queue.take();
@@ -203,14 +200,6 @@ public class TemplateServiceIT {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
     }
-  }
-
-  private String actionInstructionToXmlString(ActionInstruction actionInstruction)
-      throws JAXBException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(ActionInstruction.class);
-    StringWriter stringWriter = new StringWriter();
-    jaxbContext.createMarshaller().marshal(actionInstruction, stringWriter);
-    return stringWriter.toString();
   }
 
   private String getLatestSftpFileName() throws IOException {
