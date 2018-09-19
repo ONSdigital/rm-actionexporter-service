@@ -21,10 +21,6 @@ import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import uk.gov.ons.ctp.common.distributed.DistributedInstanceManager;
-import uk.gov.ons.ctp.common.distributed.DistributedInstanceManagerRedissonImpl;
-import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
-import uk.gov.ons.ctp.common.distributed.DistributedLockManagerRedissonImpl;
 import uk.gov.ons.ctp.common.error.RestExceptionHandler;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
@@ -46,32 +42,7 @@ import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 @ImportResource("springintegration/main.xml")
 public class ActionExporterApplication {
 
-  public static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
-
   @Autowired private AppConfig appConfig;
-
-  /**
-   * Bean used to access Distributed Lock Manager
-   *
-   * @param redissonClient Redisson Client
-   * @return the Distributed Lock Manager
-   */
-  @Bean
-  public DistributedInstanceManager actionExportInstanceManager(RedissonClient redissonClient) {
-    return new DistributedInstanceManagerRedissonImpl(ACTION_EXECUTION_LOCK, redissonClient);
-  }
-
-  /**
-   * Bean used to access Distributed Execution Lock Manager
-   *
-   * @param redissonClient Redisson Client
-   * @return the Distributed Lock Manager
-   */
-  @Bean
-  public DistributedLockManager actionExportExecutionLockManager(RedissonClient redissonClient) {
-    return new DistributedLockManagerRedissonImpl(
-        ACTION_EXECUTION_LOCK, redissonClient, appConfig.getDataGrid().getLockTimeToLiveSeconds());
-  }
 
   /**
    * Rest Exception Handler

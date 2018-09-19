@@ -22,9 +22,9 @@ import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
-import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
 
@@ -40,7 +40,7 @@ public class SftpServicePublisher {
   private static final String ACTION_LIST = "list_actionIds";
   private static final int BATCH_SIZE = 10000;
 
-  @Autowired private ActionRequestService actionRequestService;
+  @Autowired private ActionRequestRepository actionRequestRepository;
 
   @Autowired private ExportReportRepository exportReportRepository;
 
@@ -78,10 +78,10 @@ public class SftpServicePublisher {
               (actionId) -> {
                 actionIds.add(UUID.fromString(actionId));
               });
-          int saved = actionRequestService.updateDateSentByActionId(actionIds, now);
+          int saved = actionRequestRepository.updateDateSentByActionId(actionIds, now);
           if (actionIds.size() == saved) {
             sendFeedbackMessage(
-                actionRequestService.retrieveResponseRequiredByActionId(actionIds), dateStr);
+                actionRequestRepository.retrieveResponseRequiredByActionId(actionIds), dateStr);
           } else {
             log.with("action_requests", actionIds)
                 .error("ActionRequests failed to update DateSent", actionIds);

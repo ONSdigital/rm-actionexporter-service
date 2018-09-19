@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SendState;
 import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.AddressRepository;
@@ -68,6 +69,9 @@ public class ActionExportService {
     log.with("action_request", actionRequest).debug("Saving actionRequest");
     ActionRequestInstruction actionRequestDoc =
         mapperFacade.map(actionRequest, ActionRequestInstruction.class);
+
+    // This is ready to be processed by the scheduled job, once it's persisted
+    actionRequestDoc.setSendState(SendState.INIT);
 
     Timestamp now = DateTimeUtil.nowUTC();
     actionRequestDoc.setDateStored(now);

@@ -105,4 +105,8 @@ public class ActionRequestInstruction {
 
   @Column(name = "returnbydate")
   private String returnByDate;
+
+  @Column(name = "sendstate")
+  @Enumerated(EnumType.STRING)
+  private SendState sendState;
 }

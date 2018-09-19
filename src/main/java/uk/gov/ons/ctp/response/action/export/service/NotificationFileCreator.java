@@ -8,10 +8,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
+import uk.gov.ons.ctp.response.action.export.domain.SendState;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
+import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 
 @Service
 public class NotificationFileCreator {
@@ -21,7 +23,7 @@ public class NotificationFileCreator {
   private static final SimpleDateFormat FILENAME_DATE_FORMAT =
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
-  private final ActionRequestService actionRequestService;
+  private final ActionRequestRepository actionRequestRepository;
 
   private final TransformationService transformationService;
 
@@ -32,12 +34,12 @@ public class NotificationFileCreator {
   private final Clock clock;
 
   public NotificationFileCreator(
-      ActionRequestService actionRequestService,
+      ActionRequestRepository actionRequestRepository,
       TransformationService transformationService,
       SftpServicePublisher sftpService,
       EventPublisher eventPublisher,
       Clock clock) {
-    this.actionRequestService = actionRequestService;
+    this.actionRequestRepository = actionRequestRepository;
     this.transformationService = transformationService;
     this.sftpService = sftpService;
     this.eventPublisher = eventPublisher;
@@ -65,10 +67,17 @@ public class NotificationFileCreator {
   private ExportMessage createExportData(
       SurveyRefExerciseRef surveyRefExerciseRefTuple, TemplateMapping templateMapping) {
     List<ActionRequestInstruction> requests =
-        actionRequestService.findByDateSentIsNullAndActionTypeAndExerciseRef(
+        actionRequestRepository.findByActionTypeAndExerciseRefAndSurveyRefAndSendState(
             templateMapping.getActionType(),
             surveyRefExerciseRefTuple.getExerciseRef(),
-            surveyRefExerciseRefTuple.getSurveyRef());
+            surveyRefExerciseRefTuple.getSurveyRef(),
+            SendState.INIT);
+
+    for (ActionRequestInstruction actionRequestInstruction : requests) {
+      actionRequestInstruction.setSendState(SendState.SENT);
+      actionRequestRepository.save(actionRequestInstruction);
+    }
+
     return transformationService.processActionRequests(requests);
   }
 

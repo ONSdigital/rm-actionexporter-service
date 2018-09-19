@@ -29,6 +29,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
+import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationFileCreatorTest {
@@ -37,7 +38,7 @@ public class NotificationFileCreatorTest {
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
   @Mock private Clock clock;
-  @Mock private ActionRequestService actionRequestService;
+  @Mock private ActionRequestRepository actionRequestRepository;
   @Mock private SftpServicePublisher sftpService;
   @Mock private EventPublisher eventPublisher;
   @Mock private TransformationService transformationService;

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.domain.SendState;
 import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 
 /** JPA repository for ActionRequest entities */
@@ -31,7 +32,8 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    */
   @Query(
       "SELECT DISTINCT new uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef"
-          + "(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
+          + "(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.sendState = "
+          + "uk.gov.ons.ctp.response.action.export.domain.SendState.INIT")
   List<SurveyRefExerciseRef> findDistinctSurveyAndExerciseRefs();
 
   /**
@@ -41,8 +43,8 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
    * @param exerciseRef for which to return action requests.
    * @return List ActionRequests not sent to external services previously for actionType.
    */
-  List<ActionRequestInstruction> findByDateSentIsNullAndActionTypeAndExerciseRefAndSurveyRef(
-      String actionType, String exerciseRef, String surveyRef);
+  List<ActionRequestInstruction> findByActionTypeAndExerciseRefAndSurveyRefAndSendState(
+      String actionType, String exerciseRef, String surveyRef, SendState sendState);
 
   /**
    * Retrieve an ActionRequestInstruction by actionId
