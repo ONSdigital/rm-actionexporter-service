@@ -91,7 +91,8 @@ public class NotificationFileCreator {
               actionRequestRepository.updateSendStateByActionId(actionIds, SendState.ABOUT_TO_SEND);
 
           if (actionIds.size() == saved) {
-            log.with("action_ids", actionIds).error("ActionRequests failed to mark as ABOUT_TO_SEND");
+            log.with("action_ids", actionIds)
+                .error("ActionRequests failed to mark as ABOUT_TO_SEND");
           }
         });
 
