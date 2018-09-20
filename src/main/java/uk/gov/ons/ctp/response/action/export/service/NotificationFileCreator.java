@@ -79,8 +79,6 @@ public class NotificationFileCreator {
             surveyRefExerciseRefTuple.getSurveyRef(),
             SendState.INIT);
 
-    ExportMessage exportMessage = transformationService.processActionRequests(requests);
-
     List<List<ActionRequestInstruction>> subLists = Lists.partition(requests, BATCH_SIZE);
     Set<UUID> actionIds = new HashSet<>();
     subLists.forEach(
@@ -90,14 +88,14 @@ public class NotificationFileCreator {
                 actionIds.add(request.getActionId());
               });
           int saved =
-              actionRequestRepository.updateSendStateByActionId(actionIds, SendState.QUEUED);
+              actionRequestRepository.updateSendStateByActionId(actionIds, SendState.ABOUT_TO_SEND);
 
           if (actionIds.size() == saved) {
-            log.with("action_ids", actionIds).error("ActionRequests failed to mark as QUEUED");
+            log.with("action_ids", actionIds).error("ActionRequests failed to mark as ABOUT_TO_SEND");
           }
         });
 
-    return exportMessage;
+    return transformationService.processActionRequests(requests);
   }
 
   private void uploadFile(ExportMessage exportData, String filenamePrefix) {
