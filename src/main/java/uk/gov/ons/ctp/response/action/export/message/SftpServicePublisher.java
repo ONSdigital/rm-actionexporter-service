@@ -132,7 +132,7 @@ public class SftpServicePublisher {
           int saved =
               actionRequestRepository.updateSendStateByActionId(actionIds, SendState.FAILED);
 
-          if (actionIds.size() == saved) {
+          if (actionIds.size() != saved) {
             log.with("action_ids", actionIds).error("ActionRequests failed to mark as FAILED");
           }
         });
