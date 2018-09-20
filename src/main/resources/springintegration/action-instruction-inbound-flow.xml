@@ -34,6 +34,7 @@
 
     <!-- Validated xml is transformed into the jaxb generated object model -->
     <int:channel id="actionInstructionTransformed" datatype="uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction" />
+
     <int-xml:unmarshalling-transformer
             input-channel="actionInstructionXmlValid" output-channel="actionInstructionTransformed"
             unmarshaller="actionInstructionMarshaller" />
