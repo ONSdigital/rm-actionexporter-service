@@ -2,9 +2,13 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import com.google.common.collect.Lists;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportMessage;
@@ -22,6 +26,8 @@ public class NotificationFileCreator {
 
   private static final SimpleDateFormat FILENAME_DATE_FORMAT =
       new SimpleDateFormat("ddMMyyyy_HHmm");
+
+  private static final int BATCH_SIZE = 10000;
 
   private final ActionRequestRepository actionRequestRepository;
 
@@ -73,12 +79,25 @@ public class NotificationFileCreator {
             surveyRefExerciseRefTuple.getSurveyRef(),
             SendState.INIT);
 
-    for (ActionRequestInstruction actionRequestInstruction : requests) {
-      actionRequestInstruction.setSendState(SendState.SENT);
-      actionRequestRepository.save(actionRequestInstruction);
-    }
+    ExportMessage exportMessage = transformationService.processActionRequests(requests);
 
-    return transformationService.processActionRequests(requests);
+    List<List<ActionRequestInstruction>> subLists = Lists.partition(requests, BATCH_SIZE);
+    Set<UUID> actionIds = new HashSet<>();
+    subLists.forEach(
+        (batch) -> {
+          batch.forEach(
+              (request) -> {
+                actionIds.add(request.getActionId());
+              });
+          int saved =
+              actionRequestRepository.updateSendStateByActionId(actionIds, SendState.QUEUED);
+
+          if (actionIds.size() == saved) {
+            log.with("action_ids", actionIds).error("ActionRequests failed to mark as QUEUED");
+          }
+        });
+
+    return exportMessage;
   }
 
   private void uploadFile(ExportMessage exportData, String filenamePrefix) {

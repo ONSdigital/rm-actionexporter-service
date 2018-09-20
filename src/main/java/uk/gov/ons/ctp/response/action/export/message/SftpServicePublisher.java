@@ -22,6 +22,7 @@ import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
+import uk.gov.ons.ctp.response.action.export.domain.SendState;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
@@ -71,20 +72,21 @@ public class SftpServicePublisher {
 
     List<String> actionList = (List<String>) message.getPayload().getHeaders().get(ACTION_LIST);
     List<List<String>> subLists = Lists.partition(actionList, BATCH_SIZE);
-    Set<UUID> actionIds = new HashSet<UUID>();
+    Set<UUID> actionIds = new HashSet<>();
     subLists.forEach(
         (batch) -> {
           batch.forEach(
               (actionId) -> {
                 actionIds.add(UUID.fromString(actionId));
               });
-          int saved = actionRequestRepository.updateDateSentByActionId(actionIds, now);
+          int saved =
+              actionRequestRepository.updateDateSentAndSendStateByActionId(
+                  actionIds, now, SendState.SENT);
           if (actionIds.size() == saved) {
             sendFeedbackMessage(
                 actionRequestRepository.retrieveResponseRequiredByActionId(actionIds), dateStr);
           } else {
-            log.with("action_requests", actionIds)
-                .error("ActionRequests failed to update DateSent", actionIds);
+            log.with("action_ids", actionIds).error("ActionRequests failed to update DateSent");
           }
           actionIds.clear();
         });
@@ -118,6 +120,23 @@ public class SftpServicePublisher {
         .with("action_requests", actionList)
         .with("payload", message.getPayload())
         .error("Sftp transfer failed");
+
+    List<List<String>> subLists = Lists.partition(actionList, BATCH_SIZE);
+    Set<UUID> actionIds = new HashSet<>();
+    subLists.forEach(
+        (batch) -> {
+          batch.forEach(
+              (actionId) -> {
+                actionIds.add(UUID.fromString(actionId));
+              });
+          int saved =
+              actionRequestRepository.updateSendStateByActionId(actionIds, SendState.FAILED);
+
+          if (actionIds.size() == saved) {
+            log.with("action_ids", actionIds).error("ActionRequests failed to mark as FAILED");
+          }
+        });
+
     exportInfo.addOutcome(
         fileName + " transfer failed with " + Integer.toString(actionList.size()) + " requests.");
     ExportReport exportReport =

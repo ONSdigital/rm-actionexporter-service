@@ -20,14 +20,6 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
   /**
    * Retrieve a list of collection exercise references to process.
    *
-   * @return List of distinct exercise references.
-   */
-  @Query("SELECT DISTINCT(r.exerciseRef) FROM ActionRequestInstruction r WHERE r.dateSent IS NULL")
-  List<String> findAllExerciseRefs();
-
-  /**
-   * Retrieve a list of collection exercise references to process.
-   *
    * @return List of distinct exercise references with survey reference.
    */
   @Query(
@@ -47,14 +39,6 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
       String actionType, String exerciseRef, String surveyRef, SendState sendState);
 
   /**
-   * Retrieve an ActionRequestInstruction by actionId
-   *
-   * @param actionId ActionRequestInstruction actionId to be retrieved
-   * @return ActionRequestInstruction object
-   */
-  ActionRequestInstruction findByActionId(@Param("actionId") UUID actionId);
-
-  /**
    * Update action request date sent for List of actionIds.
    *
    * @param actionIds List of ActionRequest actionIds to update
@@ -64,9 +48,20 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
   @Modifying
   @Transactional
   @Query(
-      "UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent WHERE r.actionId IN :actionIds")
-  int updateDateSentByActionId(
-      @Param("actionIds") Set<UUID> actionIds, @Param("dateSent") Timestamp dateSent);
+      "UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent, r.sendState = :sendState "
+          + "WHERE r.actionId IN :actionIds")
+  int updateDateSentAndSendStateByActionId(
+      @Param("actionIds") Set<UUID> actionIds,
+      @Param("dateSent") Timestamp dateSent,
+      @Param("sendState") SendState sendState);
+
+  @Modifying
+  @Transactional
+  @Query(
+      "UPDATE ActionRequestInstruction r SET r.sendState = :sendState WHERE r.actionId "
+          + "IN :actionIds")
+  int updateSendStateByActionId(
+      @Param("actionIds") Set<UUID> actionIds, @Param("sendState") SendState sendState);
 
   /**
    * Retrieve actionIds where response required is true for List of actionIds.
