@@ -75,9 +75,4 @@ public class TransformationServiceImplTest {
     // Then
     assertTrue(sftpMessage.isEmpty());
   }
-
-  @Test
-  public void failingTestTest() {
-    assertTrue(2 == 1);
-  }
 }
