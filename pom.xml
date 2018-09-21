@@ -2,7 +2,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>actionexportersvc</artifactId>
-    <version>10.49.15</version>
+    <version>10.49.16-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>CTP : ActionExporterService</name>
@@ -164,7 +164,7 @@
         <dependency>
             <groupId>uk.gov.ons.ctp.common</groupId>
             <artifactId>framework</artifactId>
-            <version>10.49.19</version>
+            <version>10.49.21</version>
         </dependency>
 
         <dependency>
