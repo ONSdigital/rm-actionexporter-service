@@ -1,78 +1,34 @@
 package uk.gov.ons.ctp.response.action.export.repository;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.SendState;
-import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
 
 /** JPA repository for ActionRequest entities */
 @Repository
 public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, UUID> {
 
-  /**
-   * Retrieve a list of collection exercise references to process.
-   *
-   * @return List of distinct exercise references with survey reference.
-   */
-  @Query(
-      "SELECT DISTINCT new uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef"
-          + "(r.surveyRef, r.exerciseRef) FROM ActionRequestInstruction r WHERE r.sendState = "
-          + "uk.gov.ons.ctp.response.action.export.domain.SendState.INIT")
-  List<SurveyRefExerciseRef> findDistinctSurveyAndExerciseRefs();
-
-  /**
-   * Retrieve all action export requests not done for an actionType.
-   *
-   * @param actionType for which to return action requests.
-   * @param exerciseRef for which to return action requests.
-   * @return List ActionRequests not sent to external services previously for actionType.
-   */
-  List<ActionRequestInstruction> findByActionTypeAndExerciseRefAndSurveyRefAndSendState(
-      String actionType, String exerciseRef, String surveyRef, SendState sendState);
-
-  /**
-   * Update action request date sent for List of actionIds.
-   *
-   * @param actionIds List of ActionRequest actionIds to update
-   * @param dateSent to set on each ActionRequest
-   * @return int of affected rows
-   */
   @Modifying
   @Transactional
   @Query(
-      "UPDATE ActionRequestInstruction r SET r.dateSent = :dateSent, r.sendState = :sendState "
-          + "WHERE r.actionId IN :actionIds")
-  int updateDateSentAndSendStateByActionId(
-      @Param("actionIds") Set<UUID> actionIds,
-      @Param("dateSent") Timestamp dateSent,
-      @Param("sendState") SendState sendState);
+      "UPDATE ActionRequestInstruction r SET r.exportJobId = :exportJobId "
+          + "WHERE r.exportJobId IS NULL")
+  void updateActionsWithExportJob(@Param("exportJobId") UUID exportJobId);
 
-  @Modifying
-  @Transactional
-  @Query(
-      "UPDATE ActionRequestInstruction r SET r.sendState = :sendState WHERE r.actionId "
-          + "IN :actionIds")
-  int updateSendStateByActionId(
-      @Param("actionIds") Set<UUID> actionIds, @Param("sendState") SendState sendState);
+  int countByExportJobId(UUID exportJobId);
 
-  /**
-   * Retrieve actionIds where response required is true for List of actionIds.
-   *
-   * @param actionIds List of ActionRequest actionIds to check for response required.
-   * @return actionIds of those where response required.
-   */
+  Stream<ActionRequestInstruction> findByExportJobId(UUID exportJobId);
+
   @Query(
       "SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = "
-          + "TRUE AND r.actionId IN :actionIds")
-  List<UUID> retrieveResponseRequiredByActionId(@Param("actionIds") Set<UUID> actionIds);
+          + "TRUE AND r.exportJobId = :exportJobId")
+  List<UUID> retrieveResponseRequiredForJob(@Param("exportJobId") UUID exportJobId);
 
   /**
    * Check repository for actionId existence

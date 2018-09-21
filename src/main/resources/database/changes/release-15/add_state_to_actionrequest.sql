@@ -1,7 +1,11 @@
-ALTER TABLE actionexporter.actionrequest ADD COLUMN sendstate varchar(20);
+ALTER TABLE actionexporter.actionrequest ADD COLUMN exportjobid UUID;
 
-UPDATE actionexporter.actionrequest SET sendstate = 'ABOUT_TO_SEND' WHERE dateSent IS NULL;
+UPDATE actionexporter.actionrequest SET exportjobid = uuid_generate_v4() WHERE dateSent IS NOT NULL;
 
-UPDATE actionexporter.actionrequest SET sendstate = 'SENT' WHERE dateSent IS NOT NULL;
+ALTER TABLE actionexporter.actionrequest DELETE COLUMN dateSent;
 
-ALTER TABLE actionexporter.actionrequest ALTER COLUMN sendstate SET NOT NULL;
+CREATE TABLE actionexporter.exportjob
+(   id  UUID PRIMARY KEY,
+    datesuccessfullysent  timestamp,
+    status character varying(20),
+);

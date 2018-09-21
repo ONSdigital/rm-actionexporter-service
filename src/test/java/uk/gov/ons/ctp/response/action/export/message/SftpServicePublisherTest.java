@@ -50,7 +50,7 @@ public class SftpServicePublisherTest {
     // Given
     when(actionRequestRepository.updateDateSentAndSendStateByActionId(any(), any(), any()))
         .thenReturn(1);
-    when(actionRequestRepository.retrieveResponseRequiredByActionId(any()))
+    when(actionRequestRepository.retrieveResponseRequiredForJob(any()))
         .thenReturn(Collections.singletonList(actionId));
 
     // When
@@ -58,7 +58,7 @@ public class SftpServicePublisherTest {
 
     // Then
     verify(actionRequestRepository).updateDateSentAndSendStateByActionId(any(), any(), any());
-    verify(actionRequestRepository).retrieveResponseRequiredByActionId(any());
+    verify(actionRequestRepository).retrieveResponseRequiredForJob(any());
     verify(actionFeedbackPubl).sendActionFeedback(any());
     verify(exportInfo).addOutcome(any());
   }

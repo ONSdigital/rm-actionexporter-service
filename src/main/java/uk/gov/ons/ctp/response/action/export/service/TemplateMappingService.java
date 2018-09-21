@@ -26,7 +26,7 @@ public class TemplateMappingService {
   @Autowired private TemplateMappingRepository repository;
 
   public List<TemplateMapping> storeTemplateMappings(
-      String actionType, List<TemplateMapping> templateMappingList) throws CTPException {
+      String actionType, List<TemplateMapping> templateMappingList) {
 
     for (TemplateMapping templateMapping : templateMappingList) {
       templateMapping.setActionType(actionType);

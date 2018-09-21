@@ -7,8 +7,6 @@ import com.godaddy.logging.LoggerFactory;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -69,51 +67,15 @@ public class TemplateService {
     return template;
   }
 
-  public File file(
-      List<ActionRequestInstruction> actionRequestList, String templateName, String path)
-      throws CTPException {
-    File resultFile = new File(path);
-    Writer fileWriter = null;
-    try {
-      Template template = giveTemplate(templateName);
-      fileWriter = new FileWriter(resultFile);
-      template.process(buildDataModel(actionRequestList), fileWriter);
-    } catch (IOException | TemplateException e) {
-      log.error("Exception thrown while templating for file...", e);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } finally {
-      if (fileWriter != null) {
-        try {
-          fileWriter.close();
-        } catch (IOException e) {
-          log.error("IOException thrown while closing the file writer...", e);
-        }
-      }
-    }
-
-    return resultFile;
-  }
-
   public ByteArrayOutputStream stream(
-      List<ActionRequestInstruction> actionRequestList, String templateName) throws CTPException {
+      List<ActionRequestInstruction> actionRequestList, String templateName) {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    Writer outputStreamWriter = null;
-    try {
-      Template template = giveTemplate(templateName);
-      outputStreamWriter = new OutputStreamWriter(outputStream);
+    try (Writer outputStreamWriter = new OutputStreamWriter(outputStream)) {
+      Template template = getTemplate(templateName);
       template.process(buildDataModel(actionRequestList), outputStreamWriter);
-      outputStreamWriter.close();
     } catch (IOException | TemplateException e) {
       log.error("Exception thrown while templating for stream...", e);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e.getMessage());
-    } finally {
-      if (outputStreamWriter != null) {
-        try {
-          outputStreamWriter.close();
-        } catch (IOException e) {
-          log.error("IOException thrown while closing the output stream writer...", e);
-        }
-      }
+      throw new RuntimeException(e.getMessage());
     }
 
     return outputStream;
@@ -124,17 +86,20 @@ public class TemplateService {
    *
    * @param templateName the FreeMarker template to use
    * @return the FreeMarker template
-   * @throws IOException if issue creating the FreeMarker template
-   * @throws CTPException if problem getting Freemarker template with name given
    */
-  private Template giveTemplate(String templateName) throws CTPException, IOException {
+  private Template getTemplate(String templateName) {
     log.with("template_name", templateName).debug("Entering giveMeTemplate");
-    Template template = configuration.getTemplate(templateName);
+    Template template = null;
+    try {
+      template = configuration.getTemplate(templateName);
+    } catch (IOException e) {
+      throw new RuntimeException("Error reading freemarker template");
+    }
 
     log.debug("Received template");
 
     if (template == null) {
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
+      throw new IllegalStateException(ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
     return template;
   }
