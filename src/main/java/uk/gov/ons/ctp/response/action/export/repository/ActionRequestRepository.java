@@ -15,7 +15,6 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 public interface ActionRequestRepository extends BaseRepository<ActionRequestInstruction, UUID> {
 
   @Modifying
-  @Transactional
   @Query(
       "UPDATE ActionRequestInstruction r SET r.exportJobId = :exportJobId "
           + "WHERE r.exportJobId IS NULL")

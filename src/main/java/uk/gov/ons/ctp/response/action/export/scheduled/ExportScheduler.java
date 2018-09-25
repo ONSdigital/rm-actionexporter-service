@@ -90,9 +90,7 @@ public class ExportScheduler {
 
   private void processExport() {
     ExportJob exportJob = new ExportJob();
-    exportJob.setId(UUID.randomUUID());
-    exportJob.setStatus(JobStatus.INIT);
-    exportJobRepository.saveAndFlush(exportJob);
+    exportJob = exportJobRepository.saveAndFlush(exportJob);
 
     actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
 
@@ -103,9 +101,6 @@ public class ExportScheduler {
     Stream<ActionRequestInstruction> actionRequestInstructions = actionRequestRepository
         .findByExportJobId(exportJob.getId());
 
-    Map<String, TemplateMapping> actionTypeTemplateMappings = templateMappingService
-        .retrieveAllTemplateMappingsByActionType();
-
     Map<String, List<TemplateMapping>> fileNameTemplateMappings = templateMappingService
         .retrieveAllTemplateMappingsByFilename();
 
@@ -114,12 +109,6 @@ public class ExportScheduler {
         new HashMap<>();
 
     actionRequestInstructions.forEach(ari -> {
-      TemplateMapping actionTemplateMapping = actionTypeTemplateMappings.get(ari.getActionType());
-      if (actionTemplateMapping == null) {
-        log.with("action_request_instruction", ari)
-            .warn("No action type template for action request instruction");
-      }
-
       for (String filename : filenames) {
         List<TemplateMapping> templateMappings = fileNameTemplateMappings.get(filename);
         for (TemplateMapping templateMapping : templateMappings) {
@@ -141,21 +130,17 @@ public class ExportScheduler {
       }
     });
 
-    Map<String, ByteArrayOutputStream> filenamePrefixToStreamsMap = new HashMap<>();
-    filenamePrefixToActionRequestInstructionMap.forEach((filenamePrefix, ariSubset) -> {
-      ByteArrayOutputStream stream = templateService.stream(ariSubset, filenamePrefix);
-      filenamePrefixToStreamsMap.put(filenamePrefix, stream);
+    filenamePrefixToActionRequestInstructionMap.forEach((filenamePrefix, actionRequestList) -> {
+      sendFile(actionRequestList, filenamePrefix, exportJob);
     });
-
-    sendFiles(filenamePrefixToStreamsMap, exportJob);
-  }
-
-  private void sendFiles(Map<String, ByteArrayOutputStream> filenamePrefixToStreamsMap,
-      ExportJob exportJob) {
-    filenamePrefixToStreamsMap.forEach((filenamePrefix, data) -> notificationFileCreator
-        .uploadData(filenamePrefix, data, exportJob));
 
     exportJob.setStatus(JobStatus.QUEUED);
     exportJobRepository.saveAndFlush(exportJob);
+  }
+
+  private void sendFile(List<ActionRequestInstruction> actionRequestList, String filenamePrefix,
+      ExportJob exportJob) {
+    ByteArrayOutputStream stream = templateService.stream(actionRequestList, filenamePrefix);
+    notificationFileCreator.uploadData(filenamePrefix, stream, exportJob);
   }
 }

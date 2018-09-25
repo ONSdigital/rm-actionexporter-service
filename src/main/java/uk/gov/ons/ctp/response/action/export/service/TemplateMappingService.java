@@ -58,14 +58,4 @@ public class TemplateMappingService {
         .stream()
         .collect(Collectors.groupingBy(TemplateMapping::getFileNamePrefix));
   }
-
-  public Map<String, TemplateMapping> retrieveAllTemplateMappingsByActionType() {
-    Map<String, TemplateMapping> mappings = new HashMap<String, TemplateMapping>();
-    retrieveAllTemplateMappings()
-        .forEach(
-            (templateMapping) -> {
-              mappings.put(templateMapping.getActionType(), templateMapping);
-            });
-    return mappings;
-  }
 }
