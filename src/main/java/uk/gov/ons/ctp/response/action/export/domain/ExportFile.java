@@ -1,7 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
+import java.sql.Timestamp;
 import java.util.UUID;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,10 +20,29 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "exportjob", schema = "actionexporter")
-public class ExportJob {
+@Table(name = "exportfile", schema = "actionexporter")
+public class ExportFile {
   @Id
   @GeneratedValue(generator="system-uuid")
   @GenericGenerator(name="system-uuid", strategy = "uuid")
   private UUID id;
+
+  @Column(name = "filename")
+  private String filename;
+
+  @Column(name = "exportjobid")
+  private UUID exportJobId;
+
+  @Column(name = "datesuccessfullysent")
+  private Timestamp dateSuccessfullySent;
+
+  @Column(name = "status")
+  @Enumerated(EnumType.STRING)
+  private SendStatus status = SendStatus.SENT;
+
+  public enum SendStatus {
+    SENT,
+    SUCCEEDED,
+    FAILED
+  }
 }

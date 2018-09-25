@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.Publisher;
@@ -18,11 +17,11 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
+import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
+import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob.JobStatus;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
-import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
+import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
@@ -37,9 +36,8 @@ public class SftpServicePublisher {
   private static final Logger log = LoggerFactory.getLogger(SftpServicePublisher.class);
 
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
-  private static final String JOB_ID = "export_job_id";
-
-  @Autowired private ActionRequestRepository actionRequestRepository;
+  private static final String RESPONSES_REQUIRED = "response_required_id_list";
+  private static final String ACTION_COUNT = "action_count";
 
   @Autowired private ExportReportRepository exportReportRepository;
 
@@ -47,44 +45,38 @@ public class SftpServicePublisher {
 
   @Autowired private ExportInfo exportInfo;
 
-  @Autowired private ExportJobRepository exportJobRepository;
+  @Autowired private ExportFileRepository exportFileRepository;
 
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(
       @Header(FileHeaders.REMOTE_FILE) String filename,
-      @Header(JOB_ID) String exportJobId,
+      @Header(RESPONSES_REQUIRED) List<String> responseRequiredList,
+      @Header(ACTION_COUNT) String actionCount,
       ByteArrayOutputStream stream) {
 
     return stream.toByteArray();
   }
 
-  /**
-   * Using JPA entities to update repository for actionIds exported was slow. JPQL queries used for
-   * performance reasons. To increase performance updates batched with IN clause.
-   *
-   * @param message Spring integration message sent
-   */
   @SuppressWarnings("unchecked")
   @ServiceActivator(inputChannel = "sftpSuccessProcess")
   public void sftpSuccessProcess(GenericMessage<GenericMessage<byte[]>> message) {
     Timestamp now = DateTimeUtil.nowUTC();
     String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
-    UUID exportJobId = UUID.fromString((String)message.getHeaders().get(JOB_ID));
+    List<String> responsesRequiredList = (List<String>)message.getHeaders().get(RESPONSES_REQUIRED);
+    int actionCount = Integer.valueOf((String)message.getHeaders().get(ACTION_COUNT));
+    String filename = (String)message.getHeaders().get(FileHeaders.REMOTE_FILE);
 
-    ExportJob exportJob = exportJobRepository.findOne(exportJobId);
-    exportJob.setStatus(JobStatus.SUCCEEDED);
-    exportJob.setDateSuccessfullySent(now);
-    exportJobRepository.saveAndFlush(exportJob);
+    ExportFile exportFile = exportFileRepository.findOneByFilename(filename);
+    exportFile.setStatus(SendStatus.SUCCEEDED);
+    exportFile.setDateSuccessfullySent(now);
+    exportFileRepository.saveAndFlush(exportFile);
 
-    sendFeedbackMessage(actionRequestRepository.retrieveResponseRequiredForJob(exportJobId),
-        dateStr);
-
-    int actionRequestInstructionCount = actionRequestRepository.countByExportJobId(exportJobId);
+    sendFeedbackMessage(responsesRequiredList, dateStr);
 
     ExportReport exportReport =
         new ExportReport(
             (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE),
-            actionRequestInstructionCount,
+            actionCount,
             now,
             true,
             false);
@@ -92,11 +84,7 @@ public class SftpServicePublisher {
 
     log.with("file_name", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE))
         .debug("Sftp transfer complete");
-    exportInfo.addOutcome(
-        (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE)
-            + " transferred with "
-            + Integer.toString(actionRequestInstructionCount)
-            + " requests.");
+    exportInfo.addOutcome(filename + " transferred with " + actionCount + " requests.");
   }
 
   @SuppressWarnings("unchecked")
@@ -105,22 +93,20 @@ public class SftpServicePublisher {
     MessageHeaders headers =
         ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
-    UUID exportJobId = UUID.fromString((String)headers.get(JOB_ID));
+    int actionCount = Integer.valueOf((String)message.getHeaders().get(ACTION_COUNT));
+
     log.with("file_name", fileName)
-        .with("export_job_id", exportJobId)
+        .with("action_count", actionCount)
         .with("payload", message.getPayload())
         .error("Sftp transfer failed");
 
-    ExportJob exportJob = exportJobRepository.findOne(exportJobId);
-    exportJob.setStatus(JobStatus.FAILED);
-    exportJobRepository.saveAndFlush(exportJob);
+    ExportFile exportFile = exportFileRepository.findOneByFilename(fileName);
+    exportFile.setStatus(SendStatus.FAILED);
+    exportFileRepository.saveAndFlush(exportFile);
 
-    int actionRequestInstructionCount = actionRequestRepository.countByExportJobId(exportJobId);
-
-    exportInfo.addOutcome(
-        fileName + " transfer failed for " + actionRequestInstructionCount + "action requests");
+    exportInfo.addOutcome(fileName + " transfer failed for " + actionCount + "action requests");
     ExportReport exportReport =
-        new ExportReport(fileName, actionRequestInstructionCount, DateTimeUtil.nowUTC(), false, false);
+        new ExportReport(fileName, actionCount, DateTimeUtil.nowUTC(), false, false);
     exportReportRepository.save(exportReport);
   }
 
@@ -130,12 +116,12 @@ public class SftpServicePublisher {
    * @param actionIds of ActionRequests for which to send ActionFeedback.
    * @param dateStr when actioned.
    */
-  private void sendFeedbackMessage(List<UUID> actionIds, String dateStr) {
+  private void sendFeedbackMessage(List<String> actionIds, String dateStr) {
     actionIds.forEach(
         (actionId) -> {
           ActionFeedback actionFeedback =
               new ActionFeedback(
-                  actionId.toString(), "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);
+                  actionId, "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);
           actionFeedbackPubl.sendActionFeedback(actionFeedback);
         });
   }

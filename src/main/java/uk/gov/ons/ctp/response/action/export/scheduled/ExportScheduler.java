@@ -3,13 +3,14 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob.JobStatus;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
@@ -89,15 +89,19 @@ public class ExportScheduler {
   }
 
   private void processExport() {
+    if (!actionRequestRepository.existsByExportJobIdIsNull()) {
+      return;
+    }
+
     ExportJob exportJob = new ExportJob();
     exportJob = exportJobRepository.saveAndFlush(exportJob);
 
     actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
 
-    prepareFilesToSend(exportJob);
+    prepareAndSendFiles(exportJob);
   }
 
-  private void prepareFilesToSend(ExportJob exportJob) {
+  private void prepareAndSendFiles(ExportJob exportJob) {
     Stream<ActionRequestInstruction> actionRequestInstructions = actionRequestRepository
         .findByExportJobId(exportJob.getId());
 
@@ -105,7 +109,7 @@ public class ExportScheduler {
         .retrieveAllTemplateMappingsByFilename();
 
     Set<String> filenames = fileNameTemplateMappings.keySet();
-    Map<String, List<ActionRequestInstruction>> filenamePrefixToActionRequestInstructionMap =
+    Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap =
         new HashMap<>();
 
     actionRequestInstructions.forEach(ari -> {
@@ -113,34 +117,58 @@ public class ExportScheduler {
         List<TemplateMapping> templateMappings = fileNameTemplateMappings.get(filename);
         for (TemplateMapping templateMapping : templateMappings) {
           if (templateMapping.getActionType().equals(ari.getActionType())) {
-            final String filenamePrefix =
+            String filenamePrefix =
                 filename
                     + "_"
                     + ari.getSurveyRef()
                     + "_"
                     + ari.getExerciseRef();
 
-            List<ActionRequestInstruction> dataForSurveyRefExerciseRef =
-                filenamePrefixToActionRequestInstructionMap
-                    .computeIfAbsent(filenamePrefix, key -> new LinkedList<>());
+            Map<String, List<ActionRequestInstruction>> templateNameMap =
+                filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
 
-            dataForSurveyRefExerciseRef.add(ari);
+            List<ActionRequestInstruction> ariSubset = templateNameMap
+                .computeIfAbsent(templateMapping.getTemplate(), key -> new LinkedList<>());
+
+            ariSubset.add(ari);
           }
         }
       }
     });
 
-    filenamePrefixToActionRequestInstructionMap.forEach((filenamePrefix, actionRequestList) -> {
-      sendFile(actionRequestList, filenamePrefix, exportJob);
-    });
+    filenamePrefixToDataMap.forEach((filenamePrefix, data) -> {
+      List<ByteArrayOutputStream> streamList = new LinkedList<>();
+      List<String> responseRequiredList = new LinkedList<>();
+      AtomicInteger actionCount = new AtomicInteger(0);
 
-    exportJob.setStatus(JobStatus.QUEUED);
-    exportJobRepository.saveAndFlush(exportJob);
+      data.forEach((templateName, actionRequestList) -> {
+        streamList.add(templateService.stream(actionRequestList, templateName));
+        actionRequestList.forEach(ari -> {
+          actionCount.incrementAndGet();
+
+          if (ari.isResponseRequired()) {
+            responseRequiredList.add(ari.getActionId().toString());
+          }
+        });
+      });
+
+      notificationFileCreator.uploadData(filenamePrefix, getMergedStreams(streamList), exportJob,
+          responseRequiredList, actionCount.get());
+    });
   }
 
-  private void sendFile(List<ActionRequestInstruction> actionRequestList, String filenamePrefix,
-      ExportJob exportJob) {
-    ByteArrayOutputStream stream = templateService.stream(actionRequestList, filenamePrefix);
-    notificationFileCreator.uploadData(filenamePrefix, stream, exportJob);
+  private ByteArrayOutputStream getMergedStreams(List<ByteArrayOutputStream> streamList) {
+    ByteArrayOutputStream mergedStream = new ByteArrayOutputStream();
+
+    for (ByteArrayOutputStream outputStream : streamList) {
+      try {
+        mergedStream.write(outputStream.toByteArray());
+      } catch (IOException ex) {
+        log.error("Error merging ByteArrayOutputStreams", ex);
+        throw new RuntimeException();
+      }
+    }
+
+    return mergedStream;
   }
 }
