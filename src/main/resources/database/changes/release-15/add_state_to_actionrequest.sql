@@ -5,7 +5,13 @@ UPDATE actionexporter.actionrequest SET exportjobid = uuid_generate_v4() WHERE d
 ALTER TABLE actionexporter.actionrequest DELETE COLUMN dateSent;
 
 CREATE TABLE actionexporter.exportjob
+(   id  UUID PRIMARY KEY
+);
+
+CREATE TABLE actionexporter.exportfile
 (   id  UUID PRIMARY KEY,
+    status filename varying(60),
+    exportjobid UUID,
     datesuccessfullysent  timestamp,
     status character varying(20),
 );
