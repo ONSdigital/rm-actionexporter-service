@@ -19,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "exportjob", schema = "actionexporter")
 public class ExportJob {
   @Id
-  @GeneratedValue(generator="system-uuid")
-  @GenericGenerator(name="system-uuid", strategy = "uuid")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private UUID id;
 }

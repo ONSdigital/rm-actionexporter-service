@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.response.action.export.repository;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

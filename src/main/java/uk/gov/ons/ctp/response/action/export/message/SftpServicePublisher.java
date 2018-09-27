@@ -5,7 +5,6 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.Publisher;
@@ -20,7 +19,6 @@ import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
 import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
-import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
@@ -50,7 +48,7 @@ public class SftpServicePublisher {
   @Publisher(channel = "sftpOutbound")
   public byte[] sendMessage(
       @Header(FileHeaders.REMOTE_FILE) String filename,
-      @Header(RESPONSES_REQUIRED) List<String> responseRequiredList,
+      @Header(RESPONSES_REQUIRED) String[] responseRequiredList,
       @Header(ACTION_COUNT) String actionCount,
       ByteArrayOutputStream stream) {
 
@@ -60,30 +58,24 @@ public class SftpServicePublisher {
   @SuppressWarnings("unchecked")
   @ServiceActivator(inputChannel = "sftpSuccessProcess")
   public void sftpSuccessProcess(GenericMessage<GenericMessage<byte[]>> message) {
+    String filename = (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE);
     Timestamp now = DateTimeUtil.nowUTC();
-    String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
-    List<String> responsesRequiredList = (List<String>)message.getHeaders().get(RESPONSES_REQUIRED);
-    int actionCount = Integer.valueOf((String)message.getHeaders().get(ACTION_COUNT));
-    String filename = (String)message.getHeaders().get(FileHeaders.REMOTE_FILE);
 
     ExportFile exportFile = exportFileRepository.findOneByFilename(filename);
     exportFile.setStatus(SendStatus.SUCCEEDED);
     exportFile.setDateSuccessfullySent(now);
     exportFileRepository.saveAndFlush(exportFile);
 
+    String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
+    String[] responsesRequiredList =
+        (String[]) message.getPayload().getHeaders().get(RESPONSES_REQUIRED);
     sendFeedbackMessage(responsesRequiredList, dateStr);
 
-    ExportReport exportReport =
-        new ExportReport(
-            (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE),
-            actionCount,
-            now,
-            true,
-            false);
+    int actionCount = Integer.valueOf((String) message.getPayload().getHeaders().get(ACTION_COUNT));
+    ExportReport exportReport = new ExportReport(filename, actionCount, now, true, false);
     exportReportRepository.save(exportReport);
 
-    log.with("file_name", message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE))
-        .debug("Sftp transfer complete");
+    log.with("file_name", filename).debug("Sftp transfer complete");
     exportInfo.addOutcome(filename + " transferred with " + actionCount + " requests.");
   }
 
@@ -93,7 +85,7 @@ public class SftpServicePublisher {
     MessageHeaders headers =
         ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
-    int actionCount = Integer.valueOf((String)message.getHeaders().get(ACTION_COUNT));
+    int actionCount = Integer.valueOf((String) headers.get(ACTION_COUNT));
 
     log.with("file_name", fileName)
         .with("action_count", actionCount)
@@ -104,7 +96,7 @@ public class SftpServicePublisher {
     exportFile.setStatus(SendStatus.FAILED);
     exportFileRepository.saveAndFlush(exportFile);
 
-    exportInfo.addOutcome(fileName + " transfer failed for " + actionCount + "action requests");
+    exportInfo.addOutcome(fileName + " transfer failed for " + actionCount + " requests.");
     ExportReport exportReport =
         new ExportReport(fileName, actionCount, DateTimeUtil.nowUTC(), false, false);
     exportReportRepository.save(exportReport);
@@ -116,13 +108,11 @@ public class SftpServicePublisher {
    * @param actionIds of ActionRequests for which to send ActionFeedback.
    * @param dateStr when actioned.
    */
-  private void sendFeedbackMessage(List<String> actionIds, String dateStr) {
-    actionIds.forEach(
-        (actionId) -> {
-          ActionFeedback actionFeedback =
-              new ActionFeedback(
-                  actionId, "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);
-          actionFeedbackPubl.sendActionFeedback(actionFeedback);
-        });
+  private void sendFeedbackMessage(String[] actionIds, String dateStr) {
+    for (String actionId : actionIds) {
+      ActionFeedback actionFeedback =
+          new ActionFeedback(actionId, "ActionExport Sent: " + dateStr, Outcome.REQUEST_COMPLETED);
+      actionFeedbackPubl.sendActionFeedback(actionFeedback);
+    }
   }
 }

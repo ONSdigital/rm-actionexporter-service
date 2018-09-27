@@ -5,6 +5,7 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -102,59 +103,64 @@ public class ExportScheduler {
   }
 
   private void prepareAndSendFiles(ExportJob exportJob) {
-    Stream<ActionRequestInstruction> actionRequestInstructions = actionRequestRepository
-        .findByExportJobId(exportJob.getId());
+    Stream<ActionRequestInstruction> actionRequestInstructions =
+        actionRequestRepository.findByExportJobId(exportJob.getId());
 
-    Map<String, List<TemplateMapping>> fileNameTemplateMappings = templateMappingService
-        .retrieveAllTemplateMappingsByFilename();
+    Map<String, List<TemplateMapping>> fileNameTemplateMappings =
+        templateMappingService.retrieveAllTemplateMappingsByFilename();
 
     Set<String> filenames = fileNameTemplateMappings.keySet();
     Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap =
         new HashMap<>();
 
-    actionRequestInstructions.forEach(ari -> {
-      for (String filename : filenames) {
-        List<TemplateMapping> templateMappings = fileNameTemplateMappings.get(filename);
-        for (TemplateMapping templateMapping : templateMappings) {
-          if (templateMapping.getActionType().equals(ari.getActionType())) {
-            String filenamePrefix =
-                filename
-                    + "_"
-                    + ari.getSurveyRef()
-                    + "_"
-                    + ari.getExerciseRef();
+    actionRequestInstructions.forEach(
+        ari -> {
+          for (String filename : filenames) {
+            List<TemplateMapping> templateMappings = fileNameTemplateMappings.get(filename);
+            for (TemplateMapping templateMapping : templateMappings) {
+              if (templateMapping.getActionType().equals(ari.getActionType())) {
+                String filenamePrefix =
+                    filename + "_" + ari.getSurveyRef() + "_" + ari.getExerciseRef();
 
-            Map<String, List<ActionRequestInstruction>> templateNameMap =
-                filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
+                Map<String, List<ActionRequestInstruction>> templateNameMap =
+                    filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
 
-            List<ActionRequestInstruction> ariSubset = templateNameMap
-                .computeIfAbsent(templateMapping.getTemplate(), key -> new LinkedList<>());
+                List<ActionRequestInstruction> ariSubset =
+                    templateNameMap.computeIfAbsent(
+                        templateMapping.getTemplate(), key -> new LinkedList<>());
 
-            ariSubset.add(ari);
-          }
-        }
-      }
-    });
-
-    filenamePrefixToDataMap.forEach((filenamePrefix, data) -> {
-      List<ByteArrayOutputStream> streamList = new LinkedList<>();
-      List<String> responseRequiredList = new LinkedList<>();
-      AtomicInteger actionCount = new AtomicInteger(0);
-
-      data.forEach((templateName, actionRequestList) -> {
-        streamList.add(templateService.stream(actionRequestList, templateName));
-        actionRequestList.forEach(ari -> {
-          actionCount.incrementAndGet();
-
-          if (ari.isResponseRequired()) {
-            responseRequiredList.add(ari.getActionId().toString());
+                ariSubset.add(ari);
+              }
+            }
           }
         });
-      });
 
-      notificationFileCreator.uploadData(filenamePrefix, getMergedStreams(streamList), exportJob,
-          responseRequiredList, actionCount.get());
-    });
+    filenamePrefixToDataMap.forEach(
+        (filenamePrefix, data) -> {
+          List<ByteArrayOutputStream> streamList = new LinkedList<>();
+          Set<String> responseRequiredList = new HashSet<>();
+          AtomicInteger actionCount = new AtomicInteger(0);
+
+          data.forEach(
+              (templateName, actionRequestList) -> {
+                streamList.add(templateService.stream(actionRequestList, templateName));
+                actionRequestList.forEach(
+                    ari -> {
+                      actionCount.incrementAndGet();
+
+                      if (ari.isResponseRequired()) {
+                        responseRequiredList.add(ari.getActionId().toString());
+                      }
+                    });
+              });
+
+          notificationFileCreator.uploadData(
+              filenamePrefix,
+              getMergedStreams(streamList),
+              exportJob,
+              responseRequiredList.toArray(new String[0]),
+              actionCount.get());
+        });
   }
 
   private ByteArrayOutputStream getMergedStreams(List<ByteArrayOutputStream> streamList) {

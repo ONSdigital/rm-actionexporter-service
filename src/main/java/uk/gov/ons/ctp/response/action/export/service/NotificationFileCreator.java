@@ -5,7 +5,6 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
@@ -40,8 +39,12 @@ public class NotificationFileCreator {
     this.clock = clock;
   }
 
-  public void uploadData(String filenamePrefix, ByteArrayOutputStream data, ExportJob exportJob,
-      List<String> responseRequiredList, int actionCount) {
+  public void uploadData(
+      String filenamePrefix,
+      ByteArrayOutputStream data,
+      ExportJob exportJob,
+      String[] responseRequiredList,
+      int actionCount) {
     if (actionCount == 0) {
       return;
     }
@@ -56,11 +59,7 @@ public class NotificationFileCreator {
     exportFile.setFilename(filename);
     exportFileRepository.saveAndFlush(exportFile);
 
-    sftpService.sendMessage(
-        filename,
-        responseRequiredList,
-        Integer.toString(actionCount),
-        data);
+    sftpService.sendMessage(filename, responseRequiredList, Integer.toString(actionCount), data);
 
     eventPublisher.publishEvent("Printed file " + filename);
   }

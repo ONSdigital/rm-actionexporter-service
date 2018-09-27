@@ -23,8 +23,8 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "exportfile", schema = "actionexporter")
 public class ExportFile {
   @Id
-  @GeneratedValue(generator="system-uuid")
-  @GenericGenerator(name="system-uuid", strategy = "uuid")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private UUID id;
 
   @Column(name = "filename")
@@ -38,10 +38,10 @@ public class ExportFile {
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
-  private SendStatus status = SendStatus.SENT;
+  private SendStatus status = SendStatus.QUEUED;
 
   public enum SendStatus {
-    SENT,
+    QUEUED,
     SUCCEEDED,
     FAILED
   }

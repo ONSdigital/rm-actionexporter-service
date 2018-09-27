@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.TemplateMappingService.EXCEPTION_STORE_TEMPLATE_MAPPING;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,10 +39,6 @@ public class TemplateMappingServiceImplTest {
     boolean exceptionThrown = false;
     try {
       templateMappingService.storeTemplateMappings("BSNOT", null);
-    } catch (CTPException e) {
-      exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(EXCEPTION_STORE_TEMPLATE_MAPPING, e.getMessage());
     } catch (NullPointerException e) {
       exceptionThrown = true;
       assertEquals(null, e.getMessage());
@@ -73,10 +68,8 @@ public class TemplateMappingServiceImplTest {
 
     try {
       templateMappingService.storeTemplateMappings("BSNOT", myObjects);
-    } catch (CTPException e) {
+    } catch (NullPointerException e) {
       exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(EXCEPTION_TEMPLATE_MAPPING_EMPTY, e.getMessage());
     }
     assertTrue(exceptionThrown);
     verify(repository, times(0)).save(any(TemplateMapping.class));

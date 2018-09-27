@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 
 @Repository
-public interface ExportJobRepository extends JpaRepository<ExportJob, UUID> {
-
-}
+public interface ExportJobRepository extends JpaRepository<ExportJob, UUID> {}
