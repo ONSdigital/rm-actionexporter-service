@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -120,7 +121,11 @@ public class ExportScheduler {
             for (TemplateMapping templateMapping : templateMappings) {
               if (templateMapping.getActionType().equals(ari.getActionType())) {
                 String filenamePrefix =
-                    filename + "_" + ari.getSurveyRef() + "_" + ari.getExerciseRef();
+                    filename
+                        + "_"
+                        + ari.getSurveyRef()
+                        + "_"
+                        + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
 
                 Map<String, List<ActionRequestInstruction>> templateNameMap =
                     filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
@@ -176,5 +181,10 @@ public class ExportScheduler {
     }
 
     return mergedStream;
+  }
+
+  private String getExerciseRefWithoutSurveyRef(String exerciseRef) {
+    String exerciseRefWithoutSurveyRef = StringUtils.substringAfter(exerciseRef, "_");
+    return StringUtils.defaultIfEmpty(exerciseRefWithoutSurveyRef, exerciseRef);
   }
 }
