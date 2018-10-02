@@ -33,7 +33,7 @@ import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 public class ExportScheduler {
   private static final Logger log = LoggerFactory.getLogger(ExportScheduler.class);
 
-  public static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
+  private static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
 
   private final TemplateMappingService templateMappingService;
 

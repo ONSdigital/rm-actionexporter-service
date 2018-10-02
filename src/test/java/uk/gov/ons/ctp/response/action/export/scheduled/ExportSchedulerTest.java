@@ -76,6 +76,7 @@ public class ExportSchedulerTest {
   public void shouldUnlockWhenExceptionThrown() throws InterruptedException {
     RLock mockLock = mock(RLock.class);
     DataGrid mockDataGrid = mock(DataGrid.class);
+    boolean exceptionThrown = false;
 
     // Given
     given(redissonClient.getFairLock(any())).willReturn(mockLock);
@@ -83,11 +84,11 @@ public class ExportSchedulerTest {
     given(appConfig.getDataGrid()).willReturn(mockDataGrid);
     given(actionRequestRepository.existsByExportJobIdIsNull()).willThrow(RuntimeException.class);
 
+    // When
     try {
-      // When
       exportScheduler.scheduleExport();
     } catch (Exception ex) {
-      // Ignored
+      exceptionThrown = true;
     }
 
     // Verify
@@ -95,6 +96,7 @@ public class ExportSchedulerTest {
     inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
     inOrder.verify(actionRequestRepository).existsByExportJobIdIsNull();
     inOrder.verify(mockLock).unlock();
+    assertThat(exceptionThrown).isTrue();
   }
 
   @Test
