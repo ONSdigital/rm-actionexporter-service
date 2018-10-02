@@ -21,14 +21,7 @@ public interface ActionRequestRepository extends BaseRepository<ActionRequestIns
           + "WHERE r.exportJobId IS NULL")
   void updateActionsWithExportJob(@Param("exportJobId") UUID exportJobId);
 
-  int countByExportJobId(UUID exportJobId);
-
   Stream<ActionRequestInstruction> findByExportJobId(UUID exportJobId);
-
-  @Query(
-      "SELECT r.actionId FROM ActionRequestInstruction r WHERE r.responseRequired = "
-          + "TRUE AND r.exportJobId = :exportJobId")
-  List<UUID> retrieveResponseRequiredForJob(@Param("exportJobId") UUID exportJobId);
 
   /**
    * Check repository for actionId existence
