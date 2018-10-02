@@ -1,41 +1,11 @@
 databaseChangeLog:
 
-  - changeSet:
-      id: 14-1
-      author: Nick Grant
-      changes:
-        - sqlFile:
-            comment: Add export job ID row to actionrequest table
-            path: add_job_id_to_actionrequest.sql
-            relativeToChangelogFile: true
-            splitStatements: false
-
-  - changeSet:
-          id: 14-2
-          author: Nick Grant
-          changes:
-          - sqlFile:
-                  comment: Create exportjob table
-                  path: create_exportjob_table.sql
-                  relativeToChangelogFile: true
-                  splitStatements: false
-
-  - changeSet:
-          id: 14-3
-          author: Nick Grant
-          changes:
-          - sqlFile:
-                  comment: Create exportfile table
-                  path: create_exportfile_table.sql
-                  relativeToChangelogFile: true
-                  splitStatements: false
-
-  - changeSet:
-          id: 14-4
-          author: Nick Grant
-          changes:
-          - sqlFile:
-                  comment: Delete datesent from actionrequest table
-                  path: drop_actionrequest_datesent.sql
-                  relativeToChangelogFile: true
-                  splitStatements: false
+- changeSet:
+    id: 15-1
+    author: Nick Grant
+    changes:
+    - sqlFile:
+        comment: Create tables, add column and drop column, patch data
+        path: create_tables_column_drop_patch.sql
+        relativeToChangelogFile: true
+        splitStatements: false

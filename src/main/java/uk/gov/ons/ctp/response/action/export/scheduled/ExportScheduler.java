@@ -72,21 +72,26 @@ public class ExportScheduler {
   @Transactional
   public void scheduleExport() {
     log.debug("Scheduled run start");
-    RLock lock = redissonClient.getFairLock(ACTION_EXECUTION_LOCK);
     try {
-      // Get an EXCLUSIVE lock so hopefully only one thread/process is ever writing files to the
-      // SFTP server. Automatically unlock after a certain amount of time to prevent
-      // issues when lock holder crashes or Redis crashes causing permanent lockout
-      if (lock.tryLock(appConfig.getDataGrid().getLockTimeToLiveSeconds(), TimeUnit.SECONDS)) {
-        try {
-          processExport();
-        } finally {
-          // Always unlock the distributed lock
-          lock.unlock();
+      RLock lock = redissonClient.getFairLock(ACTION_EXECUTION_LOCK);
+      try {
+        // Get an EXCLUSIVE lock so hopefully only one thread/process is ever writing files to the
+        // SFTP server. Automatically unlock after a certain amount of time to prevent
+        // issues when lock holder crashes or Redis crashes causing permanent lockout
+        if (lock.tryLock(appConfig.getDataGrid().getLockTimeToLiveSeconds(), TimeUnit.SECONDS)) {
+          try {
+            processExport();
+          } finally {
+            // Always unlock the distributed lock
+            lock.unlock();
+          }
         }
+      } catch (InterruptedException e) {
+        // Ignored - process stopped while waiting for lock
       }
-    } catch (InterruptedException e) {
-      // Ignored - process stopped while waiting for lock
+    } catch (Exception ex) {
+      log.error("Uncaught exception", ex);
+      throw ex;
     }
   }
 
