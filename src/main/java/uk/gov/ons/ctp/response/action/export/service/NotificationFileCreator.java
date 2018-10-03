@@ -52,6 +52,14 @@ public class NotificationFileCreator {
     final String now = FILENAME_DATE_FORMAT.format(clock.millis());
     String filename = String.format("%s_%s.csv", filenamePrefix, now);
 
+    if (exportFileRepository.existsByFilename(filename)) {
+      log.with("filename", filename)
+          .warn(
+              "Duplicate filename. The cron job is probably running too frequently. The "
+                  + "Action Exporter service is designed to only run every minute, maximum");
+      throw new RuntimeException();
+    }
+
     log.with("filename", filename).info("Uploading file");
 
     ExportFile exportFile = new ExportFile();

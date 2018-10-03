@@ -2,7 +2,9 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayOutputStream;
@@ -64,5 +66,32 @@ public class NotificationFileCreatorTest {
         .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
 
     verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
+  }
+
+  @Test
+  public void shouldThrowExceptionForDuplicateFilename() {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ExportJob exportJob = new ExportJob(UUID.randomUUID());
+    String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
+    Date now = new Date();
+    boolean expectedExceptionThrown = false;
+
+    // Given
+    given(clock.millis()).willReturn(now.getTime());
+    given(exportFileRepository.existsByFilename(any())).willReturn(true);
+
+    // When
+    try {
+      notificationFileCreator.uploadData(
+          "TESTFILENAMEPREFIX", bos, exportJob, responseRequiredList, 666);
+    } catch (RuntimeException ex) {
+      expectedExceptionThrown = true;
+    }
+
+    // Then
+    assertThat(expectedExceptionThrown).isTrue();
+    verify(exportFileRepository, never()).saveAndFlush(any());
+    verify(sftpService, never()).sendMessage(any(), any(), any(), any());
+    verify(eventPublisher, never()).publishEvent(any());
   }
 }
