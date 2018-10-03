@@ -107,7 +107,7 @@ public class ActionExportService {
         actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
 
     boolean cancelled = false;
-    if (actionRequest != null && actionRequest.getDateSent() == null) {
+    if (actionRequest != null && actionRequest.getExportJobId() == null) {
       actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
       cancelled = true;
     } else {

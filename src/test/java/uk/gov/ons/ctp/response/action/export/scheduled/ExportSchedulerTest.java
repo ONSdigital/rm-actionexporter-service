@@ -1,96 +1,77 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.TemplateMappings.templateMappingsWithActionType;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
-import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
-import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import uk.gov.ons.ctp.response.action.export.config.AppConfig;
+import uk.gov.ons.ctp.response.action.export.config.DataGrid;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExportSchedulerTest {
 
-  @Mock private DistributedLockManager actionExportLockManager;
-  @Mock private TemplateMappingService templateMappingService;
-  @Mock private ActionRequestService actionRequestService;
-  @Mock private NotificationFileCreator notificationFileCreator;
+  @Mock private RedissonClient redissonClient;
+  @Mock private AppConfig appConfig;
+  @Mock private ExportProcessor exportProcessor;
   @InjectMocks private ExportScheduler exportScheduler;
 
   @Test
-  public void shouldLockOnFilenameAndCollectionExercise() {
+  public void shouldLockAndUnlock() throws InterruptedException {
+    RLock mockLock = mock(RLock.class);
+    DataGrid mockDataGrid = mock(DataGrid.class);
+
     // Given
-    given(actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef())
-        .willReturn(Collections.singletonList(new SurveyRefExerciseRef("1", "1")));
-    given(templateMappingService.retrieveAllTemplateMappingsByFilename())
-        .willReturn(Collections.singletonMap("filename", templateMappingsWithActionType("BSNOT")));
-    given(actionExportLockManager.lock(any())).willReturn(true);
+    given(redissonClient.getFairLock(any())).willReturn(mockLock);
+    given(mockLock.tryLock(anyLong(), any(TimeUnit.class))).willReturn(true);
+    given(appConfig.getDataGrid()).willReturn(mockDataGrid);
 
     // When
     exportScheduler.scheduleExport();
 
-    // Then
-    verify(actionExportLockManager).lock("filename_1_1");
-    verify(actionExportLockManager).unlock("filename_1_1");
-  }
-
-  @Test(expected = Exception.class)
-  public void shouldUnlockWhenExceptionThrown() {
-    // Given
-    given(actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef())
-        .willReturn(Collections.singletonList(new SurveyRefExerciseRef("1", "1")));
-    given(templateMappingService.retrieveAllTemplateMappingsByFilename())
-        .willReturn(Collections.singletonMap("filename", templateMappingsWithActionType("BSNOT")));
-    given(actionExportLockManager.lock(any())).willReturn(true);
-    doThrow(Exception.class)
-        .when(notificationFileCreator)
-        .publishNotificationFile(any(), anyListOf(TemplateMapping.class), any());
-
-    // When
-    exportScheduler.scheduleExport();
-
-    // Then
-    verify(actionExportLockManager).lock("filename_1_1");
-    verify(actionExportLockManager).unlock("filename_1_1");
+    // Verify
+    InOrder inOrder = inOrder(mockLock, exportProcessor);
+    inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
+    inOrder.verify(exportProcessor).processExport();
+    inOrder.verify(mockLock).unlock();
   }
 
   @Test
-  public void shouldFileForAllTemplateMappings() {
+  public void shouldUnlockWhenExceptionThrown() throws InterruptedException {
+    RLock mockLock = mock(RLock.class);
+    DataGrid mockDataGrid = mock(DataGrid.class);
+    boolean exceptionThrown = false;
+
     // Given
-    SurveyRefExerciseRef surveyRefExerciseRef = new SurveyRefExerciseRef("1", "1");
-    given(actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef())
-        .willReturn(Collections.singletonList(surveyRefExerciseRef));
-    given(templateMappingService.retrieveAllTemplateMappingsByFilename())
-        .willReturn(
-            ImmutableMap.of(
-                "first_file",
-                templateMappingsWithActionType("BSNOT"),
-                "second_file",
-                templateMappingsWithActionType("BSPRENOT")));
-    given(actionExportLockManager.lock(any())).willReturn(true);
+    given(redissonClient.getFairLock(any())).willReturn(mockLock);
+    given(mockLock.tryLock(anyLong(), any(TimeUnit.class))).willReturn(true);
+    given(appConfig.getDataGrid()).willReturn(mockDataGrid);
+    doThrow(RuntimeException.class).when(exportProcessor).processExport();
 
     // When
-    exportScheduler.scheduleExport();
+    try {
+      exportScheduler.scheduleExport();
+    } catch (Exception ex) {
+      exceptionThrown = true;
+    }
 
-    // Then
-    verify(notificationFileCreator)
-        .publishNotificationFile(
-            surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "first_file_1_1");
-    verify(notificationFileCreator)
-        .publishNotificationFile(
-            surveyRefExerciseRef, templateMappingsWithActionType("BSNOT"), "first_file_1_1");
+    // Verify
+    InOrder inOrder = inOrder(mockLock, exportProcessor);
+    inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
+    inOrder.verify(exportProcessor).processExport();
+    inOrder.verify(mockLock).unlock();
+    assertThat(exceptionThrown).isTrue();
   }
 }

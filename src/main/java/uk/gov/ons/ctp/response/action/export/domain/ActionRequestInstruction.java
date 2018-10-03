@@ -94,9 +94,6 @@ public class ActionRequestInstruction {
   @Column(name = "datestored")
   private Timestamp dateStored;
 
-  @Column(name = "datesent")
-  private Timestamp dateSent;
-
   @Column(name = "surveyref")
   private String surveyRef;
 
@@ -105,4 +102,7 @@ public class ActionRequestInstruction {
 
   @Column(name = "returnbydate")
   private String returnByDate;
+
+  @Column(name = "exportjobid")
+  private UUID exportJobId;
 }

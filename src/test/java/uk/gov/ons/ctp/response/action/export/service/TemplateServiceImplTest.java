@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.TemplateService.ERROR_RETRIEVING_FREEMARKER_TEMPLATE;
 import static uk.gov.ons.ctp.response.action.export.service.TemplateService.EXCEPTION_STORE_TEMPLATE;
 import static uk.gov.ons.ctp.response.action.export.utility.ObjectBuilder.buildListOfActionRequests;
 
@@ -118,30 +117,6 @@ public class TemplateServiceImplTest {
     return Collections.singletonList(result);
   }
 
-  /**
-   * Tests file issue retrieving template @Test public void testFileIssueRetrievingTemplate() throws
-   * IOException { Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenThrow(new
-   * IOException()); boolean exceptionThrown = false; try {
-   * templateService.file(buildListOfActionRequests(), TEMPLATE_NAME, TEST_FILE_PATH); } catch
-   * (CTPException e) { exceptionThrown = true; assertEquals(CTPException.Fault.SYSTEM_ERROR,
-   * e.getFault()); } TestCase.assertTrue(exceptionThrown); }
-   *
-   * <p>/** Tests file null retrieving template
-   */
-  @Test
-  public void testFileNullRetrievedTemplate() throws IOException {
-    Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(null);
-    boolean exceptionThrown = false;
-    try {
-      templateService.file(buildListOfActionRequests(), TEMPLATE_NAME, TEST_FILE_PATH);
-    } catch (CTPException e) {
-      exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(ERROR_RETRIEVING_FREEMARKER_TEMPLATE, e.getMessage());
-    }
-    TestCase.assertTrue(exceptionThrown);
-  }
-
   /** Tests file */
   //  @Test
   //  public void testFile() throws CTPException, IOException {
@@ -160,9 +135,8 @@ public class TemplateServiceImplTest {
     boolean exceptionThrown = false;
     try {
       templateService.stream(buildListOfActionRequests(), TEMPLATE_NAME);
-    } catch (CTPException e) {
+    } catch (RuntimeException e) {
       exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
     }
     TestCase.assertTrue(exceptionThrown);
   }
@@ -174,10 +148,8 @@ public class TemplateServiceImplTest {
     boolean exceptionThrown = false;
     try {
       templateService.stream(buildListOfActionRequests(), TEMPLATE_NAME);
-    } catch (CTPException e) {
+    } catch (RuntimeException e) {
       exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(ERROR_RETRIEVING_FREEMARKER_TEMPLATE, e.getMessage());
     }
     TestCase.assertTrue(exceptionThrown);
   }

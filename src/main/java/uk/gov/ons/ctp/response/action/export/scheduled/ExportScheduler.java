@@ -2,87 +2,61 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.concurrent.TimeUnit;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.gov.ons.ctp.common.distributed.DistributedLockManager;
-import uk.gov.ons.ctp.response.action.export.domain.SurveyRefExerciseRef;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
-import uk.gov.ons.ctp.response.action.export.service.ActionRequestService;
-import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
+import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 
 /** This class will be responsible for the scheduling of export actions */
 @Component
 public class ExportScheduler {
   private static final Logger log = LoggerFactory.getLogger(ExportScheduler.class);
 
-  private final TemplateMappingService templateMappingService;
+  private static final String ACTION_EXECUTION_LOCK = "actionexport.request.execution";
 
-  private final NotificationFileCreator notificationFileCreator;
+  private final ExportProcessor exportProcessor;
 
-  private final ActionRequestService actionRequestService;
+  private final RedissonClient redissonClient;
 
-  private final DistributedLockManager actionExportLockManager;
+  private final AppConfig appConfig;
 
   public ExportScheduler(
-      TemplateMappingService templateMappingService,
-      NotificationFileCreator notificationFileCreator,
-      ActionRequestService actionRequestService,
-      DistributedLockManager actionExportLockManager) {
-    this.templateMappingService = templateMappingService;
-    this.notificationFileCreator = notificationFileCreator;
-    this.actionRequestService = actionRequestService;
-    this.actionExportLockManager = actionExportLockManager;
+      ExportProcessor exportProcessor, RedissonClient redissonClient, AppConfig appConfig) {
+    this.exportProcessor = exportProcessor;
+    this.redissonClient = redissonClient;
+    this.appConfig = appConfig;
   }
 
   /** Carry out scheduled actions according to configured cron expression */
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
     log.debug("Scheduled run start");
-    final List<SurveyRefExerciseRef> exerciseRefs =
-        actionRequestService.retrieveDistinctExerciseRefsWithSurveyRef();
-
-    for (final SurveyRefExerciseRef exerciseRef : exerciseRefs) {
-      processActionRequestsForCollectionExercise(exerciseRef);
+    try {
+      processExport();
+    } catch (Exception ex) {
+      log.error("Uncaught exception - transaction rolled back and scheduled job will re-run", ex);
+      throw ex;
     }
   }
 
-  private void processActionRequestsForCollectionExercise(
-      final SurveyRefExerciseRef surveyRefExerciseRef) {
-    final String surveyRefAndExerciseRef =
-        surveyRefExerciseRef.getSurveyRef()
-            + "_"
-            + surveyRefExerciseRef.getExerciseRefWithoutSurveyRef();
-
-    templateMappingService
-        .retrieveAllTemplateMappingsByFilename()
-        .forEach(publishFile(surveyRefExerciseRef, surveyRefAndExerciseRef));
-  }
-
-  /** Lock on file being created so only one instance can write to an SFTP file. */
-  private BiConsumer<String, List<TemplateMapping>> publishFile(
-      final SurveyRefExerciseRef surveyRefExerciseRef, final String surveyRefAndExerciseRef) {
-    return (fileName, templateMappings) -> {
-      final String filenamePrefix = fileName + "_" + surveyRefAndExerciseRef;
-      final boolean isLockedAlready = actionExportLockManager.isLocked(filenamePrefix);
-      final boolean gotLock = !isLockedAlready && actionExportLockManager.lock(filenamePrefix);
-      if (!gotLock) {
-        log.with("filename_with_exercise_ref", filenamePrefix)
-            .with("file_locked", isLockedAlready)
-            .debug("Could not get a lock");
-        return;
+  private void processExport() {
+    RLock lock = redissonClient.getFairLock(ACTION_EXECUTION_LOCK);
+    try {
+      // Get an EXCLUSIVE lock so hopefully only one thread/process is ever writing files to the
+      // SFTP server. Automatically unlock after a certain amount of time to prevent
+      // issues when lock holder crashes or Redis crashes causing permanent lockout
+      if (lock.tryLock(appConfig.getDataGrid().getLockTimeToLiveSeconds(), TimeUnit.SECONDS)) {
+        try {
+          exportProcessor.processExport();
+        } finally {
+          // Always unlock the distributed lock
+          lock.unlock();
+        }
       }
-      try {
-        log.with("survey", surveyRefExerciseRef.getSurveyRef())
-            .with("exercise_ref", surveyRefExerciseRef.getExerciseRef())
-            .info("Publishing notification file");
-        notificationFileCreator.publishNotificationFile(
-            surveyRefExerciseRef, templateMappings, filenamePrefix);
-      } finally {
-        actionExportLockManager.unlock(filenamePrefix);
-      }
-    };
+    } catch (InterruptedException e) {
+      // Ignored - process stopped while waiting for lock
+    }
   }
 }
