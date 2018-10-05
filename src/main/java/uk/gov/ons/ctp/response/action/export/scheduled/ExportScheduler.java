@@ -36,7 +36,8 @@ public class ExportScheduler {
     try {
       processExport();
     } catch (Exception ex) {
-      log.error("Uncaught exception - transaction rolled back and scheduled job will re-run", ex);
+      log.error(
+          "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", ex);
     }
   }
 
