@@ -13,7 +13,6 @@ import org.springframework.integration.file.FileHeaders;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.support.ErrorMessage;
 import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
@@ -81,16 +80,13 @@ public class SftpServicePublisher {
 
   @SuppressWarnings("unchecked")
   @ServiceActivator(inputChannel = "sftpFailedProcess")
-  public void sftpFailedProcess(ErrorMessage message) {
-    MessageHeaders headers =
-        ((MessagingException) message.getPayload()).getFailedMessage().getHeaders();
+  public void sftpFailedProcess(GenericMessage message) {
+    MessagingException payload = (MessagingException) message.getPayload();
+    MessageHeaders headers = payload.getFailedMessage().getHeaders();
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
     int actionCount = Integer.valueOf((String) headers.get(ACTION_COUNT));
 
-    log.with("file_name", fileName)
-        .with("action_count", actionCount)
-        .with("payload", message.getPayload())
-        .error("Sftp transfer failed");
+    log.with("file_name", fileName).with("action_count", actionCount).error("Sftp transfer failed");
 
     ExportFile exportFile = exportFileRepository.findOneByFilename(fileName);
     exportFile.setStatus(SendStatus.FAILED);

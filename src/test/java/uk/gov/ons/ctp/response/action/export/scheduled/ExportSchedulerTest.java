@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -52,7 +51,6 @@ public class ExportSchedulerTest {
   public void shouldUnlockWhenExceptionThrown() throws InterruptedException {
     RLock mockLock = mock(RLock.class);
     DataGrid mockDataGrid = mock(DataGrid.class);
-    boolean exceptionThrown = false;
 
     // Given
     given(redissonClient.getFairLock(any())).willReturn(mockLock);
@@ -61,17 +59,12 @@ public class ExportSchedulerTest {
     doThrow(RuntimeException.class).when(exportProcessor).processExport();
 
     // When
-    try {
-      exportScheduler.scheduleExport();
-    } catch (Exception ex) {
-      exceptionThrown = true;
-    }
+    exportScheduler.scheduleExport();
 
     // Verify
     InOrder inOrder = inOrder(mockLock, exportProcessor);
     inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
     inOrder.verify(exportProcessor).processExport();
     inOrder.verify(mockLock).unlock();
-    assertThat(exceptionThrown).isTrue();
   }
 }
