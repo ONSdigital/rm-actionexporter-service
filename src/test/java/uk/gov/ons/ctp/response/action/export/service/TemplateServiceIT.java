@@ -73,7 +73,7 @@ public class TemplateServiceIT {
   @Test
   public void testTemplateGeneratesCorrectReminderFileForSocial() throws Exception {
     // Given
-    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALREM");
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALREM", "Prem1");
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
@@ -117,7 +117,7 @@ public class TemplateServiceIT {
   @Test
   public void testTemplateGeneratesCorrectPrintFileForSocial() throws Exception {
     // Given
-    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALNOT");
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALNOT", "Prem1");
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
@@ -160,7 +160,7 @@ public class TemplateServiceIT {
   @Test
   public void testTemplateGeneratesCorrectPrintFileForSocialPreNotification() throws Exception {
     // Given
-    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALPRENOT");
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest("SOCIALPRENOT", "Prem1");
 
     ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setActionRequest(actionRequest);
@@ -202,6 +202,61 @@ public class TemplateServiceIT {
     }
   }
 
+  @Test
+  public void testMostRecentAddressUsedWhenDuplicateSampleUnitRefs() throws Exception {
+    // Given
+    ActionInstruction firstActionInstruction = createActionInstruction("SOCIALREM", "Old Address");
+    ActionInstruction secondActionInstruction = createActionInstruction("SOCIALREM", "New Address");
+
+
+    BlockingQueue<String> queue =
+            simpleMessageListener.listen(
+                    SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
+
+    simpleMessageSender.sendMessage(
+            "action-outbound-exchange",
+            "Action.Printer.binding",
+            ActionRequestBuilder.actionInstructionToXmlString(firstActionInstruction));
+
+    // When
+    String firstActionExportConfirmation = queue.take();
+
+    assertThat(firstActionExportConfirmation, containsString("SOCIALREM"));
+    String firstNotificationFilePath = getLatestSftpFileName();
+    assertTrue(defaultSftpSessionFactory.getSession().remove(firstNotificationFilePath));
+    defaultSftpSessionFactory.getSession().close();
+
+
+    simpleMessageSender.sendMessage(
+            "action-outbound-exchange",
+            "Action.Printer.binding",
+            ActionRequestBuilder.actionInstructionToXmlString(secondActionInstruction));
+
+    String secondActionExportConfirmation = queue.take();
+
+    // Then
+    assertThat(secondActionExportConfirmation, containsString("SOCIALREM"));
+    String secondNotificationFilePath = getLatestSftpFileName();
+    InputStream inputSteam = defaultSftpSessionFactory.getSession().readRaw(secondNotificationFilePath);
+
+    try (Reader reader = new InputStreamReader(inputSteam);
+         CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
+      Iterator<String> firstRowColumns = parser.iterator().next().iterator();
+      assertEquals("New Address", firstRowColumns.next());
+    } finally {
+      // Delete the file created in this test
+      assertTrue(defaultSftpSessionFactory.getSession().remove(secondNotificationFilePath));
+    }
+  }
+
+  private ActionInstruction createActionInstruction( String actionType, String addressLine ) {
+    ActionRequest actionRequest = ActionRequestBuilder.createSocialActionRequest(actionType, addressLine);
+    ActionInstruction actionInstruction = new ActionInstruction();
+    actionInstruction.setActionRequest(actionRequest);
+
+    return actionInstruction;
+  }
+  
   private String getLatestSftpFileName() throws IOException {
     Comparator<ChannelSftp.LsEntry> sortByModifiedTimeDescending =
         (f1, f2) -> Integer.compare(f2.getAttrs().getMTime(), f1.getAttrs().getMTime());

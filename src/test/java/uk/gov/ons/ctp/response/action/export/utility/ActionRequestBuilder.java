@@ -15,10 +15,10 @@ import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
 public class ActionRequestBuilder {
-  public static ActionRequest createSocialActionRequest(final String actionType) {
+  public static ActionRequest createSocialActionRequest(final String actionType, String addressLine1) {
     ActionAddress actionAddress = new ActionAddress();
     actionAddress.setSampleUnitRef("sampleUR");
-    actionAddress.setLine1("Prem1");
+    actionAddress.setLine1(addressLine1);
     actionAddress.setCountry("E");
     actionAddress.setOrganisationName("Castle of Frankenstein");
     actionAddress.setPostcode("postCode");
