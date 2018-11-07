@@ -15,10 +15,8 @@ FROM actionexporter.address AS a
 WHERE ar.sampleunitreffk = a.sampleunitrefpk;
 
 ALTER TABLE ONLY actionexporter.actionrequest DROP CONSTRAINT sampleunitrefFK_fkey;
-ALTER TABLE ONLY actionexporter.actionrequest DROP COLUMN sampleunitrefFK;
-
+ALTER TABLE ONLY actionexporter.actionrequest RENAME COLUMN sampleunitrefFK TO sampleunitref;
 ALTER TABLE ONLY actionexporter.address DROP CONSTRAINT sampleunitrefPK_pkey;
-ALTER TABLE ONLY actionexporter.address RENAME COLUMN sampleunitrefPK TO sampleunitref;
 ALTER TABLE ONLY actionexporter.address ADD CONSTRAINT addressPK_pkey PRIMARY KEY (addressPK);
-
 ALTER TABLE ONLY actionexporter.actionrequest ADD CONSTRAINT addressFK_fkey FOREIGN KEY (addressFK) REFERENCES actionexporter.address(addressPK);
+ALTER TABLE ONLY actionexporter.address DROP COLUMN sampleunitrefPK;

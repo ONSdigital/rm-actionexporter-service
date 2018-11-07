@@ -105,4 +105,7 @@ public class ActionRequestInstruction {
 
   @Column(name = "exportjobid")
   private UUID exportJobId;
+
+  @Column(name = "sampleunitref")
+  private String sampleUnitRef;
 }

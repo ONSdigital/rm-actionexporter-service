@@ -22,7 +22,6 @@ public class ActionRequestBuilder {
   public static ActionRequest createSocialActionRequest(
       final String actionType, String addressLine1, String exerciseRef) {
     ActionAddress actionAddress = new ActionAddress();
-    actionAddress.setSampleUnitRef("sampleUR");
     actionAddress.setLine1(addressLine1);
     actionAddress.setCountry("E");
     actionAddress.setOrganisationName("Castle of Frankenstein");
@@ -31,6 +30,7 @@ public class ActionRequestBuilder {
     actionAddress.setLocality("locality");
 
     ActionRequest actionRequest = new ActionRequest();
+    actionRequest.setSampleUnitRef("sampleUR");
     actionRequest.setActionId(UUID.randomUUID().toString());
     actionRequest.setActionPlan("actionPlan");
     actionRequest.setActionType(actionType);

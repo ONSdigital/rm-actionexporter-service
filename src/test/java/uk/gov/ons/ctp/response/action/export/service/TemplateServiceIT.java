@@ -106,7 +106,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
       assertEquals(actionRequest.getAddress().getOrganisationName(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -149,7 +149,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -195,7 +195,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
-      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
     } finally {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));

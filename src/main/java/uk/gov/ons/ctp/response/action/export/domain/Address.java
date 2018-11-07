@@ -37,9 +37,6 @@ public class Address {
   @Column(name = "addresspk")
   private Integer addressPK;
 
-  @Column(name = "sampleunitref")
-  private String sampleUnitRef;
-
   @Column(name = "addresstype")
   private String addressType;
 
