@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 16-1
+    author: Adam Hawtin
+    changes:
+    - sqlFile:
+        comment: Add an integer PK column to address table, add FK column to action request
+        path: use_integer_pk_in_address_and_add_fk_to_action_request.sql
+        relativeToChangelogFile: true
+        splitStatements: false
