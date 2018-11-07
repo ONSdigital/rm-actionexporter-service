@@ -31,8 +31,8 @@ public class Address {
       name = "actionexportseq_gen",
       strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
       parameters = {
-          @Parameter(name = "sequence_name", value = "actionexporter.addresspkseq"),
-          @Parameter(name = "increment_size", value = "1")
+        @Parameter(name = "sequence_name", value = "actionexporter.addresspkseq"),
+        @Parameter(name = "increment_size", value = "1")
       })
   @Column(name = "addresspk")
   private Integer addressPK;
