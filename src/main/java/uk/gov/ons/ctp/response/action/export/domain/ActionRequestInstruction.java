@@ -77,7 +77,7 @@ public class ActionRequestInstruction {
   private Contact contact;
 
   @ManyToOne
-  @JoinColumn(name = "sampleunitreffk", referencedColumnName = "sampleunitrefpk")
+  @JoinColumn(name = "addressfk", referencedColumnName = "addresspk")
   private Address address;
 
   @Column(name = "caseid")

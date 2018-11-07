@@ -34,8 +34,8 @@ public class Address {
           @Parameter(name = "sequence_name", value = "actionexporter.addresspkseq"),
           @Parameter(name = "increment_size", value = "1")
       })
-  @Column(name = "actionaddresspk")
-  private Integer actionaddressPK;
+  @Column(name = "addresspk")
+  private Integer addressPK;
 
   @Column(name = "sampleunitref")
   private String sampleUnitRef;
