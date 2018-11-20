@@ -77,6 +77,7 @@ public class ActionExportService {
     actionRequestDoc.setDateStored(now);
 
     if (actionRequestDoc.getAddress() != null) {
+      actionRequestDoc.getAddress().setAddressPK(UUID.randomUUID());
       addressRepo.persist(actionRequestDoc.getAddress());
     }
 

@@ -5,8 +5,8 @@ databaseChangeLog:
     author: Adam Hawtin, Liam Toozer
     changes:
     - sqlFile:
-        comment: Add an integer PK column to address table, add FK column to action request
-        path: use_integer_pk_in_address_and_add_fk_to_action_request.sql
+        comment: Add a UUID PK column to address table, add FK column to action request
+        path: use_uuid_pk_in_address_and_add_fk_to_action_request.sql
         relativeToChangelogFile: true
         splitStatements: false
 
