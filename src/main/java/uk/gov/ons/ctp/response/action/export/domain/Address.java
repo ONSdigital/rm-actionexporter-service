@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.domain;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,8 +23,8 @@ import net.sourceforge.cobertura.CoverageIgnore;
 public class Address {
 
   @Id
-  @Column(name = "sampleunitrefpk")
-  private String sampleUnitRef;
+  @Column(name = "addresspk")
+  private UUID addressPK;
 
   @Column(name = "addresstype")
   private String addressType;
