@@ -43,6 +43,7 @@ public class ObjectBuilder {
    */
   private static Address buildActionAddress() {
     Address address = new Address();
+    address.setAddressPK(UUID.randomUUID());
     address.setLine1("1 High Street");
     address.setTownName("Southampton");
     address.setPostcode("SO16 0AS");
