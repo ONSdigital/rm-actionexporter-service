@@ -76,8 +76,8 @@ public class ActionExportService {
     Timestamp now = DateTimeUtil.nowUTC();
     actionRequestDoc.setDateStored(now);
 
-    if (actionRequestDoc.getAddress() != null) {
-      actionRequestDoc.getAddress().setAddressPK(UUID.randomUUID());
+    if (!addressRepo.existsBySampleUnitRef(actionRequestDoc.getAddress().getSampleUnitRef())) {
+      // Address should never change so do not save if already exists
       addressRepo.persist(actionRequestDoc.getAddress());
     }
 

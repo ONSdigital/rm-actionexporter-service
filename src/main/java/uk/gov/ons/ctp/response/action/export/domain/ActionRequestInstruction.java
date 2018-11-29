@@ -77,7 +77,7 @@ public class ActionRequestInstruction {
   private Contact contact;
 
   @ManyToOne
-  @JoinColumn(name = "addressfk", referencedColumnName = "addresspk")
+  @JoinColumn(name = "sampleunitreffk", referencedColumnName = "sampleunitrefpk")
   private Address address;
 
   @Column(name = "caseid")
@@ -105,7 +105,4 @@ public class ActionRequestInstruction {
 
   @Column(name = "exportjobid")
   private UUID exportJobId;
-
-  @Column(name = "sampleunitref")
-  private String sampleUnitRef;
 }

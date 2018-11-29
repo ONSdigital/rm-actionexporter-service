@@ -16,13 +16,9 @@ import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
 public class ActionRequestBuilder {
   public static ActionRequest createSocialActionRequest(final String actionType) {
-    return createSocialActionRequest(actionType, "Prem1", "exRef");
-  }
-
-  public static ActionRequest createSocialActionRequest(
-      final String actionType, String addressLine1, String exerciseRef) {
     ActionAddress actionAddress = new ActionAddress();
-    actionAddress.setLine1(addressLine1);
+    actionAddress.setSampleUnitRef("sampleUR");
+    actionAddress.setLine1("Prem1");
     actionAddress.setCountry("E");
     actionAddress.setOrganisationName("Castle of Frankenstein");
     actionAddress.setPostcode("postCode");
@@ -30,7 +26,6 @@ public class ActionRequestBuilder {
     actionAddress.setLocality("locality");
 
     ActionRequest actionRequest = new ActionRequest();
-    actionRequest.setSampleUnitRef("sampleUR");
     actionRequest.setActionId(UUID.randomUUID().toString());
     actionRequest.setActionPlan("actionPlan");
     actionRequest.setActionType(actionType);
@@ -45,7 +40,7 @@ public class ActionRequestBuilder {
     actionRequest.setPriority(Priority.HIGHEST);
     actionRequest.setCaseRef("caseRef");
     actionRequest.setIac("test-iac");
-    actionRequest.setExerciseRef(exerciseRef);
+    actionRequest.setExerciseRef("exRef");
     actionRequest.setContact(new ActionContact());
     actionRequest.setEvents(new ActionEvent(Collections.singletonList("event1")));
     actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));

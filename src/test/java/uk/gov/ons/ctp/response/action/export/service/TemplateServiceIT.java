@@ -106,7 +106,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
       assertEquals(actionRequest.getAddress().getOrganisationName(), templateRow.next());
-      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -149,7 +149,7 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
       assertEquals(actionRequest.getIac(), templateRow.next());
-      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
       assertEquals(actionRequest.getReturnByDate(), templateRow.next());
     } finally {
       // Delete the file created in this test
@@ -195,69 +195,11 @@ public class TemplateServiceIT {
       assertEquals(actionRequest.getAddress().getTownName(), templateRow.next());
       assertEquals(actionRequest.getAddress().getLocality(), templateRow.next());
       assertEquals(actionRequest.getAddress().getCountry(), templateRow.next());
-      assertEquals(actionRequest.getSampleUnitRef(), templateRow.next());
+      assertEquals(actionRequest.getAddress().getSampleUnitRef(), templateRow.next());
     } finally {
       // Delete the file created in this test
       assertTrue(defaultSftpSessionFactory.getSession().remove(notificationFilePath));
     }
-  }
-
-  @Test
-  public void testMostRecentAddressUsedWhenDuplicateSampleUnitRefs() throws Exception {
-    // Given
-    ActionInstruction firstActionInstruction =
-        createActionInstruction("SOCIALREM", "Old Address", "exercise_1");
-    ActionInstruction secondActionInstruction =
-        createActionInstruction("SOCIALREM", "New Address", "exercise_2");
-
-    BlockingQueue<String> queue =
-        simpleMessageListener.listen(
-            SimpleMessageBase.ExchangeType.Fanout, "event-message-outbound-exchange");
-
-    simpleMessageSender.sendMessage(
-        "action-outbound-exchange",
-        "Action.Printer.binding",
-        ActionRequestBuilder.actionInstructionToXmlString(firstActionInstruction));
-
-    // When
-    String firstActionExportConfirmation = queue.take();
-
-    assertThat(firstActionExportConfirmation, containsString("SOCIALREM"));
-    String firstNotificationFilePath = getLatestSftpFileName();
-    assertTrue(defaultSftpSessionFactory.getSession().remove(firstNotificationFilePath));
-    defaultSftpSessionFactory.getSession().close();
-
-    simpleMessageSender.sendMessage(
-        "action-outbound-exchange",
-        "Action.Printer.binding",
-        ActionRequestBuilder.actionInstructionToXmlString(secondActionInstruction));
-
-    String secondActionExportConfirmation = queue.take();
-
-    // Then
-    assertThat(secondActionExportConfirmation, containsString("SOCIALREM"));
-    String secondNotificationFilePath = getLatestSftpFileName();
-    InputStream inputSteam =
-        defaultSftpSessionFactory.getSession().readRaw(secondNotificationFilePath);
-
-    try (Reader reader = new InputStreamReader(inputSteam);
-        CSVParser parser = new CSVParser(reader, CSVFormat.newFormat(':'))) {
-      Iterator<String> firstRowColumns = parser.iterator().next().iterator();
-      assertEquals("New Address", firstRowColumns.next());
-    } finally {
-      // Delete the file created in this test
-      assertTrue(defaultSftpSessionFactory.getSession().remove(secondNotificationFilePath));
-    }
-  }
-
-  private ActionInstruction createActionInstruction(
-      String actionType, String addressLine1, String exerciseRef) {
-    ActionRequest actionRequest =
-        ActionRequestBuilder.createSocialActionRequest(actionType, addressLine1, exerciseRef);
-    ActionInstruction actionInstruction = new ActionInstruction();
-    actionInstruction.setActionRequest(actionRequest);
-
-    return actionInstruction;
   }
 
   private String getLatestSftpFileName() throws IOException {

@@ -101,10 +101,10 @@ public class TemplateServiceImplTest {
 
   private static List<ActionRequestInstruction> testBusinessActionRequest() {
     ActionRequestInstruction result = new ActionRequestInstruction();
-    result.setSampleUnitRef("SampleUnitRef");
     Contact contact = new Contact();
     Address address = new Address();
     result.setActionId(UUID.randomUUID());
+    address.setSampleUnitRef("SampleUnitRef");
     result.setIac("testIac");
     result.setCaseGroupStatus("InProgress");
     result.setEnrolmentStatus("Pending");
