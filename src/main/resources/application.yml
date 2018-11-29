@@ -23,6 +23,7 @@ liquibase:
   default-schema: actionexporter
   url: jdbc:postgresql://localhost:6432/postgres
   changeLog: classpath:/database/changelog-master.yml
+  enabled: false
 
 security:
   basic:
@@ -66,27 +67,32 @@ spring:
     enabled: false
     
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://localhost:6432/postgres
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
     continue-on-error: true
-    tomcat:
-      initial-size: 5
-      max-active: 10
-      max-idle: 5
-      min-idle: 3
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 20
+      auto-commit: false
 
   freemarker:
     checkTemplateLocation: false
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     properties:
       hibernate:
         ddl-auto: update
         default_schema: actionexporter
+    hibernate:
+      ddl-auto: update
+      default_schema: actionexporter
+      connection:
+        provider_class: org.hibernate.hikaricp.internal.HikariCPConnectionProvider
 
 data-grid:
   address: localhost:7379
@@ -121,7 +127,7 @@ messaging:
   backoffInitial: 5000
   backoffMultiplier: 3
   backoffMax: 45000
-  consumingThreads: 1
+  consumingThreads: 30
   pubMaxAttempts: 3
   conMaxAttempts: 3
   prefetchCount: 10
