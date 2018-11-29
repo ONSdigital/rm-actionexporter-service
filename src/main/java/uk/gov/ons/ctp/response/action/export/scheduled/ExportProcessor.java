@@ -4,12 +4,18 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +33,8 @@ import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 @Component
 public class ExportProcessor {
   private static final Logger log = LoggerFactory.getLogger(ExportProcessor.class);
+
+  private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(100);
 
   private final TemplateMappingService templateMappingService;
 
@@ -115,22 +123,46 @@ public class ExportProcessor {
 
     filenamePrefixToDataMap.forEach(
         (filenamePrefix, data) -> {
-          List<ByteArrayOutputStream> streamList = new LinkedList<>();
           Set<String> responseRequiredList = new HashSet<>();
           AtomicInteger actionCount = new AtomicInteger(0);
 
+          List<Callable<ByteArrayOutputStream>> callables = new LinkedList<>();
           data.forEach(
               (templateName, actionRequestList) -> {
-                streamList.add(templateService.stream(actionRequestList, templateName));
-                actionRequestList.forEach(
-                    ari -> {
-                      actionCount.incrementAndGet();
+                callables.add(
+                    () -> {
+                      ByteArrayOutputStream result =
+                          templateService.stream(actionRequestList, templateName);
+                      actionRequestList.forEach(
+                          ari -> {
+                            actionCount.incrementAndGet();
 
-                      if (ari.isResponseRequired()) {
-                        responseRequiredList.add(ari.getActionId().toString());
-                      }
+                            if (ari.isResponseRequired()) {
+                              synchronized (responseRequiredList) {
+                                responseRequiredList.add(ari.getActionId().toString());
+                              }
+                            }
+                          });
+                      return result;
                     });
               });
+
+          List<ByteArrayOutputStream> streamList = new ArrayList<>();
+          try {
+            List<Future<ByteArrayOutputStream>> futures = EXECUTOR_SERVICE.invokeAll(callables);
+            futures.forEach(
+                future -> {
+                  try {
+                    streamList.add(future.get());
+                  } catch (InterruptedException e) {
+                    e.printStackTrace();
+                  } catch (ExecutionException e) {
+                    e.printStackTrace();
+                  }
+                });
+          } catch (InterruptedException e) {
+            e.printStackTrace(); // TODO: Don't care just hacking
+          }
 
           notificationFileCreator.uploadData(
               filenamePrefix,
