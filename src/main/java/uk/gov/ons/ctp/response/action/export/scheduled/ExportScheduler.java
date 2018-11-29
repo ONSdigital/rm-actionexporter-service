@@ -30,7 +30,7 @@ public class ExportScheduler {
   }
 
   /** Carry out scheduled actions according to configured cron expression */
-  @Scheduled(fixedDelayString = "60000")
+  @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
     log.debug("Scheduled run start");
     try {
