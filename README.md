@@ -24,3 +24,4 @@ There are two ways of running this service
     ```
 # Code Style
 `mvn install` will automatically format the code using googles style. IDE plugins can be found here [Google java format](https://github.com/google/google-java-format#intellij)
+ 
