@@ -6,6 +6,11 @@ services:
 language: java
 jdk: openjdk8
 
+env:
+  global:
+    - SOURCE_IMAGE_NAME="actionexportersvc"
+    - DESTINATION_IMAGE_NAME="$DOCKER_GCP_LOCATION/census-rm-actionexportersvc"
+
 before_install:
 - mkdir -p ~/Documents/sftp
 - cp .maven.settings.xml "$HOME"/.m2/settings.xml
@@ -16,18 +21,12 @@ install: mvn install -DskipTests -DskipITs -Ddocker.skip -Ddockerfile.skip -Dmav
 script: mvn verify cobertura:cobertura-integration-test
 
 after_success:
-- if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-  docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
-  docker push sdcplatform/actionexportersvc;
+- if [ "$TRAVIS_BRANCH" == "rm-census" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
+  docker tag "$SOURCE_IMAGE_NAME" "$DESTINATION_IMAGE_NAME";
+  docker push "$DESTINATION_IMAGE_NAME";
   fi
 - bash <(curl -s https://codecov.io/bash)
-
-notifications:
-  slack:
-    rooms:
-      secure: KRc+o003grFrMQpD73WoB4uQ6nyu/hFwUY3p2DyorEXd12Ms4c3adGYBIKrn/XoWYu40g7avvb+IKY8HzyT9Hm8+4wDOartk0a/gmO/ZvzLxCp63S/lWW4cX13kydgWE3tk7J6PrPP5Ps6UVLb4zVjXeeg3nalxKUCbHLfeyXW+vZFhANw5XiMDOSLuc9SEP3w/rsgBgwBfzpj0pM1fEJCQ0ZZoaAplvn0lFkdTiAyhtKGYHo/xSod7O4VwAfApUXUV8ABMwVFkaM3rGlIVDtoSZAH9eEwt3n9uPEr0jzJQovfVvV6oikaDVI2bX9iwnt9Cb38fCmN0iQtEyKl5P4syZy8zw19wA6GjEz7CS/xLIc8wHHIuBGqJZ5sTWQ+Ggzlbo2hd8geZaqpXiouHgqiABmtX1J6Dii9BYdZntXSMBFR+iCGFuueSeCrw5TBuH9EwoPRMAPYY20y/y51bAXKBzd3ScapJ/6edr4/qxhKX6Z/sFJcr54YZHOA/1czbdIKt5Ass2/kQxp2uzu/mmVeG+wjtxmM7iex2J0ldE+SkdlDodg99/byTOOy2kA4TmfXUyc6UI9H4dXJhsp1jA52q302O2M0dSMS8la7LZ6n4w3x4IvUMLyJgxohJykwHLTkwEWc0ERp6YBb1YlO3FUA8QWFvQ2F6couhx0SQhLA0=
-    on_failure: always
-    on_success: never
 
 cache:
   directories:
@@ -35,4 +34,4 @@ cache:
 
 branches:
   only:
-  - master
+    - rm-census
