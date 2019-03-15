@@ -5,8 +5,8 @@ ARG JAR_FILE=actionexportersvc*.jar
 RUN apt-get update
 RUN apt-get -yq clean
 
-RUN groupadd -g 989 actionexportersvc && \
-    useradd -r -u 989 -g actionexportersvc actionexportersvc
+RUN groupadd -gid 989 actionexportersvc && \
+    useradd --create-home --system --uid 989 --gid actionexportersvc actionexportersvc
 USER actionexportersvc
 
 COPY target/$JAR_FILE /opt/actionexportersvc.jar
