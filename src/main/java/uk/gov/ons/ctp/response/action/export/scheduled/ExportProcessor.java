@@ -4,13 +4,13 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -51,6 +51,32 @@ public class ExportProcessor {
     this.exportJobRepository = exportJobRepository;
   }
 
+  private class ExportData {
+    private TemplateMapping mapping;
+    private List<ActionRequestInstruction> ariList;
+
+    public ExportData(TemplateMapping mapping, ActionRequestInstruction ari) {
+      this.mapping = mapping;
+      this.ariList = Arrays.asList(ari);
+    }
+
+    public TemplateMapping getTemplateMapping() {
+      return mapping;
+    }
+
+    public List<ActionRequestInstruction> getActionRequestInstructionList() {
+      return ariList;
+    }
+
+    public void addActionRequestInstruction(ActionRequestInstruction ari) {
+      if (ariList != null) {
+        this.ariList.add(ari);
+      } else {
+        this.ariList = Arrays.asList(ari);
+      }
+    }
+  }
+
   @Transactional
   public void processExport() {
     if (!actionRequestRepository.existsByExportJobIdIsNull()) {
@@ -62,22 +88,19 @@ public class ExportProcessor {
 
     actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
 
-    Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap =
-        prepareData(exportJob);
+    Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob);
 
     createAndSendFiles(filenamePrefixToDataMap, exportJob);
   }
 
-  private Map<String, Map<String, List<ActionRequestInstruction>>> prepareData(
-      ExportJob exportJob) {
+  private Map<String, ExportData> prepareData(ExportJob exportJob) {
     Stream<ActionRequestInstruction> actionRequestInstructions =
         actionRequestRepository.findByExportJobId(exportJob.getId());
 
     Map<String, TemplateMapping> templateMappings =
         templateMappingService.retrieveAllTemplateMappingsByActionType();
 
-    Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap =
-        new HashMap<>();
+    Map<String, ExportData> filenamePrefixToDataMap = new HashMap<>();
 
     actionRequestInstructions.forEach(
         ari -> {
@@ -90,13 +113,11 @@ public class ExportProcessor {
                     + "_"
                     + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
 
-            Map<String, List<ActionRequestInstruction>> templateNameMap =
-                filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
-
-            List<ActionRequestInstruction> ariSubset =
-                templateNameMap.computeIfAbsent(mapping.getTemplate(), key -> new LinkedList<>());
-
-            ariSubset.add(ari);
+            if (filenamePrefixToDataMap.containsKey(filenamePrefix)) {
+              filenamePrefixToDataMap.get(filenamePrefix).addActionRequestInstruction(ari);
+            } else {
+              filenamePrefixToDataMap.put(filenamePrefix, new ExportData(mapping, ari));
+            }
           }
         });
 
@@ -104,34 +125,29 @@ public class ExportProcessor {
   }
 
   private void createAndSendFiles(
-      Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap,
-      ExportJob exportJob) {
+      Map<String, ExportData> filenamePrefixToDataMap, ExportJob exportJob) {
 
     filenamePrefixToDataMap.forEach(
         (filenamePrefix, data) -> {
           List<ByteArrayOutputStream> streamList = new LinkedList<>();
-          Set<String> responseRequiredList = new HashSet<>();
-          AtomicInteger actionCount = new AtomicInteger(0);
 
-          data.forEach(
-              (templateName, actionRequestList) -> {
-                streamList.add(templateService.stream(actionRequestList, templateName));
-                actionRequestList.forEach(
-                    ari -> {
-                      actionCount.incrementAndGet();
+          streamList.add(
+              templateService.stream(
+                  data.getActionRequestInstructionList(), data.getTemplateMapping().getTemplate()));
 
-                      if (ari.isResponseRequired()) {
-                        responseRequiredList.add(ari.getActionId().toString());
-                      }
-                    });
-              });
+          Set<String> responseRequiredList =
+              data.getActionRequestInstructionList()
+                  .stream()
+                  .filter(ActionRequestInstruction::isResponseRequired)
+                  .map(ari -> ari.getActionId().toString())
+                  .collect(Collectors.toSet());
 
           notificationFileCreator.uploadData(
               filenamePrefix,
               getMergedStreams(streamList),
               exportJob,
               responseRequiredList.toArray(new String[0]),
-              actionCount.get());
+              data.getActionRequestInstructionList().size());
         });
   }
 
