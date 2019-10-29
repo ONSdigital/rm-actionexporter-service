@@ -5,6 +5,7 @@ import com.godaddy.logging.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,9 +53,9 @@ public class TemplateMappingService {
     return repository.findAll();
   }
 
-  public Map<String, List<TemplateMapping>> retrieveAllTemplateMappingsByFilename() {
+  public Map<String, TemplateMapping> retrieveAllTemplateMappingsByActionType() {
     return retrieveAllTemplateMappings()
         .stream()
-        .collect(Collectors.groupingBy(TemplateMapping::getFileNamePrefix));
+        .collect(Collectors.toMap(TemplateMapping::getActionType, Function.identity()));
   }
 }

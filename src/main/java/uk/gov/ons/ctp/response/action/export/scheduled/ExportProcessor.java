@@ -73,36 +73,30 @@ public class ExportProcessor {
     Stream<ActionRequestInstruction> actionRequestInstructions =
         actionRequestRepository.findByExportJobId(exportJob.getId());
 
-    Map<String, List<TemplateMapping>> fileNameTemplateMappings =
-        templateMappingService.retrieveAllTemplateMappingsByFilename();
+    Map<String, TemplateMapping> templateMappings =
+        templateMappingService.retrieveAllTemplateMappingsByActionType();
 
-    Set<String> filenames = fileNameTemplateMappings.keySet();
     Map<String, Map<String, List<ActionRequestInstruction>>> filenamePrefixToDataMap =
         new HashMap<>();
 
     actionRequestInstructions.forEach(
         ari -> {
-          for (String filename : filenames) {
-            List<TemplateMapping> templateMappings = fileNameTemplateMappings.get(filename);
-            for (TemplateMapping templateMapping : templateMappings) {
-              if (templateMapping.getActionType().equals(ari.getActionType())) {
-                String filenamePrefix =
-                    filename
-                        + "_"
-                        + ari.getSurveyRef()
-                        + "_"
-                        + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
+          if (templateMappings.containsKey(ari.getActionType())) {
+            TemplateMapping mapping = templateMappings.get(ari.getActionType());
+            String filenamePrefix =
+                mapping.getFileNamePrefix()
+                    + "_"
+                    + ari.getSurveyRef()
+                    + "_"
+                    + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
 
-                Map<String, List<ActionRequestInstruction>> templateNameMap =
-                    filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
+            Map<String, List<ActionRequestInstruction>> templateNameMap =
+                filenamePrefixToDataMap.computeIfAbsent(filenamePrefix, key -> new HashMap<>());
 
-                List<ActionRequestInstruction> ariSubset =
-                    templateNameMap.computeIfAbsent(
-                        templateMapping.getTemplate(), key -> new LinkedList<>());
+            List<ActionRequestInstruction> ariSubset =
+                templateNameMap.computeIfAbsent(mapping.getTemplate(), key -> new LinkedList<>());
 
-                ariSubset.add(ari);
-              }
-            }
+            ariSubset.add(ari);
           }
         });
 
