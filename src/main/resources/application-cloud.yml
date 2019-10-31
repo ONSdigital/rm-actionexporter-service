@@ -85,7 +85,7 @@ data-grid:
   list-time-to-live-seconds: 600
 
 export-schedule:
-  cron-expression: "0 * * * * ?"
+  cron-expression: "0 0/5 * 1/1 * ? *"
 
 sftp:
   directory: BSD/
