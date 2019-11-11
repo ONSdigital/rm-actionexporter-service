@@ -2,7 +2,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>actionexportersvc</artifactId>
-    <version>10.49.20-SNAPSHOT</version>
+    <version>10.49.20</version>
     <packaging>jar</packaging>
 
     <name>CTP : ActionExporterService</name>
@@ -24,7 +24,7 @@
         <developerConnection>scm:git:https://github.com/ONSdigital/rm-actionexporter-service
         </developerConnection>
         <url>https://github.com/ONSdigital/rm-actionexporter-service</url>
-        <tag>actionexportersvc-10.49.10</tag>
+        <tag>actionexportersvc-10.49.20</tag>
     </scm>
 
     <profiles>
