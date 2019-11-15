@@ -4,6 +4,7 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,7 +58,7 @@ public class ExportProcessor {
 
     public ExportData(TemplateMapping mapping, ActionRequestInstruction ari) {
       this.mapping = mapping;
-      this.ariList = Arrays.asList(ari);
+      this.ariList = new ArrayList<ActionRequestInstruction>(Arrays.asList(ari));
     }
 
     public TemplateMapping getTemplateMapping() {
