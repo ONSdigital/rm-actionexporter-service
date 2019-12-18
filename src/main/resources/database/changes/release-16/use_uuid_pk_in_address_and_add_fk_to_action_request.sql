@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto" SCHEMA "public";
 
 -- Add new columns for new unique address keys and foreign keys (unique and not null to ensure it meets PK criteria)
-ALTER TABLE ONLY actionexporter.address ADD COLUMN addressPK UUID DEFAULT "public".gen_random_uuid() UNIQUE NOT NULL;
+ALTER TABLE ONLY actionexporter.address ADD COLUMN addressPK UUID UNIQUE NOT NULL;
 ALTER TABLE ONLY actionexporter.actionrequest ADD COLUMN addressFK UUID;
 
 -- Remove foreign key constraint from sampleunitrefFK in action request and rename accordingly

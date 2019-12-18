@@ -34,7 +34,7 @@ BEGIN
 
        IF v_rows > 0 THEN  
           -- Insert the data into the report table
-          INSERT INTO actionexporter.report(id, reportPK,reporttypeFK,contents, createddatetime) VALUES(gen_random_uuid(), nextval('actionexporter.reportPKseq'), 'PRINT_VOLUMES', v_contents, CURRENT_TIMESTAMP); 
+          INSERT INTO actionexporter.report(id, reportPK,reporttypeFK,contents, createddatetime) VALUES(gen_random_uuid(), nextval('actionexporter.reportPKseq'), 'PRINT_VOLUMES', v_contents, CURRENT_TIMESTAMP);
        END IF;
 
        PERFORM actionexporter.logmessage(p_messagetext := 'GENERATING PRINT VOLUMES MI REPORT COMPLETED ROWS WRIITEN = ' || v_rows

@@ -24,7 +24,7 @@ public class Address {
 
   @Id
   @Column(name = "addresspk")
-  private UUID addressPK;
+  private UUID addressPK = UUID.randomUUID();
 
   @Column(name = "addresstype")
   private String addressType;
