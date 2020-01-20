@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: actionexportersvc
+  name: {{ .Chart.Name }}
   labels:
-    app: actionexportersvc
+    app: {{ .Chart.Name }}
     env: "{{ .Values.env }}"
 spec:
   replicas: 1
@@ -14,18 +14,18 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: actionexportersvc
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: actionexportersvc
+        app: {{ .Chart.Name }}
     spec:
       volumes:
         - name: sftp-data
           persistentVolumeClaim:
             claimName: sftp-pvc
       containers:
-        - name: actionexportersvc
+        - name: {{ .Chart.Name }}
           image: "eu.gcr.io/ons-rasrmbs-management/{{ .Values.image.repositoryName }}:{{ .Values.image.tag }}"
           ports:
             - name: http-server

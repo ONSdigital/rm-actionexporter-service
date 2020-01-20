@@ -4,7 +4,7 @@ env: "dev"
 version: "1.2"
 
 image:
-  repositoryName: actionexportersvc
+  repositoryName: action-exporter
   tag: migration-sandbox
 
 service:
