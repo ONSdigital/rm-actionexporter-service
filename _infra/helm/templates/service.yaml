@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: actionexportersvc
+  name: {{ .Chart.Name }}
 spec:
   type: ClusterIP
   ports:
   - port: 8082
     protocol: TCP
   selector:
-    app: actionexportersvc
+    app: {{ .Chart.Name }}
