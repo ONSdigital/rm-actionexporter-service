@@ -57,3 +57,7 @@ target
 *.data
 *.redo
 *.backup
+.DS_Store
+
+# VSCode
+.vscode/
