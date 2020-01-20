@@ -4,7 +4,7 @@ metadata:
   name: actionexportersvc
   labels:
     app: actionexportersvc
-    env: dev
+    env: "{{ .Values.env }}"
 spec:
   replicas: 1
   strategy:
@@ -26,7 +26,7 @@ spec:
             claimName: sftp-pvc
       containers:
         - name: actionexportersvc
-          image: "eu.gcr.io/{{ .Values.image.repository }}:{{.Values.image.tag }}"
+          image: "eu.gcr.io/ons-rasrmbs-management/{{ .Values.image.repositoryName }}:{{ .Values.image.tag }}"
           ports:
             - name: http-server
               containerPort: 8082
