@@ -70,7 +70,7 @@ jobs:
           mkdir ~/.m2
 
           cp .maven.settings.xml ~/.m2/settings.xml
-          mvn clean install -DskipTests -DskipITs
+          mvn install -DskipTests -DskipITs -Ddocker.skip -Ddockerfile.skip -Dmaven.javadoc.skip=true -Dhttp.wait.skip
 
           cp -r ~/.m2 ../m2/
           cp _infra/Dockerfile.migration ../m2/Dockerfile
