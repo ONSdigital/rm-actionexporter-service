@@ -160,13 +160,13 @@ jobs:
           cp _infra/Dockerfile ../artifact/
           cp -r target/actionexportersvc-*.jar ../artifact/actionexportersvc.jar
           ls -la ../artifact
+          cat ../artifact/Dockerfile
           echo $(grep -E "version:\s+" _infra/helm/Chart.yaml | cut -d" " -f2 | sed -r 's/"//g') > ../artifact/tagfile
 
   - put: docker-artifact
     params: 
       build: artifact
       tag_file: artifact/tagfile
-      build: source-code
 
   - task: push helm chart
     image: helm-container
@@ -188,9 +188,12 @@ jobs:
           gcloud container clusters get-credentials $CLUSTER --region $REGION
 
           cd source-code
-          helm package action-exporter _infra/helm
+          helm package _infra/helm
 
-          gsutil cp action-exporter-*.tgz gs://ras-rm-artifacts/action-exporter
+          gsutil cp action-exporter-*.tgz gs://ras-rm-artifacts/action-exporter/
       
       params:
         SERVICE_ACCOUNT: ((gcp.service_account_json))
+        PROJECT: ons-rasrmbs-management
+        REGION: europe-west2
+        CLUSTER: k8s-management
