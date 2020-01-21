@@ -16,14 +16,7 @@ resources:
     password: ((github.access_token))
     paths:
     - pom.xml
-    - _infra/Dockerfile.migration
-
-- name: git-release
-  type: github-release
-  source:
-    repository: rm-actionexporter-service
-    owner: ONSdigital
-    access_token: ((github.access_token))
+    - _infra/Dockerfile.cache
 
 - name: helm-container
   type: docker-image
@@ -73,7 +66,7 @@ jobs:
           mvn install -DskipTests -DskipITs -Ddocker.skip -Ddockerfile.skip -Dmaven.javadoc.skip=true -Dhttp.wait.skip
 
           cp -r ~/.m2 ../m2/
-          cp _infra/Dockerfile.migration ../m2/Dockerfile
+          cp _infra/Dockerfile.cache ../m2/Dockerfile
           echo "cache" > ../m2/tagfile
 
   - put: docker-artifact
@@ -116,7 +109,6 @@ jobs:
     trigger: true
     passed: [unit-test]
   - get: helm-container
-  - get: git-release
   - get: docker-artifact
   - task: verify helm chart version
     config:
@@ -129,7 +121,6 @@ jobs:
 
       inputs:
       - name: source-code
-      - name: git-release
       outputs:
       - name: docker-tag
 
@@ -139,7 +130,6 @@ jobs:
         - -exc
         - |
           cd source-code
-          cat git-release/version
           echo "Perform check on helm chart version and compare against git release and fail if <="
           echo "copy release number to the docker tag file and append RC"
           echo "11.0.0" > ../docker-tag/tagfile
@@ -166,10 +156,11 @@ jobs:
         - -exc
         - |
           cd source-code
-          mvn clean package -DskipTest=true
-          cp Dockerfile ../artifact/
-          cp -r target ../artifact/
-          echo $(grep -E "version:\s+" _infra/helm/values.yaml | cut -d" " -f2 | sed -r 's/"//g') > ../artifact/tagfile
+          mvn clean package -DskipTests -DskipITs -Ddocker.skip -Ddockerfile.skip -Dmaven.javadoc.skip=true -Dhttp.wait.skip
+          cp _infra/Dockerfile ../artifact/
+          cp -r target/actionexportersvc-*.jar ../artifact/actionexportersvc.jar
+          ls -la ../artifact
+          echo $(grep -E "version:\s+" _infra/helm/Chart.yaml | cut -d" " -f2 | sed -r 's/"//g') > ../artifact/tagfile
 
   - put: docker-artifact
     params: 
