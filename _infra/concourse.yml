@@ -1,0 +1,205 @@
+resources:
+- name: source-code
+  type: git
+  source:
+    uri: https://github.com/ONSdigital/rm-actionexporter-service.git
+    branch: concourse-pipeline
+    username: ons-rasrm-concourse
+    password: ((github.access_token))
+
+- name: pom
+  type: git
+  source:
+    uri: https://github.com/ONSdigital/rm-actionexporter-service.git
+    branch: concourse-pipeline
+    username: ons-rasrm-concourse
+    password: ((github.access_token))
+    paths:
+    - pom.xml
+    - _infra/Dockerfile.migration
+
+- name: git-release
+  type: github-release
+  source:
+    repository: rm-actionexporter-service
+    owner: ONSdigital
+    access_token: ((github.access_token))
+
+- name: helm-container
+  type: docker-image
+  source:
+    repository: eu.gcr.io/ons-rasrmbs-management/helm
+    username: _json_key
+    password: ((gcp.service_account_json))
+
+- name: docker-artifact
+  type: docker-image
+  source:
+    repository: eu.gcr.io/ons-rasrmbs-management/action-exporter
+    username: _json_key
+    password: ((gcp.service_account_json))
+
+jobs:
+- name: build-cache-container
+  serial_groups: [cache]
+  plan:
+  - get: pom
+    trigger: true
+  - task: build cache
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: maven
+          tag: 3.6.3-jdk-8-slim
+
+      inputs:
+      - name: pom
+      outputs:
+      - name: m2
+
+      run: 
+        path: /bin/bash
+        args:
+        - -exc
+        - |
+          cd pom
+          apt-get update
+          apt-get install -y git
+          mkdir ~/.m2
+
+          cp .maven.settings.xml ~/.m2/settings.xml
+          mvn clean install -DskipTests -DskipITs
+
+          cp -r ~/.m2 ../m2/
+          cp _infra/Dockerfile.migration ../m2/Dockerfile
+          echo "cache" > ../m2/tagfile
+
+  - put: docker-artifact
+    params:
+      build: m2
+      tag_file: m2/tagfile
+
+- name: unit-test
+  serial_groups: [cache]
+  plan:
+  - get: source-code
+    trigger: true
+  - get: pom
+    passed: [build-cache-container]
+  - task: run unit tests
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: eu.gcr.io/ons-rasrmbs-management/action-exporter
+          tag: cache
+          username: _json_key
+          password: ((gcp.service_account_json))
+
+      inputs:
+      - name: source-code
+
+      run: 
+        path: /bin/bash
+        args:
+        - -exc
+        - |
+          cd source-code
+          mvn clean test
+
+- name: create-artifacts
+  plan:
+  - get: source-code
+    trigger: true
+    passed: [unit-test]
+  - get: helm-container
+  - get: git-release
+  - get: docker-artifact
+  - task: verify helm chart version
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: maven
+          tag: 3.6.3-jdk-8-slim
+
+      inputs:
+      - name: source-code
+      - name: git-release
+      outputs:
+      - name: docker-tag
+
+      run: 
+        path: /bin/bash
+        args:
+        - -exc
+        - |
+          cd source-code
+          cat git-release/version
+          echo "Perform check on helm chart version and compare against git release and fail if <="
+          echo "copy release number to the docker tag file and append RC"
+          echo "11.0.0" > ../docker-tag/tagfile
+
+  - task: package artifact
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: eu.gcr.io/ons-rasrmbs-management/action-exporter
+          tag: cache
+          username: _json_key
+          password: ((gcp.service_account_json))
+
+      inputs:
+      - name: source-code
+      outputs:
+      - name: artifact
+
+      run: 
+        path: /bin/bash
+        args:
+        - -exc
+        - |
+          cd source-code
+          mvn clean package -DskipTest=true
+          cp Dockerfile ../artifact/
+          cp -r target ../artifact/
+          echo $(grep -E "version:\s+" _infra/helm/values.yaml | cut -d" " -f2 | sed -r 's/"//g') > ../artifact/tagfile
+
+  - put: docker-artifact
+    params: 
+      build: artifact
+      tag_file: artifact/tagfile
+      build: source-code
+
+  - task: push helm chart
+    image: helm-container
+    config:
+      platform: linux
+
+      inputs:
+      - name: source-code
+
+      run: 
+        path: /bin/sh
+        args:
+        - -exc
+        - |
+          cat <<EOF > service-account.json
+          $SERVICE_ACCOUNT
+          EOF
+          gcloud auth activate-service-account --key-file=./service-account.json --project $PROJECT
+          gcloud container clusters get-credentials $CLUSTER --region $REGION
+
+          cd source-code
+          helm package action-exporter _infra/helm
+
+          gsutil cp action-exporter-*.tgz gs://ras-rm-artifacts/action-exporter
+      
+      params:
+        SERVICE_ACCOUNT: ((gcp.service_account_json))
