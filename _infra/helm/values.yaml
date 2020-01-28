@@ -1,11 +1,6 @@
 replicaCount: 1
 
-env: "dev"
-version: "1.2"
-
-image:
-  repositoryName: action-exporter
-  tag: migration-sandbox
+env: "minikube"
 
 service:
   port: 8082
