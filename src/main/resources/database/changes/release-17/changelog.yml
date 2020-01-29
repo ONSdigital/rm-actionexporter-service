@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 17-1
+      author: Adam Wilkie
+      changes:
+        - sqlFile:
+            comment: Change email field size to 200
+            path: update_email_field_size.sql
+            relativeToChangelogFile: true
+            splitStatements: false
