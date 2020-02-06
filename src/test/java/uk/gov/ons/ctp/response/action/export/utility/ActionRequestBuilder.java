@@ -49,7 +49,6 @@ public class ActionRequestBuilder {
     actionRequest.setContact(new ActionContact());
     actionRequest.setEvents(new ActionEvent(Collections.singletonList("event1")));
     actionRequest.setReturnByDate(DateTimeFormatter.ofPattern("dd/MM").format(LocalDate.now()));
-
     actionRequest.getContact().setEmailAddress("this_email_is_very_long_and_should_hopefully_exceed_more_than_fifty_characters@gmail.com");
 
     return actionRequest;
