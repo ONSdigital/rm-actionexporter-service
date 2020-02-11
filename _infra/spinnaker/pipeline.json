@@ -1,0 +1,21 @@
+{
+  "schema": "v2",
+  "application": "action-exporter",
+  "name": "action-exporter",
+  "template": {
+    "artifactAccount": "front50ArtifactCredentials",
+    "reference": "spinnaker://rasrmApplicationTemplate",
+    "type": "front50/pipelineTemplate"
+  },
+  "variables": {
+    "name": "action-exporter",
+    "defaultHelmChart": "action-exporter-0.1.0.tgz",
+    "helmChartMatcher": "action-exporter-.*\\.tgz"
+  },
+  "exclude": [],
+  "triggers": [],
+  "parameters": [],
+  "notifications": [],
+  "description": "",
+  "stages": []
+}

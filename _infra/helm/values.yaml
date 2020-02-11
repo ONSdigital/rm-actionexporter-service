@@ -1,0 +1,10 @@
+replicaCount: 1
+
+env: "minikube"
+
+service:
+  port: 8082
+
+resources:
+  requests:
+    memory: "256Mi"
