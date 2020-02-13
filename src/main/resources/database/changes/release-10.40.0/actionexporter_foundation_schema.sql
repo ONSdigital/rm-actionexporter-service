@@ -79,7 +79,7 @@ CREATE TABLE contact (
     forename 		character varying(35),
     surname 		character varying(35),
     phonenumber 	character varying(20),
-    emailaddress 	character varying(200),
+    emailaddress 	character varying(50),
     title 		character varying(20)
 );
 
