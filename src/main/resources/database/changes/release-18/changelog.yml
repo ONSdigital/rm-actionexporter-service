@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 18-1
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Remove UUID generation for the address table
+            path: remove_random_uuid.sql
+            relativeToChangelogFile: true
+            splitStatements: false
