@@ -4,13 +4,13 @@ metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
-    env: "{{ .Values.env }}"
+    env: {{ .Values.env }}
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
     rollingUpdate:
-      maxSurge: {{ .Values.maxSurge }}
-      maxUnavailable: {{ .Values.maxUnavailable }}
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
     type: RollingUpdate
   selector:
     matchLabels:
@@ -30,17 +30,18 @@ spec:
             claimName: sftp-pvc
       containers:
         - name: {{ .Chart.Name }}
-          image: "eu.gcr.io/ons-rasrmbs-management/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.name }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http-server
-              containerPort: {{ .Values.containerPort }}
+              containerPort: {{ .Values.container.port }}
           volumeMounts:
             - name: sftp-data
               mountPath: "/home/demo/sftp"
           readinessProbe:
             httpGet:
               path: /info
-              port: {{ .Values.containerPort }}
+              port: {{ .Values.container.port }}
             initialDelaySeconds: 110
             periodSeconds: 20
             failureThreshold: 5
@@ -49,7 +50,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /info
-              port: {{ .Values.containerPort }}
+              port: {{ .Values.container.port }}
             initialDelaySeconds: 120
             periodSeconds: 20
             failureThreshold: 5
@@ -78,7 +79,7 @@ spec:
                 name: rabbitmq
                 key: rabbitmq-password
           - name: SERVER_PORT
-            value: "8082"
+            value: "{{ .Values.container.port }}"
           - name: SECURITY_BASIC_ENABLED
             value: "true"
           - name: SPRING_DATASOURCE_URL
