@@ -25,3 +25,6 @@ service:
 resources:
   requests:
     memory: "256Mi"
+
+test:
+  enabled: true
