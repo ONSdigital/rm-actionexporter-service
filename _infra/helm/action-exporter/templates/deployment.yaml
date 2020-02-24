@@ -24,10 +24,12 @@ spec:
         helmVersion: {{ .Chart.Version }}
         env: {{ .Values.env }}
     spec:
+      {{- if .Values.test.enabled }}
       volumes:
         - name: sftp-data
           persistentVolumeClaim:
             claimName: sftp-pvc
+      {{- end}}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.name }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
@@ -35,9 +37,11 @@ spec:
           ports:
             - name: http-server
               containerPort: {{ .Values.container.port }}
+          {{- if .Values.test.enabled }}
           volumeMounts:
             - name: sftp-data
               mountPath: "/home/demo/sftp"
+          {{- end}}
           readinessProbe:
             httpGet:
               path: /info
