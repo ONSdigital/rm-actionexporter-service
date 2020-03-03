@@ -24,6 +24,16 @@ spec:
         helmVersion: {{ .Chart.Version }}
         env: {{ .Values.env }}
     spec:
+      {{- if .Values.database.sqlProxyEnabled }}
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-proxy-credentials
+            defaultMode: 0444
+            items:
+            - key: "credentials.json"
+              path: "credentials.json"
+      {{- end }}
       {{- if .Values.test.enabled }}
       volumes:
         - name: sftp-data
@@ -31,6 +41,32 @@ spec:
             claimName: sftp-pvc
       {{- end}}
       containers:
+        {{- if .Values.database.sqlProxyEnabled }}
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.16
+          command: ["/cloud_sql_proxy",
+                    "-instances=$(SQL_INSTANCE_NAME)=tcp:$(DB_PORT)",
+                    "-ip_address_types=PRIVATE",
+                    "-credential_file=/secrets/cloudsql/credentials.json"]
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          env:
+          - name: SQL_INSTANCE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: cloudsql-proxy-config
+                key: instance-connection-name
+          - name: DB_PORT
+            valueFrom:
+              secretKeyRef:
+                name: db-config
+                key: db-port
+        {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.name }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -115,9 +151,21 @@ spec:
           - name: SECURITY_BASIC_ENABLED
             value: "true"
           - name: SPRING_DATASOURCE_URL
+            {{- if .Values.database.sqlProxyEnabled }}
+            value: "jdbc:postgresql://127.0.0.1:5432/$(DB_NAME)"
+            {{- else }}
             value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable"
+            {{- end }}
           - name: LIQUIBASE_URL
-            value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            value: "$(SPRING_DATASOURCE_URL)"
+          - name: LIQUIBASE_USER
+            value: "$(DB_USERNAME)"
+          - name: LIQUIBASE_PASSWORD
+            value: "$(DB_PASSWORD)"
+          - name: SPRING_DATASOURCE_USERNAME
+            value: "$(DB_USERNAME)"
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: "$(DB_PASSWORD)"
           - name: RABBITMQ_HOST
             value: "$(RABBITMQ_SERVICE_HOST)"
           - name: RABBITMQ_PORT
@@ -156,14 +204,6 @@ spec:
             value: "3600000"
           - name: DATA_GRID_LOCK_TIME_TO_LIVE_SECONDS
             value: "45"
-          - name: LIQUIBASE_USER
-            value: "$(DB_USERNAME)"
-          - name: LIQUIBASE_PASSWORD
-            value: "$(DB_PASSWORD)"
-          - name: SPRING_DATASOURCE_USERNAME
-            value: "$(DB_USERNAME)"
-          - name: SPRING_DATASOURCE_PASSWORD
-            value: "$(DB_PASSWORD)"
           - name: LOGGING_LEVEL_uk.gov.ons.ctp.response.action.export.scheduled
             value: "WARN"
           - name: EXPORT_SCHEDULE_CRON_EXPRESSION
