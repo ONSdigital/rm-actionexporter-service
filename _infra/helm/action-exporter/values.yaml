@@ -24,6 +24,9 @@ container:
 service:
   port: 80
 
+exportSchedule:
+  cron: "*/30 * * * * *"
+
 resources:
   requests:
     memory: "256Mi"
