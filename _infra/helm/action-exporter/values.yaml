@@ -1,5 +1,6 @@
 env: minikube
 namespace: minikube
+loglevel: DEBUG
 
 replicas: 1
 rollingUpdate:
@@ -24,9 +25,18 @@ container:
 service:
   port: 80
 
+exportSchedule:
+  cron: "*/30 * * * * *"
+
+endpoints:
+  enabled: true
+
 resources:
   requests:
     memory: "256Mi"
+
+sftp:
+  host: "$(SFTP_SERVICE_HOST)"
 
 test:
   enabled: true

@@ -126,6 +126,10 @@ spec:
               secretKeyRef:
                 name: db-credentials
                 key: {{ .Values.database.secrets.passwordKey }}
+          - name: ENDPOINTS_ENABLED
+            value: {{ .Values.endpoints.enabled }}
+          - name: LOGGING_LEVEL_uk.gov.ons.ctp
+            value: {{ .Values.loglevel }}
           - name: SECURITY_USER_NAME
             valueFrom:
               secretKeyRef:
@@ -171,9 +175,9 @@ spec:
           - name: RABBITMQ_PORT
             value: "5672"
           - name: SFTP_HOST
-            value: "$(SFTP_SERVICE_HOST)"
+            value: {{ .Values.sftp.host }}
           - name: SFTP_PORT
-            value: "$(SFTP_SERVICE_PORT)"
+            value: "22"
           - name: SFTP_USERNAME
             {{- if .Values.test.enabled }}
             value: "demo"
@@ -221,7 +225,7 @@ spec:
           - name: LOGGING_LEVEL_uk.gov.ons.ctp.response.action.export.scheduled
             value: "WARN"
           - name: EXPORT_SCHEDULE_CRON_EXPRESSION
-            value: "*/30 * * * * *"
+            value: {{ .Values.exportSchedule.cron }}
           - name: SPRING_ZIPKIN_ENABLED
             value: "true"
           - name: SPRING_ZIPKIN_BASEURL
