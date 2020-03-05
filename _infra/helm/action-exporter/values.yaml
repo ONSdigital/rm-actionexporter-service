@@ -1,5 +1,6 @@
 env: minikube
 namespace: minikube
+loglevel: DEBUG
 
 replicas: 1
 rollingUpdate:
@@ -23,6 +24,12 @@ container:
   port: 8080
 service:
   port: 80
+
+exportSchedule:
+  cron: "*/30 * * * * *"
+
+endpoints:
+  enabled: true
 
 resources:
   requests:
