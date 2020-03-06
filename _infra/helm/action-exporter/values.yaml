@@ -35,8 +35,5 @@ resources:
   requests:
     memory: "256Mi"
 
-sftp:
-  host: "$(SFTP_SERVICE_HOST)"
-
 test:
   enabled: true
