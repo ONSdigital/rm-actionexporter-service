@@ -35,5 +35,6 @@ resources:
   requests:
     memory: "256Mi"
 
-test:
-  enabled: true
+sftp:
+  test:
+    enabled: true
