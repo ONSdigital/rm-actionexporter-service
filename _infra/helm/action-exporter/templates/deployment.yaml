@@ -73,7 +73,7 @@ spec:
           ports:
             - name: http-server
               containerPort: {{ .Values.container.port }}
-          {{- if .Values.test.enabled }}
+          {{- if .Values.sftp.test.enabled }}
           volumeMounts:
             - name: sftp-data
               mountPath: "/home/demo/sftp"
