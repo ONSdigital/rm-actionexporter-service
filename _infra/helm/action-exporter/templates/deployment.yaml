@@ -34,7 +34,7 @@ spec:
             - key: "credentials.json"
               path: "credentials.json"
       {{- end }}
-      {{- if .Values.test.enabled }}
+      {{- if .Values.sftp.test.enabled }}
       volumes:
         - name: sftp-data
           persistentVolumeClaim:
