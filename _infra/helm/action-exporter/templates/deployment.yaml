@@ -175,7 +175,11 @@ spec:
           - name: RABBITMQ_PORT
             value: "5672"
           - name: SFTP_HOST
+            {{- if .Values.test.enabled }}
+            value: "$(SFTP_SERVICE_HOST)"
+            {{- else }}
             value: {{ .Values.sftp.host }}
+            {{- end }}
           - name: SFTP_PORT
             value: "22"
           - name: SFTP_USERNAME
