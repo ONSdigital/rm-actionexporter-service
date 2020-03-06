@@ -127,7 +127,7 @@ spec:
                 name: db-credentials
                 key: {{ .Values.database.secrets.passwordKey }}
           - name: ENDPOINTS_ENABLED
-            value: {{ .Values.endpoints.enabled }}
+            value: {{ .Values.endpoints.enabled | quote }}
           - name: LOGGING_LEVEL_uk.gov.ons.ctp
             value: {{ .Values.loglevel }}
           - name: SECURITY_USER_NAME
