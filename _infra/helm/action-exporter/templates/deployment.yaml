@@ -34,12 +34,6 @@ spec:
             - key: "credentials.json"
               path: "credentials.json"
       {{- end }}
-      {{- if .Values.sftp.test.enabled }}
-      volumes:
-        - name: sftp-data
-          persistentVolumeClaim:
-            claimName: sftp-pvc
-      {{- end}}
       containers:
         {{- if .Values.database.sqlProxyEnabled }}
         - name: cloudsql-proxy
@@ -73,11 +67,6 @@ spec:
           ports:
             - name: http-server
               containerPort: {{ .Values.container.port }}
-          {{- if .Values.sftp.test.enabled }}
-          volumeMounts:
-            - name: sftp-data
-              mountPath: "/home/demo/sftp"
-          {{- end}}
           readinessProbe:
             httpGet:
               path: /info
