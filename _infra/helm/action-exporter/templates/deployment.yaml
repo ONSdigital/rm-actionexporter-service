@@ -139,6 +139,24 @@ spec:
               secretKeyRef:
                 name: security-credentials
                 key: security-password
+          - name: RABBITMQ_HOST
+            {{- if .Values.managedRabbitMQ.enabled }}
+            valueFrom:
+              configMapKeyRef:
+                name: rabbit-config
+                key: rabbit-mq-host
+            {{- else }}
+            value: "$(RABBITMQ_SERVICE_HOST)"
+            {{- end }}
+          - name: RABBITMQ_PORT
+            {{- if .Values.managedRabbitMQ.enabled }}
+            valueFrom:
+              configMapKeyRef:
+                name: rabbit-config
+                key: rabbit-mq-port
+            {{- else }}
+            value: "$(RABBITMQ_SERVICE_PORT)"
+            {{- end }}
           - name: RABBITMQ_USERNAME
             valueFrom:
               secretKeyRef:
@@ -169,10 +187,6 @@ spec:
             value: "$(DB_USERNAME)"
           - name: SPRING_DATASOURCE_PASSWORD
             value: "$(DB_PASSWORD)"
-          - name: RABBITMQ_HOST
-            value: "$(RABBITMQ_SERVICE_HOST)"
-          - name: RABBITMQ_PORT
-            value: "5672"
           - name: SFTP_HOST
             {{- if .Values.sftp.test.enabled }}
             value: "$(SFTP_SERVICE_HOST)"
@@ -221,11 +235,11 @@ spec:
             value: "WARN"
           - name: EXPORT_SCHEDULE_CRON_EXPRESSION
             value: {{ .Values.exportSchedule.cron | quote }}
-          {{ if .Values.zipkin.enabled}}
+          {{- if .Values.zipkin.enabled}}
           - name: SPRING_ZIPKIN_ENABLED
             value: {{ .Values.zipkin.enabled }}
           - name: SPRING_ZIPKIN_BASEURL
             value: "http://$(ZIPKIN_SERVICE_HOST):$(ZIPKIN_SERVICE_PORT)/"
           {{- end}}
           resources:
-            {{ toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
