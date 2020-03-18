@@ -206,7 +206,7 @@ spec:
                 name: sftp-secret
                 key: sftp-actionexporter-password
           - name: SFTP_DIRECTORY
-            value: "/home/demo/sftp"
+            value: "{{ .Values.sftp.directory }}"
           - name: REDIS_HOST
             {{- if .Values.database.managedRedis }}
             valueFrom:
