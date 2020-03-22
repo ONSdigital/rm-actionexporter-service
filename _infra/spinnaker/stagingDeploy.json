@@ -1,16 +1,16 @@
 {
   "schema": "v2",
   "application": "action-exporter",
-  "name": "action-exporter",
+  "name": "deploy staging",
   "template": {
     "artifactAccount": "front50ArtifactCredentials",
-    "reference": "spinnaker://rasrmApplicationTemplate",
+    "reference": "spinnaker://individualDeploymentTemplate",
     "type": "front50/pipelineTemplate"
   },
   "variables": {
-    "name": "action-exporter",
-    "defaultHelmChart": "action-exporter-0.1.0.tgz",
-    "helmChartMatcher": "action-exporter-.*\\.tgz"
+    "namespace": "staging",
+    "environment": "dev",
+    "service": "action-exporter"
   },
   "exclude": [],
   "triggers": [],
