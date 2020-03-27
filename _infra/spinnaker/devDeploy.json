@@ -9,8 +9,10 @@
   },
   "variables": {
     "namespace": "dev",
+    "configNamespace": "dev",
     "environment": "dev",
-    "service": "action-exporter"
+    "service": "action-exporter",
+    "bucket": "ras-rm-configuration"
   },
   "exclude": [],
   "triggers": [],
