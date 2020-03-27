@@ -10,7 +10,8 @@
   "variables": {
     "namespace": "preprod",
     "environment": "preprod",
-    "service": "action-exporter"
+    "service": "action-exporter",
+    "bucket": "ras-rm-preprod-configuration"
   },
   "exclude": [],
   "triggers": [],
