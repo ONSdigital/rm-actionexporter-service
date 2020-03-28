@@ -4,15 +4,11 @@
   "name": "deploy dev",
   "template": {
     "artifactAccount": "front50ArtifactCredentials",
-    "reference": "spinnaker://deployBaseline",
+    "reference": "spinnaker://deployBaselineTailored",
     "type": "front50/pipelineTemplate"
   },
   "variables": {
-    "namespace": "dev",
-    "configNamespace": "dev",
-    "environment": "dev",
-    "service": "action-exporter",
-    "bucket": "ras-rm-configuration"
+    "application": "action-exporter"
   },
   "exclude": [],
   "triggers": [],
