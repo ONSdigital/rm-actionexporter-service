@@ -236,15 +236,14 @@
         <!-- Testing -->
 
         <dependency>
-            <groupId>uk.gov.ons.ctp.common</groupId>
-            <artifactId>test-framework</artifactId>
-            <version>10.49.4</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
