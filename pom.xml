@@ -24,7 +24,6 @@
         <developerConnection>scm:git:https://github.com/ONSdigital/rm-actionexporter-service
         </developerConnection>
         <url>https://github.com/ONSdigital/rm-actionexporter-service</url>
-        <tag>actionexportersvc-10.49.10</tag>
     </scm>
 
     <profiles>
@@ -121,18 +120,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-spring-service-connector</artifactId>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-sleuth-zipkin -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
-        </dependency>
-
-        <!-- If you intend to deploy the app on Cloud Foundry, add the following -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-cloudfoundry-connector</artifactId>
         </dependency>
 
         <dependency>
