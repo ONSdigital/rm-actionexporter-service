@@ -134,17 +134,37 @@
 
         <!-- SPRING END -->
 
-        <!-- ONS libraries-->
+        <!-- Third party libraries -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+        </dependency>
 
         <dependency>
-            <groupId>uk.gov.ons.ctp.common</groupId>
-            <artifactId>framework</artifactId>
-            <version>10.49.21</version>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-        <!-- ONS END -->
-        <!-- ONS END -->
 
-        <!-- Third party libraries -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.cache</groupId>
+                    <artifactId>cache-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>ma.glasnost.orika</groupId>
+            <artifactId>orika-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ma.glasnost.orika</groupId>
