@@ -54,8 +54,7 @@ public class TemplateMappingService {
   }
 
   public Map<String, TemplateMapping> retrieveAllTemplateMappingsByActionType() {
-    return retrieveAllTemplateMappings()
-        .stream()
+    return retrieveAllTemplateMappings().stream()
         .collect(Collectors.toMap(TemplateMapping::getActionType, Function.identity()));
   }
 }

@@ -137,8 +137,7 @@ public class ExportProcessor {
                   data.getActionRequestInstructionList(), data.getTemplateMapping().getTemplate()));
 
           Set<String> responseRequiredList =
-              data.getActionRequestInstructionList()
-                  .stream()
+              data.getActionRequestInstructionList().stream()
                   .filter(ActionRequestInstruction::isResponseRequired)
                   .map(ari -> ari.getActionId().toString())
                   .collect(Collectors.toSet());
