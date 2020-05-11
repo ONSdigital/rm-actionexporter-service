@@ -27,27 +27,6 @@
         <url>https://github.com/ONSdigital/rm-actionexporter-service</url>
     </scm>
 
-    <profiles>
-        <profile>
-            <id>artifactory</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
-            <repositories>
-                <repository>
-                    <id>release-repo</id>
-                    <name>libs-release</name>
-                    <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-release-local</url>
-                </repository>
-                <repository>
-                    <id>snapshot-repo</id>
-                    <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-snapshot-local/</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
