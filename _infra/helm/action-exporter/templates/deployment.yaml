@@ -237,6 +237,8 @@ spec:
             value: "45"
           - name: LOGGING_LEVEL_uk.gov.ons.ctp.response.action.export.scheduled
             value: "WARN"
+          - name: LOGGING_LEVEL_com.jcraft.jsch
+            value: "DEBUG"
           - name: EXPORT_SCHEDULE_CRON_EXPRESSION
             value: {{ .Values.exportSchedule.cron | quote }}
           resources:
