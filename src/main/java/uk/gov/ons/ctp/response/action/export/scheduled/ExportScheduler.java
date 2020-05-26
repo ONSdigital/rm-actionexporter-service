@@ -33,6 +33,8 @@ public class ExportScheduler {
   @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
   public void scheduleExport() {
     log.debug("Scheduled run start");
+    log.warn("Test Warning");
+    log.error("Test Error");
     try {
       processExport();
     } catch (Exception ex) {
