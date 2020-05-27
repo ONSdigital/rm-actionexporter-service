@@ -29,7 +29,10 @@ jobs:
           java-version: 1.8
       - run: mkdir -p "$HOME"/Documents/sftp
       - name: Run Tests
-        run: mvn clean verify
+        run: |
+          mvn fmt:check
+          mvn install -DskipTests -DskipITs -Ddocker.skip -Ddockerfile.skip -Dmaven.javadoc.skip=true -Dhttp.wait.skip -B -V
+          mvn verify cobertura:cobertura-integration-test
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '270.0.0'
