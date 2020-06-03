@@ -10,6 +10,10 @@ spring:
     password: postgres
     port: 16432
 
+gcs:
+  bucket: "bucket"
+  enabled: false
+
 sftp:
   port: 1122
   host: localhost

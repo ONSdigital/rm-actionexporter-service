@@ -130,3 +130,7 @@ swagger-settings:
   title: Action Exporter API
   description: API for ${project.artifactId}
   version: ${project.version}
+
+gcs:
+  bucket: "bucket"
+  enabled: false

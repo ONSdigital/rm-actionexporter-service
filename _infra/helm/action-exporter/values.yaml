@@ -44,3 +44,7 @@ sftp:
 
 managedRabbitMQ:
   enabled: false
+
+gcs:
+  bucket: "example"
+  enabled: false
