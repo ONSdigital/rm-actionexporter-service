@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.response.action;
 
 import com.godaddy.logging.LoggingConfigs;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import java.time.Clock;
 import javax.annotation.PostConstruct;
 import net.sourceforge.cobertura.CoverageIgnore;
@@ -83,6 +85,16 @@ public class ActionExporterApplication {
   @Bean
   public Clock clock() {
     return Clock.systemDefaultZone();
+  }
+
+  /**
+   * Bean used to create and configure GCS Client
+   *
+   * @return the Storage Client
+   */
+  @Bean
+  public Storage storage() {
+    return StorageOptions.getDefaultInstance().getService();
   }
 
   /**

@@ -17,4 +17,5 @@ public class AppConfig {
   private DataGrid dataGrid;
   private SwaggerSettings swaggerSettings;
   private Logging logging;
+  private GCS gcs;
 }
