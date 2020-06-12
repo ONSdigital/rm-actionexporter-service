@@ -31,6 +31,9 @@ public class ExportFile {
   @Column(name = "datesuccessfullysent")
   private Timestamp dateSuccessfullySent;
 
+  @Column(name = "rowcount")
+  private int rowCount;
+
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
   private SendStatus status = SendStatus.QUEUED;

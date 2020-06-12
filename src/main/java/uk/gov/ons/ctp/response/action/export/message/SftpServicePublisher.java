@@ -17,9 +17,7 @@ import org.springframework.messaging.support.GenericMessage;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
-import uk.gov.ons.ctp.response.action.export.domain.ExportReport;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
-import uk.gov.ons.ctp.response.action.export.repository.ExportReportRepository;
 import uk.gov.ons.ctp.response.action.export.scheduled.ExportInfo;
 import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
 import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
@@ -35,8 +33,6 @@ public class SftpServicePublisher {
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
   private static final String RESPONSES_REQUIRED = "response_required_id_list";
   private static final String ACTION_COUNT = "action_count";
-
-  @Autowired private ExportReportRepository exportReportRepository;
 
   @Autowired private ActionFeedbackPublisher actionFeedbackPubl;
 
@@ -60,20 +56,18 @@ public class SftpServicePublisher {
     String filename = (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE);
     Timestamp now = DateTimeUtil.nowUTC();
 
+    int actionCount = Integer.valueOf((String) message.getPayload().getHeaders().get(ACTION_COUNT));
+
     ExportFile exportFile = exportFileRepository.findOneByFilename(filename);
     exportFile.setStatus(SendStatus.SUCCEEDED);
     exportFile.setDateSuccessfullySent(now);
+    exportFile.setRowCount(actionCount);
     exportFileRepository.saveAndFlush(exportFile);
 
     String dateStr = new SimpleDateFormat(DATE_FORMAT).format(now);
     String[] responsesRequiredList =
         (String[]) message.getPayload().getHeaders().get(RESPONSES_REQUIRED);
     sendFeedbackMessage(responsesRequiredList, dateStr);
-
-    int actionCount = Integer.valueOf((String) message.getPayload().getHeaders().get(ACTION_COUNT));
-    ExportReport exportReport = new ExportReport(filename, actionCount, now, true, false);
-    exportReportRepository.save(exportReport);
-
     log.with("file_name", filename).debug("Sftp transfer complete");
     exportInfo.addOutcome(filename + " transferred with " + actionCount + " requests.");
   }
@@ -91,12 +85,10 @@ public class SftpServicePublisher {
 
     ExportFile exportFile = exportFileRepository.findOneByFilename(fileName);
     exportFile.setStatus(SendStatus.FAILED);
+    exportFile.setRowCount(actionCount);
     exportFileRepository.saveAndFlush(exportFile);
 
     exportInfo.addOutcome(fileName + " transfer failed for " + actionCount + " requests.");
-    ExportReport exportReport =
-        new ExportReport(fileName, actionCount, DateTimeUtil.nowUTC(), false, false);
-    exportReportRepository.save(exportReport);
   }
 
   /**
