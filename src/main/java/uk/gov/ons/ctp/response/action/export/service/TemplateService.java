@@ -1,24 +1,18 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import static uk.gov.ons.ctp.common.util.InputStreamUtils.getStringFromInputStream;
-
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
@@ -46,25 +40,6 @@ public class TemplateService {
 
   public List<TemplateExpression> retrieveAllTemplates() {
     return repository.findAll();
-  }
-
-  public TemplateExpression storeTemplate(String templateName, InputStream fileContents)
-      throws CTPException {
-    String stringValue = getStringFromInputStream(fileContents);
-    if (StringUtils.isEmpty(stringValue)) {
-      log.error(EXCEPTION_STORE_TEMPLATE);
-      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, EXCEPTION_STORE_TEMPLATE);
-    }
-
-    TemplateExpression template = new TemplateExpression();
-    template.setContent(stringValue);
-    template.setName(templateName);
-    template.setDateModified(new Date());
-    template = repository.save(template);
-
-    configuration.clearTemplateCache();
-
-    return template;
   }
 
   public ByteArrayOutputStream stream(
