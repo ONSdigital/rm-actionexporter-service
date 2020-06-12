@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 19-1
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Drop message log table
+            path: drop_message_log.sql
+            relativeToChangelogFile: true
+            splitStatements: false
