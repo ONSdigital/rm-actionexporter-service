@@ -1,0 +1,1 @@
+ALTER TABLE actionexporter.exportfile add COLUMN rowcount int;

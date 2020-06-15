@@ -1,0 +1,31 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 20-1
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Add the rowcount column to the export file table
+            path: alter_table_exportfile.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 20-2
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Update the export file table with the rowcounts from the filerowcount table
+            path: migrate_filerowcount.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 20-3
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Finally rop file row count tables
+            path: drop_filerowcount.sql
+            relativeToChangelogFile: true
+            splitStatements: false
