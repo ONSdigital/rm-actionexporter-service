@@ -86,7 +86,7 @@ See the [API](API.yaml) for API documentation.
 See the [DATABASE](DATABASE.md) for details
 
 ## Suggestions
-Suggestions for improvements can be found in the [improvements](IMPROVEMENTS.yaml)
+Suggestions for improvements can be found in the [improvements](IMPROVEMENTS.md)
 
 ## Copyright
 Copyright (C) 2017 Crown Copyright (Office for National Statistics)

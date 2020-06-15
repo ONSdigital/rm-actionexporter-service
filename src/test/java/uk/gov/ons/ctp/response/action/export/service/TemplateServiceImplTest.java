@@ -2,11 +2,6 @@ package uk.gov.ons.ctp.response.action.export.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static uk.gov.ons.ctp.response.action.export.service.TemplateService.EXCEPTION_STORE_TEMPLATE;
 import static uk.gov.ons.ctp.response.action.export.utility.ObjectBuilder.buildListOfActionRequests;
 
 import freemarker.template.Configuration;
@@ -27,7 +22,6 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.Address;
 import uk.gov.ons.ctp.response.action.export.domain.Contact;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
 /** To unit test TemplateServiceImpl */
@@ -41,49 +35,6 @@ public class TemplateServiceImplTest {
   @Mock private TemplateRepository repository;
 
   @Mock private freemarker.template.Configuration configuration;
-
-  /** Tests store with a null template */
-  @Test
-  public void testStoreNullTemplate() {
-    boolean exceptionThrown = false;
-    try {
-      templateService.storeTemplate(TEMPLATE_NAME, null);
-    } catch (CTPException e) {
-      exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(EXCEPTION_STORE_TEMPLATE, e.getMessage());
-    }
-    assertTrue(exceptionThrown);
-    verify(repository, times(0)).save(any(TemplateExpression.class));
-    verify(configuration, times(0)).clearTemplateCache();
-  }
-
-  /** Tests store with an empty template */
-  @Test
-  public void testStoreEmptyTemplate() {
-    boolean exceptionThrown = false;
-    try {
-      templateService.storeTemplate(
-          TEMPLATE_NAME,
-          getClass().getResourceAsStream("/templates/freemarker/empty_template.ftl"));
-    } catch (CTPException e) {
-      exceptionThrown = true;
-      assertEquals(CTPException.Fault.SYSTEM_ERROR, e.getFault());
-      assertEquals(EXCEPTION_STORE_TEMPLATE, e.getMessage());
-    }
-    assertTrue(exceptionThrown);
-    verify(repository, times(0)).save(any(TemplateExpression.class));
-    verify(configuration, times(0)).clearTemplateCache();
-  }
-
-  /** Tests store with an valid template */
-  @Test
-  public void testStoreValidTemplate() throws CTPException {
-    templateService.storeTemplate(
-        TEMPLATE_NAME, getClass().getResourceAsStream("/templates/freemarker/valid_template.ftl"));
-    verify(repository, times(1)).save(any(TemplateExpression.class));
-    verify(configuration, times(1)).clearTemplateCache();
-  }
 
   @Test
   public void testTemplateGeneratesCorrectPrintFile() throws IOException, CTPException {
