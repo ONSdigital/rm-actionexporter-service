@@ -56,7 +56,8 @@ public class TemplateService {
     try {
       template = configuration.getTemplate(templateName);
     } catch (IOException e) {
-      throw new RuntimeException("Error reading freemarker template");
+      log.error("Error reading freemarker template", e);
+      throw new RuntimeException("Error reading freemarker template", e);
     }
 
     log.debug("Received template");
