@@ -77,7 +77,7 @@ spring:
   freemarker:
 #    checkTemplateLocation: false
     template-loader-path: classpath:/templates/
-    suffix: ftl
+    suffix: .ftl
     delayfornewtemplates: 86400000
 
   jpa:

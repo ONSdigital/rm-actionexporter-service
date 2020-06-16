@@ -132,9 +132,9 @@ public class ExportProcessor {
         (filenamePrefix, data) -> {
           List<ByteArrayOutputStream> streamList = new LinkedList<>();
 
+          String templateName = data.getTemplateMapping().getTemplate() + ".ftl";
           streamList.add(
-              templateService.stream(
-                  data.getActionRequestInstructionList(), data.getTemplateMapping().getTemplate()));
+              templateService.stream(data.getActionRequestInstructionList(), templateName));
 
           Set<String> responseRequiredList =
               data.getActionRequestInstructionList().stream()
