@@ -105,8 +105,6 @@ sftp:
 freemarker:
   delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
 
-
-
 redelivery-policy:
   maxRedeliveries: 10
   initialRedeliveryDelay: 1000
