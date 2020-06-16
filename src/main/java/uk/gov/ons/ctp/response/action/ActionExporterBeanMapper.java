@@ -8,10 +8,8 @@ import ma.glasnost.orika.impl.generator.EclipseJdtCompilerStrategy;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.common.util.StringToUUIDConverter;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.representation.ActionRequestInstructionDTO;
-import uk.gov.ons.ctp.response.action.export.representation.TemplateExpressionDTO;
 import uk.gov.ons.ctp.response.action.export.representation.TemplateMappingDTO;
 
 /** The bean mapper to go from Entity objects to Presentation objects. */
@@ -33,8 +31,6 @@ public class ActionExporterBeanMapper extends ConfigurableMapper {
 
     ConverterFactory converterFactory = factory.getConverterFactory();
     converterFactory.registerConverter(new StringToUUIDConverter());
-
-    factory.classMap(TemplateExpression.class, TemplateExpressionDTO.class).byDefault().register();
 
     factory.classMap(TemplateMapping.class, TemplateMappingDTO.class).byDefault().register();
 

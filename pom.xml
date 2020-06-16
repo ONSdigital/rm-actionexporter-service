@@ -428,6 +428,13 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>templates</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 

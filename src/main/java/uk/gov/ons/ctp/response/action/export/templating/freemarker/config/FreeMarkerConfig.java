@@ -15,16 +15,6 @@ public class FreeMarkerConfig {
   private long delayForNewTemplates;
 
   /**
-   * The bean to store FreeMarker templates in MongoDB
-   *
-   * @return the loader to store FreeMarker templates in MongoDB
-   */
-  @Bean
-  public FreeMarkerTemplateLoader templateLoader() {
-    return new FreeMarkerTemplateLoader();
-  }
-
-  /**
    * The FreeMarker configuration
    *
    * @return the FreeMarker configuration
@@ -33,9 +23,9 @@ public class FreeMarkerConfig {
   public freemarker.template.Configuration configuration() {
     freemarker.template.Configuration configuration =
         new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_25);
-    configuration.setTemplateLoader(templateLoader());
     configuration.setDefaultEncoding("UTF-8");
     configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+    //    configuration.setClassForTemplateLoading(this.getClass(), "/");
     configuration.setLogTemplateExceptions(false);
     configuration.setTemplateUpdateDelayMilliseconds(delayForNewTemplates);
     return configuration;

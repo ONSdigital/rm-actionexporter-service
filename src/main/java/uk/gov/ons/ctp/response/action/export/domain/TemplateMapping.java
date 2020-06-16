@@ -24,7 +24,7 @@ public class TemplateMapping {
   @Column(name = "actiontypenamepk")
   private String actionType;
 
-  @Column(name = "templatenamefk")
+  @Column(name = "templatename")
   private String template;
 
   @Column(name = "filenameprefix")

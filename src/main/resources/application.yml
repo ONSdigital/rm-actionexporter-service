@@ -75,7 +75,10 @@ spring:
       min-idle: 3
 
   freemarker:
-    checkTemplateLocation: false
+#    checkTemplateLocation: false
+    template-loader-path: classpath:/templates/
+    suffix: ftl
+    delayfornewtemplates: 86400000
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
@@ -101,6 +104,8 @@ sftp:
 
 freemarker:
   delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
+
+
 
 redelivery-policy:
   maxRedeliveries: 10

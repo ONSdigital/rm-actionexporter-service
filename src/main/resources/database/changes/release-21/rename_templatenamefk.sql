@@ -1,0 +1,1 @@
+ALTER TABLE actionexporter.templatemapping RENAME COLUMN  templatenamefk TO templatename;

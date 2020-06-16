@@ -14,8 +14,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
 /**
  * The implementation of the TemplateService TODO Specific to FreeMarker at the moment with
@@ -30,17 +28,7 @@ public class TemplateService {
   public static final String EXCEPTION_STORE_TEMPLATE =
       "Issue storing template. It appears to be empty.";
 
-  @Autowired private TemplateRepository repository;
-
   @Autowired private freemarker.template.Configuration configuration;
-
-  public TemplateExpression retrieveTemplate(String templateName) {
-    return repository.findOne(templateName);
-  }
-
-  public List<TemplateExpression> retrieveAllTemplates() {
-    return repository.findAll();
-  }
 
   public ByteArrayOutputStream stream(
       List<ActionRequestInstruction> actionRequestList, String templateName) {
