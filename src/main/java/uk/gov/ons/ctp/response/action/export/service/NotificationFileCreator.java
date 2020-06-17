@@ -5,10 +5,10 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
@@ -52,7 +52,7 @@ public class NotificationFileCreator {
   public void uploadData(
       String filenamePrefix,
       ByteArrayOutputStream data,
-      ExportJob exportJob,
+      UUID exportJob,
       String[] responseRequiredList,
       int actionCount) {
     if (actionCount == 0) {
@@ -73,7 +73,7 @@ public class NotificationFileCreator {
     log.with("filename", filename).info("Uploading file");
 
     ExportFile exportFile = new ExportFile();
-    exportFile.setExportJobId(exportJob.getId());
+    exportFile.setExportJobId(exportJob);
     exportFile.setFilename(filename);
     exportFileRepository.saveAndFlush(exportFile);
 

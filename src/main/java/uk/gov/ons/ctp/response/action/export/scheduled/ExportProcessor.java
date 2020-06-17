@@ -4,23 +4,15 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
-import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
@@ -37,19 +29,15 @@ public class ExportProcessor {
 
   private TemplateService templateService;
 
-  private ExportJobRepository exportJobRepository;
-
   public ExportProcessor(
       TemplateMappingService templateMappingService,
       NotificationFileCreator notificationFileCreator,
       ActionRequestRepository actionRequestRepository,
-      TemplateService templateService,
-      ExportJobRepository exportJobRepository) {
+      TemplateService templateService) {
     this.templateMappingService = templateMappingService;
     this.notificationFileCreator = notificationFileCreator;
     this.actionRequestRepository = actionRequestRepository;
     this.templateService = templateService;
-    this.exportJobRepository = exportJobRepository;
   }
 
   private class ExportData {
@@ -84,19 +72,18 @@ public class ExportProcessor {
       return;
     }
 
-    ExportJob exportJob = new ExportJob();
-    exportJob = exportJobRepository.saveAndFlush(exportJob);
+    UUID exportJob = UUID.randomUUID();
 
-    actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
+    actionRequestRepository.updateActionsWithExportJob(exportJob);
 
     Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob);
 
     createAndSendFiles(filenamePrefixToDataMap, exportJob);
   }
 
-  private Map<String, ExportData> prepareData(ExportJob exportJob) {
+  private Map<String, ExportData> prepareData(UUID exportJob) {
     Stream<ActionRequestInstruction> actionRequestInstructions =
-        actionRequestRepository.findByExportJobId(exportJob.getId());
+        actionRequestRepository.findByExportJobId(exportJob);
 
     Map<String, TemplateMapping> templateMappings =
         templateMappingService.retrieveAllTemplateMappingsByActionType();
@@ -125,8 +112,7 @@ public class ExportProcessor {
     return filenamePrefixToDataMap;
   }
 
-  private void createAndSendFiles(
-      Map<String, ExportData> filenamePrefixToDataMap, ExportJob exportJob) {
+  private void createAndSendFiles(Map<String, ExportData> filenamePrefixToDataMap, UUID exportJob) {
 
     filenamePrefixToDataMap.forEach(
         (filenamePrefix, data) -> {

@@ -21,7 +21,6 @@ import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.config.GCS;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
@@ -46,7 +45,7 @@ public class NotificationFileCreatorTest {
   @Test
   public void shouldCreateTheCorrectFilename() {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ExportJob exportJob = new ExportJob(UUID.randomUUID());
+    UUID exportJob = UUID.randomUUID();
     String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
     Date now = new Date();
     GCS mockGCS = mock(GCS.class);
@@ -65,7 +64,7 @@ public class NotificationFileCreatorTest {
     ArgumentCaptor<ExportFile> exportFileArgumentCaptor = ArgumentCaptor.forClass(ExportFile.class);
     verify(exportFileRepository).saveAndFlush(exportFileArgumentCaptor.capture());
     assertThat(exportFileArgumentCaptor.getValue().getFilename()).isEqualTo(expectedFilename);
-    assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
+    assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob);
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
     verify(sftpService)
@@ -77,7 +76,7 @@ public class NotificationFileCreatorTest {
   @Test
   public void shouldCreateTheCorrectFilenameAndUploadDataToGCS() {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ExportJob exportJob = new ExportJob(UUID.randomUUID());
+    UUID exportJob = UUID.randomUUID();
     String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
     Date now = new Date();
     GCS mockGCS = mock(GCS.class);
@@ -97,7 +96,7 @@ public class NotificationFileCreatorTest {
     ArgumentCaptor<ExportFile> exportFileArgumentCaptor = ArgumentCaptor.forClass(ExportFile.class);
     verify(exportFileRepository).saveAndFlush(exportFileArgumentCaptor.capture());
     assertThat(exportFileArgumentCaptor.getValue().getFilename()).isEqualTo(expectedFilename);
-    assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
+    assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob);
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
     verify(sftpService)
@@ -110,7 +109,7 @@ public class NotificationFileCreatorTest {
   @Test
   public void shouldThrowExceptionForDuplicateFilename() {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ExportJob exportJob = new ExportJob(UUID.randomUUID());
+    UUID exportJob = UUID.randomUUID();
     String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
     Date now = new Date();
     boolean expectedExceptionThrown = false;

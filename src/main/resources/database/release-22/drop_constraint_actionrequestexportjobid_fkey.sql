@@ -1,0 +1,2 @@
+ALTER TABLE ONLY actionexporter.actionrequest
+DROP CONSTRAINT actionrequestexportjobid_fkey;

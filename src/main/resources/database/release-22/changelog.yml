@@ -1,0 +1,41 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 22-1
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Remove constraint on export job table
+            path: drop_constraint_exportfile_exportjobid_fkey.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 22-2
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Remove constraint on export job table
+            path: drop_constraint_actionrequestexportjonbid_fkey.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 22-3
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Add constraint on export file table
+            path: add_constraint_actionrequestexportfile.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 22-4
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Drop the export job table
+            path: drop_exportjob.sql
+            relativeToChangelogFile: true
+            splitStatements: false

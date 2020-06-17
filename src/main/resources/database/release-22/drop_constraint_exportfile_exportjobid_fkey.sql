@@ -1,0 +1,2 @@
+ALTER TABLE ONLY actionexporter.exportfile
+DROP CONSTRAINT exportfile_exportjobid_fkey;

@@ -18,10 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
-import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
@@ -31,14 +29,12 @@ public class ExportProcessorTest {
   @Mock private TemplateMappingService templateMappingService;
   @Mock private ActionRequestRepository actionRequestRepository;
   @Mock private NotificationFileCreator notificationFileCreator;
-  @Mock private ExportJobRepository exportJobRepository;
   @Mock private TemplateService templateService;
 
   @InjectMocks private ExportProcessor exportProcessor;
 
   @Test
   public void testHappyPath() {
-    ExportJob exportJob = new ExportJob(UUID.randomUUID());
     String actionType = "ACTIONTYPE";
 
     ActionRequestInstruction ari = new ActionRequestInstruction();
@@ -62,8 +58,7 @@ public class ExportProcessorTest {
 
     // Given
     given(actionRequestRepository.existsByExportJobIdIsNull()).willReturn(true);
-    given(exportJobRepository.saveAndFlush(any())).willReturn(exportJob);
-    given(actionRequestRepository.findByExportJobId(any()))
+    given(actionRequestRepository.findByExportJobId(any(UUID.class)))
         .willReturn(Collections.singletonList(ari).stream());
     given(templateMappingService.retrieveAllTemplateMappingsByActionType())
         .willReturn(fileNameTemplateMappings);
@@ -73,9 +68,8 @@ public class ExportProcessorTest {
     exportProcessor.processExport();
 
     // Verify
-    verify(exportJobRepository).saveAndFlush(any());
-    verify(actionRequestRepository).updateActionsWithExportJob(eq(exportJob.getId()));
-    verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
+    verify(actionRequestRepository).updateActionsWithExportJob(any(UUID.class));
+    verify(actionRequestRepository).findByExportJobId(any(UUID.class));
     verify(templateMappingService).retrieveAllTemplateMappingsByActionType();
 
     ArgumentCaptor<ByteArrayOutputStream> bosCaptor =
@@ -85,7 +79,7 @@ public class ExportProcessorTest {
         .uploadData(
             eq("FILENAMEPREFIX_SURVEYREF_EXERCISEREF"),
             bosCaptor.capture(),
-            eq(exportJob),
+            any(UUID.class),
             eq(responsesRequired),
             eq(1));
     assertThat(bosCaptor.getValue().toByteArray()).isEqualTo(bos.toByteArray());
