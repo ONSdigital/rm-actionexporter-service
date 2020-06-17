@@ -25,8 +25,6 @@ public class TemplateService {
 
   public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE =
       "Could not find FreeMarker template.";
-  public static final String EXCEPTION_STORE_TEMPLATE =
-      "Issue storing template. It appears to be empty.";
 
   @Autowired private freemarker.template.Configuration configuration;
 
@@ -54,9 +52,10 @@ public class TemplateService {
     log.with("template_name", templateName).debug("Entering giveMeTemplate");
     Template template = null;
     try {
+      print(configuration);
       template = configuration.getTemplate(templateName);
     } catch (IOException e) {
-      log.error("Error reading freemarker template", e);
+      log.with(e).error("Error reading freemarker template").;
       throw new RuntimeException("Error reading freemarker template", e);
     }
 
@@ -66,6 +65,14 @@ public class TemplateService {
       throw new IllegalStateException(ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
     return template;
+  }
+  private void print(freemarker.template.Configuration configuration) {
+    log.with(configuration.getDefaultEncoding())
+            .with(configuration.getTemplateUpdateDelayMilliseconds())
+            .with(configuration.getVersion())
+            .with(configuration.getLogTemplateExceptions())
+            .with(configuration.getTemplateExceptionHandler())
+            .error("Freemarker configuration");
   }
 
   /**
