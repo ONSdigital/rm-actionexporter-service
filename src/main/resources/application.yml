@@ -75,7 +75,6 @@ spring:
       min-idle: 3
 
   freemarker:
-#    checkTemplateLocation: false
     template-loader-path: classpath:/templates/
     suffix: .ftl
     delayfornewtemplates: 86400000
@@ -101,9 +100,6 @@ sftp:
   username: centos
   password: "JLibV2&XD,"
   directory: Documents/sftp/
-
-freemarker:
-  delayfornewtemplates: 86400000  # ie 24 hours in milliseconds
 
 redelivery-policy:
   maxRedeliveries: 10
