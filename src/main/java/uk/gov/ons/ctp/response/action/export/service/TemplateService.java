@@ -52,28 +52,16 @@ public class TemplateService {
     log.with("template_name", templateName).debug("Entering giveMeTemplate");
     Template template = null;
     try {
-      print(configuration);
       template = configuration.getTemplate(templateName);
     } catch (IOException e) {
       log.with(e).error("Error reading freemarker template");
       throw new RuntimeException("Error reading freemarker template", e);
     }
-
-    log.debug("Received template");
-
     if (template == null) {
       throw new IllegalStateException(ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
+    log.with("template", template.getName()).debug("Received template");
     return template;
-  }
-
-  private void print(freemarker.template.Configuration configuration) {
-    log.with(configuration.getDefaultEncoding())
-        .with(configuration.getTemplateUpdateDelayMilliseconds())
-        .with(configuration.getVersion())
-        .with(configuration.getLogTemplateExceptions())
-        .with(configuration.getTemplateExceptionHandler())
-        .error("Freemarker configuration");
   }
 
   /**

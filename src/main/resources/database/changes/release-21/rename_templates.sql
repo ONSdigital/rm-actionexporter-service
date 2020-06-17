@@ -1,0 +1,1 @@
+UPDATE actionexporter.templatemapping SET templatename = 'initialPrint.ftl' WHERE templatename = 'initialPrint';

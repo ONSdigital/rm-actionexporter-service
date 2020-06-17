@@ -31,7 +31,17 @@ databaseChangeLog:
             splitStatements: false
 
   - changeSet:
-      id: 21-4
+      id: 21-3
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Rename templates
+            path: rename_templates.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+
+  - changeSet:
+      id: 21-5
       author: Warren Bailey
       changes:
         - sqlFile:
