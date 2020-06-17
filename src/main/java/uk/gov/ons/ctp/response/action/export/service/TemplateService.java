@@ -14,8 +14,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateExpression;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
 /**
  * The implementation of the TemplateService TODO Specific to FreeMarker at the moment with
@@ -27,20 +25,8 @@ public class TemplateService {
 
   public static final String ERROR_RETRIEVING_FREEMARKER_TEMPLATE =
       "Could not find FreeMarker template.";
-  public static final String EXCEPTION_STORE_TEMPLATE =
-      "Issue storing template. It appears to be empty.";
-
-  @Autowired private TemplateRepository repository;
 
   @Autowired private freemarker.template.Configuration configuration;
-
-  public TemplateExpression retrieveTemplate(String templateName) {
-    return repository.findOne(templateName);
-  }
-
-  public List<TemplateExpression> retrieveAllTemplates() {
-    return repository.findAll();
-  }
 
   public ByteArrayOutputStream stream(
       List<ActionRequestInstruction> actionRequestList, String templateName) {
@@ -68,14 +54,13 @@ public class TemplateService {
     try {
       template = configuration.getTemplate(templateName);
     } catch (IOException e) {
-      throw new RuntimeException("Error reading freemarker template");
+      log.with(e).error("Error reading freemarker template");
+      throw new RuntimeException("Error reading freemarker template", e);
     }
-
-    log.debug("Received template");
-
     if (template == null) {
       throw new IllegalStateException(ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
+    log.with("template", template.getName()).debug("Received template");
     return template;
   }
 

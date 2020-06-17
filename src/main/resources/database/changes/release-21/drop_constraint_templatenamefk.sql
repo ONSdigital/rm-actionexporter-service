@@ -1,0 +1,1 @@
+ALTER TABLE ONLY actionexporter.templatemapping DROP CONSTRAINT templatenameFK_fkey;

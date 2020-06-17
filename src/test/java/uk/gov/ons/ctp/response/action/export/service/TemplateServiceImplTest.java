@@ -22,7 +22,6 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.Address;
 import uk.gov.ons.ctp.response.action.export.domain.Contact;
-import uk.gov.ons.ctp.response.action.export.repository.TemplateRepository;
 
 /** To unit test TemplateServiceImpl */
 @RunWith(MockitoJUnitRunner.class)
@@ -31,8 +30,6 @@ public class TemplateServiceImplTest {
   private static final String TEST_FILE_PATH = "/tmp/ctp/forPrinter.csv";
 
   @InjectMocks private TemplateService templateService;
-
-  @Mock private TemplateRepository repository;
 
   @Mock private freemarker.template.Configuration configuration;
 
@@ -67,17 +64,6 @@ public class TemplateServiceImplTest {
     result.setAddress(address);
     return Collections.singletonList(result);
   }
-
-  /** Tests file */
-  //  @Test
-  //  public void testFile() throws CTPException, IOException {
-  //
-  // Mockito.when(configuration.getTemplate(TEMPLATE_NAME)).thenReturn(Mockito.mock(Template.class));
-  //
-  //    File result = templateService.file(buildListOfActionRequests(), TEMPLATE_NAME,
-  // TEST_FILE_PATH);
-  //    assertNotNull(result);
-  //  }
 
   /** Tests stream issue retrieving */
   @Test
