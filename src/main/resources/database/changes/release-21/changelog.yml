@@ -31,7 +31,7 @@ databaseChangeLog:
             splitStatements: false
 
   - changeSet:
-      id: 21-3
+      id: 21-4
       author: Warren Bailey
       changes:
         - sqlFile:
