@@ -9,10 +9,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Domain entity representing a template mapping. */
-@CoverageIgnore
 @Entity
 @Data
 @AllArgsConstructor(access = AccessLevel.PUBLIC)

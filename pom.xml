@@ -13,11 +13,13 @@
         <springboot.version>1.5.6.RELEASE</springboot.version>
         <springcloud.version>Dalston.SR1</springcloud.version>
         <common.version>11.0.0-SNAPSHOT</common.version>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
-        <surefire.version>2.20</surefire.version>
+        <surefire.version>2.22.2</surefire.version>
         <godaddylogging.version>1.2.5</godaddylogging.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <javax.activation.version>1.2.0</javax.activation.version>
+        <jaxb.api.version>2.3.0</jaxb.api.version>
     </properties>
 
     <scm>
@@ -40,6 +42,29 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
 
         <!-- Spring dependencies -->
         <dependency>
@@ -135,7 +160,15 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
+            <version>1.18.12</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
         </dependency>
 
         <dependency>
@@ -177,12 +210,6 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.11</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sourceforge.cobertura</groupId>
-            <artifactId>cobertura</artifactId>
-            <version>2.1.1</version>
         </dependency>
 
         <dependency>
@@ -247,11 +274,30 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.4.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.3,</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.8.1</version>
                     <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <release>11</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -260,6 +306,9 @@
                     <version>${surefire.version}</version>
                     <configuration>
                         <threadCount>1</threadCount>
+                        <argLine>
+                            --illegal-access=permit
+                        </argLine>
                     </configuration>
                     <!-- REQUIRED for unit tests to run -->
                     <dependencies>
@@ -338,7 +387,7 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.4</version>
+                <version>1.4.13</version>
                 <executions>
                     <execution>
                         <goals>
@@ -351,6 +400,25 @@
                                 <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
                             </buildArgs>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

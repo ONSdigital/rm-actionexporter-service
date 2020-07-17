@@ -5,7 +5,6 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.time.Clock;
 import javax.annotation.PostConstruct;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -29,7 +28,6 @@ import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.repository.impl.BaseRepositoryImpl;
 
 /** The main entry point into the Action Service SpringBoot Application. */
-@CoverageIgnore
 @SpringBootApplication
 @EnableTransactionManagement
 @IntegrationComponentScan

@@ -17,13 +17,11 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import uk.gov.ons.ctp.response.action.message.instruction.Priority;
 
 /** Domain model object. */
-@CoverageIgnore
 @Entity
 @Data
 @AllArgsConstructor

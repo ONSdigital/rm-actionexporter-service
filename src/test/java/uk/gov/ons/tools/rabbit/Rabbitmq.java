@@ -1,10 +1,8 @@
 package uk.gov.ons.tools.rabbit;
 
 import lombok.Data;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 @Data
-@CoverageIgnore
 public class Rabbitmq {
   private String username;
   private String password;

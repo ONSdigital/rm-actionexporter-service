@@ -9,12 +9,10 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 /** Domain model object. */
-@CoverageIgnore
 @Entity
 @Data
 @AllArgsConstructor
