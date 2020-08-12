@@ -6,11 +6,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.data.annotation.Id;
 
 /** Representation of an ActionRequest */
-@CoverageIgnore
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)

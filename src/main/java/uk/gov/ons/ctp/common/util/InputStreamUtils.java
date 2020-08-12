@@ -6,10 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Class to collect together some useful InputStream manipulation methods */
-@CoverageIgnore
 public class InputStreamUtils {
 
   private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);

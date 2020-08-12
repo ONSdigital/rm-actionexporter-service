@@ -10,10 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Domain model object. */
-@CoverageIgnore
 @Entity
 @Data
 @Builder

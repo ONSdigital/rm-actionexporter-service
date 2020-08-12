@@ -11,9 +11,7 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sourceforge.cobertura.CoverageIgnore;
 
-@CoverageIgnore
 @Entity
 @Data
 @AllArgsConstructor
