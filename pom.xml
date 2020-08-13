@@ -10,8 +10,8 @@
     <description>CTP : ActionExporterService</description>
 
     <properties>
-        <springboot.version>1.5.6.RELEASE</springboot.version>
-        <springcloud.version>Dalston.SR1</springcloud.version>
+        <springboot.version>1.5.22.RELEASE</springboot.version>
+        <springcloud.version>Edgeware.SR6</springcloud.version>
         <common.version>11.0.0-SNAPSHOT</common.version>
         <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
@@ -478,18 +478,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
-                    <check />
-                </configuration>
             </plugin>
         </plugins>
         <resources>
