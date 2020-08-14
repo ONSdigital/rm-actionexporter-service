@@ -39,7 +39,7 @@ public class TemplateMappingService {
 
   public TemplateMapping retrieveTemplateMappingByActionType(String actionType)
       throws CTPException {
-    TemplateMapping templateMapping = repository.findOne(actionType);
+    TemplateMapping templateMapping = repository.getOne(actionType);
     if (templateMapping == null) {
       log.with("action_type", actionType).error("No template mapping for actionType found.");
       throw new CTPException(

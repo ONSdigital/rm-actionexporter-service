@@ -18,13 +18,6 @@ logging:
   profile: DEV
   useJson: false
 
-liquibase:
-  user: postgres
-  password: postgres
-  default-schema: actionexporter
-  url: jdbc:postgresql://localhost:5432/postgres
-  changeLog: classpath:/database/changelog-master.yml
-
 security:
   basic:
     enabled: true
@@ -43,16 +36,16 @@ management:
       enabled: true
     rabbit:
       enabled: false
+  endpoint:
+    info:
+      enabled: true
+  endpoints:
+    enabled-by-default: true
 
 server:
   port: 8141
-  servlet-path: /
-
-endpoints:
-  info:
-    enabled: true
-    sensitive: false
-  enabled: true
+  servlet:
+    path: /
 
 spring:
   output:
@@ -86,6 +79,14 @@ spring:
       hibernate:
         ddl-auto: update
         default_schema: actionexporter
+  
+  liquibase:
+    user: postgres
+    password: postgres
+    default-schema: actionexporter
+    url: jdbc:postgresql://localhost:5432/postgres
+    changeLog: classpath:/database/changelog-master.yml
+
 
 data-grid:
   address: localhost:6379
