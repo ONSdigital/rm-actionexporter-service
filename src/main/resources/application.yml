@@ -22,10 +22,6 @@ security:
   basic:
     enabled: true
     realm: sdc
-  user:
-    name: admin
-    password: secret
-
 
 management:
   security:
@@ -44,9 +40,7 @@ management:
 
 server:
   port: 8141
-  servlet:
-    path: /
-
+  
 spring:
   output:
     ansi:
@@ -87,6 +81,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     changeLog: classpath:/database/changelog-master.yml
 
+  mvc:
+    servlet:
+      path: /
+
+  security:
+    user:
+      name: admin
+      password: secret
 
 data-grid:
   address: localhost:6379
