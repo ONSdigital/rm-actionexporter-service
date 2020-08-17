@@ -10,8 +10,8 @@
     <description>CTP : ActionExporterService</description>
 
     <properties>
-        <springboot.version>2.0.9.RELEASE</springboot.version>
-        <springcloud.version>Finchley.SR4</springcloud.version>
+        <springboot.version>2.1.16.RELEASE</springboot.version>
+        <springcloud.version>Greenwich.SR6</springcloud.version>
         <common.version>11.0.0-SNAPSHOT</common.version>
         <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
@@ -137,6 +137,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-spring-service-connector</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
+        </dependency>        
 
         <dependency>
             <groupId>com.google.cloud</groupId>
@@ -272,6 +277,18 @@
             <artifactId>byte-buddy</artifactId>
             <version>1.8.22</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+            <version>1.4.0</version>
+        </dependency> 
+
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>1.5.2</version>
         </dependency>
 
     </dependencies>

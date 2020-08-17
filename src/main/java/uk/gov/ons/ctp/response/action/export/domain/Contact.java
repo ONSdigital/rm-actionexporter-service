@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /** Domain model object. */
 @Entity
@@ -19,6 +21,13 @@ import lombok.NoArgsConstructor;
 public class Contact {
 
   @Id
+  @GenericGenerator(
+      name = "actionexportseq_gen",
+      strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+      parameters = {
+        @Parameter(name = "sequence_name", value = "actionexporter.contactpkseq"),
+        @Parameter(name = "increment_size", value = "1")
+      })
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "actionexportseq_gen")
   @Column(name = "contactpk")
   private Integer contactPk;
