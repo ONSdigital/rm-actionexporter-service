@@ -18,15 +18,7 @@ logging:
   profile: DEV
   useJson: false
 
-security:
-  basic:
-    enabled: true
-    realm: sdc
-
 management:
-  security:
-    role: SUPERUSER
-    enabled: true
   health:
     mongo:
       enabled: true
