@@ -53,13 +53,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
-    driverClassName: org.postgresql.Driver
+    driver-class-name: org.postgresql.Driver
     continue-on-error: true
-    tomcat:
-      initial-size: 5
-      max-active: 10
-      max-idle: 5
-      min-idle: 3
+    initialization-mode: always
+    hikari:
+      maximumPoolSize: 50
+      connectionTimeout: 30000
 
   freemarker:
     template-loader-path: classpath:/templates/
