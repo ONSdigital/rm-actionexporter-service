@@ -10,8 +10,8 @@
     <description>CTP : ActionExporterService</description>
 
     <properties>
-        <springboot.version>2.1.16.RELEASE</springboot.version>
-        <springcloud.version>Greenwich.SR6</springcloud.version>
+        <springboot.version>2.2.9.RELEASE</springboot.version>
+        <springcloud.version>Hoxton.SR7</springcloud.version>
         <common.version>11.0.0-SNAPSHOT</common.version>
         <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
