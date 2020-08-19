@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -38,7 +39,11 @@ public class ExportSchedulerTest {
     given(appConfig.getDataGrid()).willReturn(mockDataGrid);
 
     // When
-    exportScheduler.scheduleExport();
+    try {
+      exportScheduler.scheduleExport();
+    } catch (Exception e) {
+      fail();
+    }
 
     // Verify
     InOrder inOrder = inOrder(mockLock, exportProcessor);
@@ -59,12 +64,15 @@ public class ExportSchedulerTest {
     doThrow(RuntimeException.class).when(exportProcessor).processExport();
 
     // When
-    exportScheduler.scheduleExport();
-
-    // Verify
-    InOrder inOrder = inOrder(mockLock, exportProcessor);
-    inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
-    inOrder.verify(exportProcessor).processExport();
-    inOrder.verify(mockLock).unlock();
+    try {
+      exportScheduler.scheduleExport();
+      fail();
+    } catch (Exception e) {
+      // Verify
+      InOrder inOrder = inOrder(mockLock, exportProcessor);
+      inOrder.verify(mockLock).tryLock(anyLong(), any(TimeUnit.class));
+      inOrder.verify(exportProcessor).processExport();
+      inOrder.verify(mockLock).unlock();
+    }
   }
 }
