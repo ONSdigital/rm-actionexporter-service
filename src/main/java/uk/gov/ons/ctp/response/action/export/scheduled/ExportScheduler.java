@@ -29,16 +29,10 @@ public class ExportScheduler {
     this.appConfig = appConfig;
   }
 
-  /** Carry out scheduled actions according to configured cron expression */
-  @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
-  public void scheduleExport() {
+  // This is called using a K8s CronJob via /export
+  public void scheduleExport() throws Exception {
     log.debug("Scheduled run start");
-    try {
-      processExport();
-    } catch (Exception ex) {
-      log.error(
-          "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", ex);
-    }
+    processExport();
   }
 
   private void processExport() {

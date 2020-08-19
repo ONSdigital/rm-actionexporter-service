@@ -80,7 +80,7 @@ a Rest endpoint for updating and querying this table however the main have templ
 the setup of the database. However in production we currently only use a single template.
 
 ## API
-See the [API](API.yaml) for API documentation.
+See the [API](openapi.yaml) for API documentation.
 
 ## Database structure.
 See the [DATABASE](DATABASE.md) for details
