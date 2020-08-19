@@ -5,7 +5,6 @@ import com.godaddy.logging.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 
