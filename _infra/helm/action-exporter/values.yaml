@@ -30,7 +30,7 @@ service:
 crons:
   exportScheduler:
     name: export-scheduler
-    cron: "*/30 * * * * *"
+    cron: */30 * * * * *
     target: "export"
 
 endpoints:
