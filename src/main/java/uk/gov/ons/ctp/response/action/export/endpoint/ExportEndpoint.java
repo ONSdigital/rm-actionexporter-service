@@ -15,7 +15,7 @@ import uk.gov.ons.ctp.response.action.export.scheduled.ExportScheduler;
 public class ExportEndpoint {
   private static final Logger log = LoggerFactory.getLogger(ExportEndpoint.class);
 
-  private final ExportScheduler exportScheduler;
+  private ExportScheduler exportScheduler;
 
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<String> triggerExport() throws CTPException {
