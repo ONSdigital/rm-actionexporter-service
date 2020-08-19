@@ -47,4 +47,4 @@ managedRabbitMQ:
 
 gcs:
   bucket: "example"
-  enabled: true
+  enabled: false
