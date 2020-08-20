@@ -48,9 +48,6 @@ spring:
     driver-class-name: org.postgresql.Driver
     continue-on-error: true
     initialization-mode: always
-    hikari:
-      maximumPoolSize: 50
-      connectionTimeout: 30000
 
   freemarker:
     template-loader-path: classpath:/templates/
