@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -65,10 +65,14 @@ public class ActionExportService {
    * @param actionRequest to be processed
    */
   private void processActionRequest(ActionRequest actionRequest) {
-    log.with("action_id", actionRequest.getActionId())
-        .with("case_id", actionRequest.getCaseId())
-        .with("action_type", actionRequest.getActionType())
-        .debug("Saving actionRequest");
+    log.debug(
+        "action_id: "
+            + actionRequest.getActionId()
+            + "case_id: "
+            + actionRequest.getCaseId()
+            + "action_type: "
+            + actionRequest.getActionType()
+            + "Saving actionRequest");
 
     ActionRequestInstruction actionRequestDoc =
         mapperFacade.map(actionRequest, ActionRequestInstruction.class);
@@ -83,7 +87,7 @@ public class ActionExportService {
 
     if (actionRequestRepo.existsByActionId(actionRequestDoc.getActionId())) {
       // ActionRequests should never be sent twice with same actionId but...
-      log.with("action_id", actionRequestDoc.getActionId()).warn("Key ActionId already exists");
+      log.warn("action_id: ", actionRequestDoc.getActionId() + ", key ActionId already exists");
     } else {
       actionRequestRepo.persist(actionRequestDoc);
     }
@@ -105,7 +109,7 @@ public class ActionExportService {
    * @param actionCancel to be processed
    */
   private void processActionCancel(ActionCancel actionCancel) {
-    log.with("action_cancel", actionCancel).debug("Processing actionCancel");
+    log.debug("action_cancel: " + actionCancel.toString() + ", processing actionCancel");
     ActionRequestInstruction actionRequest =
         actionRequestRepo.getOne(UUID.fromString(actionCancel.getActionId()));
 

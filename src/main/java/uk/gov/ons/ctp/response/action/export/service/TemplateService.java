@@ -1,7 +1,5 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +9,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
@@ -49,18 +49,18 @@ public class TemplateService {
    * @return the FreeMarker template
    */
   private Template getTemplate(String templateName) {
-    log.with("template_name", templateName).debug("Entering giveMeTemplate");
+    log.debug("template_name: " + templateName + ", entering giveMeTemplate");
     Template template = null;
     try {
       template = configuration.getTemplate(templateName);
     } catch (IOException e) {
-      log.with(e).error("Error reading freemarker template");
+      log.error("Error reading freemarker template", e);
       throw new RuntimeException("Error reading freemarker template", e);
     }
     if (template == null) {
       throw new IllegalStateException(ERROR_RETRIEVING_FREEMARKER_TEMPLATE);
     }
-    log.with("template", template.getName()).debug("Received template");
+    log.debug("template:" + template.getName() + ", received template");
     return template;
   }
 

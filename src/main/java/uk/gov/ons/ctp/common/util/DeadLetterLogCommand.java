@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.util;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.xml.transform.stream.StreamResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.oxm.Marshaller;
 import uk.gov.ons.ctp.common.error.CTPException;
 
@@ -57,10 +57,10 @@ public class DeadLetterLogCommand<X> {
     } catch (Throwable t) {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
         marshaller.marshal(thingToMarshal, new StreamResult(baos));
-        log.with("content", baos).error("Failed to execute", t);
+        log.error("ByteArrayOutputStream baos: Failed to execute", t);
       } catch (IOException ioe) {
         // we cannot marshal it to xml, so last ditch .. toString()
-        log.with("content", thingToMarshal).error("Failed to marshel", ioe);
+        log.error("Failed to marshal", ioe);
       }
     }
   }

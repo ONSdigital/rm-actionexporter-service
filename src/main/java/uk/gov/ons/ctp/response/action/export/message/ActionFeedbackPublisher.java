@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,8 +26,8 @@ public class ActionFeedbackPublisher {
    * @param actionFeedback the ActionFeedback to publish.
    */
   public void sendActionFeedback(ActionFeedback actionFeedback) {
-    log.with("action_id", actionFeedback.getActionId())
-        .debug("Entering sendActionFeedback for actionId ");
+    log.debug(
+        "action_id: " + actionFeedback.getActionId() + "Entering sendActionFeedback for actionId ");
     rabbitTemplate.convertAndSend(actionFeedback);
   }
 }

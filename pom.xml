@@ -16,7 +16,6 @@
         <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
         <surefire.version>2.22.2</surefire.version>
-        <godaddylogging.version>1.2.5</godaddylogging.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <javax.activation.version>1.2.0</javax.activation.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
@@ -220,12 +219,6 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.11</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.godaddy</groupId>
-            <artifactId>logging</artifactId>
-            <version>${godaddylogging.version}</version>
         </dependency>
 
         <dependency>

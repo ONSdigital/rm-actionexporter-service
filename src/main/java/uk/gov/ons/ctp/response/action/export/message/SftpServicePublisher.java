@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.Publisher;
@@ -68,7 +68,7 @@ public class SftpServicePublisher {
     String[] responsesRequiredList =
         (String[]) message.getPayload().getHeaders().get(RESPONSES_REQUIRED);
     sendFeedbackMessage(responsesRequiredList, dateStr);
-    log.with("file_name", filename).debug("Sftp transfer complete");
+    log.debug("file_name:" + filename + ", Sftp transfer complete");
     exportInfo.addOutcome(filename + " transferred with " + actionCount + " requests.");
   }
 
@@ -81,7 +81,7 @@ public class SftpServicePublisher {
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
     int actionCount = Integer.valueOf((String) headers.get(ACTION_COUNT));
 
-    log.with("file_name", fileName).with("action_count", actionCount).error("Sftp transfer failed");
+    log.error("file_name:" + fileName + "action_count: ", actionCount + "Sftp transfer failed");
 
     ExportFile exportFile = exportFileRepository.findOneByFilename(fileName);
     exportFile.setStatus(SendStatus.FAILED);

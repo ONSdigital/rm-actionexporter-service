@@ -1,10 +1,8 @@
 package uk.gov.ons.ctp.response.action;
 
-import com.godaddy.logging.LoggingConfigs;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.time.Clock;
-import javax.annotation.PostConstruct;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -102,12 +100,5 @@ public class ActionExporterApplication {
    */
   public static void main(final String[] args) {
     SpringApplication.run(ActionExporterApplication.class, args);
-  }
-
-  @PostConstruct
-  public void initJsonLogging() {
-    if (appConfig.getLogging().isUseJson()) {
-      LoggingConfigs.setCurrent(LoggingConfigs.getCurrent().useJson());
-    }
   }
 }

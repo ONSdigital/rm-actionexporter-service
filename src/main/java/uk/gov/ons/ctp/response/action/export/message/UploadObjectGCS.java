@@ -1,9 +1,9 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import com.google.cloud.storage.*;
 import java.io.ByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,15 +19,18 @@ public class UploadObjectGCS {
     BlobId blobId = BlobId.of(bucket, filename);
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
     Boolean isSuccess = false;
-    log.with("file_name", filename).with("bucket", bucket).info("Uploading to GCS bucket");
+    log.info("file_name: ", filename + "bucket: " + bucket + ", Uploading to GCS bucket");
     try {
       storage.create(blobInfo, data.toByteArray());
       isSuccess = true;
-      log.with("file_name", filename).with("bucket", bucket).info("Upload Successful!");
+      log.info("file_name: ", filename + "bucket: " + bucket + ", Upload Successful!");
     } catch (StorageException exception) {
-      log.with("exception", exception)
-          .with("file_name", filename)
-          .error("Error uploading the generated file to GCS");
+      log.error(
+          "exception:"
+              + exception
+              + "file_name: "
+              + filename
+              + ", Error uploading the generated file to GCS");
     }
     return isSuccess;
   }
