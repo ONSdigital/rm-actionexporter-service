@@ -24,10 +24,12 @@ spec:
                   key: security-password
             - name: APP_NAME
               value: {{ .Chart.Name }}
+            - name: APP_PORT
+              value: {{ .Values.service.port }}
             - name: TARGET
               value: {{ .Values.crons.exportScheduler.target }}
             args:
             - /bin/sh
             - -c
-            - curl -u $(SECURITY_USER_NAME):$(SECURITY_USER_PASSWORD) http://$(APP_NAME)/$(TARGET)
+            - curl -u $(SECURITY_USER_NAME):$(SECURITY_USER_PASSWORD) http://$(APP_NAME):$(APP_PORT)/$(TARGET)
           restartPolicy: OnFailure
