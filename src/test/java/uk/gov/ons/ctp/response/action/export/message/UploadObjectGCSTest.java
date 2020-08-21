@@ -26,8 +26,6 @@ public class UploadObjectGCSTest {
     Assert.assertTrue(actualResponse);
   }
 
-  // TODO: make ByteArrayOutputStream work in this test work with Spring Boot 2 on Java 11
-
   @Test
   public void shouldErrorOutWhileUploadToGCS() {
     ByteArrayOutputStream mockFile = new ByteArrayOutputStream();
