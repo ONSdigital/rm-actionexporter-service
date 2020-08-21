@@ -28,17 +28,16 @@ public class UploadObjectGCSTest {
 
   // TODO: make ByteArrayOutputStream work in this test work with Spring Boot 2 on Java 11
 
-  //   @Test
-  //   public void shouldErrorOutWhileUploadToGCS() {
-  //     ByteArrayOutputStream mockFile = new ByteArrayOutputStream();
-  //     String bucket = "testBucket";
-  //     String filename = "testFile.csv";
-  //     BlobId blobId = BlobId.of(bucket, filename);
-  //     BlobInfo mockBlobInfo = BlobInfo.newBuilder(blobId).build();
-  //     Blob blob = mock(Blob.class);
-  //     when(storage.create(mockBlobInfo,
-  // mockFile.toByteArray())).thenThrow(StorageException.class);
-  //     boolean actualResponse = uploadObjectGCS.uploadObject(filename, bucket, mockFile);
-  //     Assert.assertFalse(actualResponse);
-  //   }
+  @Test
+  public void shouldErrorOutWhileUploadToGCS() {
+    ByteArrayOutputStream mockFile = new ByteArrayOutputStream();
+    String bucket = "testBucket";
+    String filename = "testFile.csv";
+    BlobId blobId = BlobId.of(bucket, filename);
+    BlobInfo mockBlobInfo = BlobInfo.newBuilder(blobId).build();
+    Blob blob = mock(Blob.class);
+    when(storage.create(mockBlobInfo, mockFile.toByteArray())).thenThrow(StorageException.class);
+    boolean actualResponse = uploadObjectGCS.uploadObject(filename, bucket, mockFile);
+    Assert.assertFalse(actualResponse);
+  }
 }
