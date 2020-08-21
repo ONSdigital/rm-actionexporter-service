@@ -25,7 +25,7 @@ spec:
             - name: APP_NAME
               value: {{ .Chart.Name }}
             - name: APP_PORT
-              value: {{ .Values.service.port }}
+              value: "{{ .Values.service.port }}"
             - name: TARGET
               value: {{ .Values.crons.exportScheduler.target }}
             args:
