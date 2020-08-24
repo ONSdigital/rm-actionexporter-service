@@ -89,10 +89,8 @@ public class RestExceptionHandler {
             .map(e -> String.format("field=%s message=%s", e.getField(), e.getDefaultMessage()))
             .collect(Collectors.joining(","));
 
-    log.error("validation_errors: "
-            + errors
-            + ", source_message: "
-            + ex.getSourceMessage()
+    log.error("validation_errors: " + errors
+            + ", source_message: " + ex.getSourceMessage()
             + ", Unhandled InvalidRequestException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
