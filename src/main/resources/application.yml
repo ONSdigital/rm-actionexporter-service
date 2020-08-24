@@ -29,6 +29,10 @@ management:
       enabled: true
   endpoints:
     enabled-by-default: true
+    web:
+      base-path: /
+      exposure:
+        include: "*"
 
 server:
   port: 8141
