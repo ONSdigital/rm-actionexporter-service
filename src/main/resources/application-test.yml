@@ -25,6 +25,3 @@ data-grid:
 
 rabbitmq:
   port: 7672
-
-export-schedule:
-  cron-expression: "* * * * * *"

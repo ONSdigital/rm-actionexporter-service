@@ -3,14 +3,18 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 import java.util.concurrent.TimeUnit;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+<<<<<<< HEAD
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+=======
+import org.springframework.stereotype.Service;
+>>>>>>> master
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 
 /** This class will be responsible for the scheduling of export actions */
-@Component
+@Service
 public class ExportScheduler {
   private static final Logger log = LoggerFactory.getLogger(ExportScheduler.class);
 
@@ -29,19 +33,9 @@ public class ExportScheduler {
     this.appConfig = appConfig;
   }
 
-  /** Carry out scheduled actions according to configured cron expression */
-  @Scheduled(cron = "#{appConfig.exportSchedule.cronExpression}")
-  public void scheduleExport() {
+  // This is called using a K8s CronJob via /export
+  public void processExport() throws Exception {
     log.debug("Scheduled run start");
-    try {
-      processExport();
-    } catch (Exception ex) {
-      log.error(
-          "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", ex);
-    }
-  }
-
-  private void processExport() {
     RLock lock = redissonClient.getFairLock(ACTION_EXECUTION_LOCK);
     try {
       // Get an EXCLUSIVE lock so hopefully only one thread/process is ever writing files to the
