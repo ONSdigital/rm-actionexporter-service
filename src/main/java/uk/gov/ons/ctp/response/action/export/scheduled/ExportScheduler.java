@@ -29,12 +29,8 @@ public class ExportScheduler {
   }
 
   // This is called using a K8s CronJob via /export
-  public void scheduleExport() throws Exception {
+  public void processExport() throws Exception {
     log.debug("Scheduled run start");
-    processExport();
-  }
-
-  private void processExport() {
     RLock lock = redissonClient.getFairLock(ACTION_EXECUTION_LOCK);
     try {
       // Get an EXCLUSIVE lock so hopefully only one thread/process is ever writing files to the

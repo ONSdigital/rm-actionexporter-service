@@ -40,7 +40,7 @@ public class ExportSchedulerTest {
 
     // When
     try {
-      exportScheduler.scheduleExport();
+      exportScheduler.processExport();
     } catch (Exception e) {
       fail();
     }
@@ -65,7 +65,7 @@ public class ExportSchedulerTest {
 
     // When
     try {
-      exportScheduler.scheduleExport();
+      exportScheduler.processExport();
       fail();
     } catch (Exception e) {
       // Verify
