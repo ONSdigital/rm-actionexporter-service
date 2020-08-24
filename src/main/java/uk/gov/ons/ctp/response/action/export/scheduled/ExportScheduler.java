@@ -3,14 +3,9 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 import java.util.concurrent.TimeUnit;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-<<<<<<< HEAD
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-=======
 import org.springframework.stereotype.Service;
->>>>>>> master
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 
 /** This class will be responsible for the scheduling of export actions */
