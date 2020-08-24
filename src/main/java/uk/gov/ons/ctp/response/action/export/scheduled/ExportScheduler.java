@@ -5,11 +5,11 @@ import com.godaddy.logging.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 
 /** This class will be responsible for the scheduling of export actions */
-@Component
+@Service
 public class ExportScheduler {
   private static final Logger log = LoggerFactory.getLogger(ExportScheduler.class);
 

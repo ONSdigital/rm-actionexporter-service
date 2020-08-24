@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.response.action.export.endpoint;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +15,7 @@ import uk.gov.ons.ctp.response.action.export.scheduled.ExportScheduler;
 public class ExportEndpoint {
   private static final Logger log = LoggerFactory.getLogger(ExportEndpoint.class);
 
-  private ExportScheduler exportScheduler;
+  @Autowired private ExportScheduler exportScheduler;
 
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<String> triggerExport() throws CTPException {
