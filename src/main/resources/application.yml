@@ -91,9 +91,6 @@ data-grid:
   address: localhost:6379
   lock-time-to-live-seconds: 3600
 
-export-schedule:
-  cron-expression: "0 * * * * ?"
-
 sftp:
   host: localhost
   port: 122
@@ -122,13 +119,6 @@ messaging:
   conMaxAttempts: 3
   prefetchCount: 10
   txSize: 1
-
-swagger-settings:
-  swagger-ui-active: true
-  group-name: actionexporter-api
-  title: Action Exporter API
-  description: API for ${project.artifactId}
-  version: ${project.version}
 
 gcs:
   bucket: "bucket"

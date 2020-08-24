@@ -27,8 +27,11 @@ container:
 service:
   port: 8080
 
-exportSchedule:
-  cron: "*/30 * * * * *"
+crons:
+  exportScheduler:
+    name: export-scheduler
+    cron: "*/30 * * * *"
+    target: "export"
 
 endpoints:
   enabled: true
