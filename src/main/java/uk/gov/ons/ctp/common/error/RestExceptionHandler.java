@@ -128,8 +128,7 @@ public class RestExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
-    log.error("parameter: "
-            + ex.getParameter().getParameterName()
+    log.error("parameter: " + ex.getParameter().getParameterName()
             + ", Uncaught MethodArgumentNotValidException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
