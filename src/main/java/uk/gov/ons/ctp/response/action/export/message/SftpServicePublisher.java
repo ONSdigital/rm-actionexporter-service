@@ -81,7 +81,7 @@ public class SftpServicePublisher {
     String fileName = (String) headers.get(FileHeaders.REMOTE_FILE);
     int actionCount = Integer.valueOf((String) headers.get(ACTION_COUNT));
 
-    log.error("file_name:" + fileName + "action_count: ", actionCount + "Sftp transfer failed");
+    log.error("file_name:" + fileName + ", action_count: ", actionCount + ", Sftp transfer failed");
 
     ExportFile exportFile = exportFileRepository.findOneByFilename(fileName);
     exportFile.setStatus(SendStatus.FAILED);
