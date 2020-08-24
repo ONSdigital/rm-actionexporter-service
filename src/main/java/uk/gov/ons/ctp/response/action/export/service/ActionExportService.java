@@ -65,9 +65,13 @@ public class ActionExportService {
    * @param actionRequest to be processed
    */
   private void processActionRequest(ActionRequest actionRequest) {
-    log.debug("action_id: " + actionRequest.getActionId()
-            + ", case_id: " + actionRequest.getCaseId()
-            + ", action_type: " + actionRequest.getActionType()
+    log.debug(
+        "action_id: "
+            + actionRequest.getActionId()
+            + ", case_id: "
+            + actionRequest.getCaseId()
+            + ", action_type: "
+            + actionRequest.getActionType()
             + ", Saving actionRequest");
 
     ActionRequestInstruction actionRequestDoc =

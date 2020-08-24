@@ -63,7 +63,9 @@ public class NotificationFileCreator {
     String filename = String.format("%s_%s.csv", filenamePrefix, now);
 
     if (exportFileRepository.existsByFilename(filename)) {
-      log.warn("filename: " + filename.toString()
+      log.warn(
+          "filename: "
+              + filename.toString()
               + ", duplicate filename. The cron job is probably running too frequently. The "
               + "Action Exporter service is designed to only run every minute, maximum");
       throw new RuntimeException();
