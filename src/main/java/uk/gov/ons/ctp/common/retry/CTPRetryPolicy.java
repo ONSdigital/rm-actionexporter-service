@@ -27,8 +27,7 @@ public class CTPRetryPolicy implements RetryPolicy {
   private static final String RUNTIME_EXCEPTION = "java.lang.RuntimeException";
 
   private volatile int maxAttempts;
-  private volatile List<String>
-      retryableExceptions; // TODO Make it a List<Class<? extends Throwable>
+  private volatile List<String> retryableExceptions;
 
   /** Default CTP Retry Policy Constructor */
   public CTPRetryPolicy() {
