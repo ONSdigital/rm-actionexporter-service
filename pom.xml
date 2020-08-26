@@ -18,6 +18,7 @@
         <surefire.version>2.22.2</surefire.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <javax.activation.version>1.2.0</javax.activation.version>
+        <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
     </properties>
 
@@ -249,7 +250,7 @@
         <dependency>
             <groupId>javax.xml.soap</groupId>
             <artifactId>javax.xml.soap-api</artifactId>
-            <version>1.4.0</version>
+            <version>${javax.xml.soap.version}</version>
         </dependency> 
 
         <dependency>
