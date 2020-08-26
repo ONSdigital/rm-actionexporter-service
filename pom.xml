@@ -10,10 +10,11 @@
     <description>CTP : ActionExporterService</description>
 
     <properties>
+        <java.version>11</java.version>
         <springboot.version>2.2.9.RELEASE</springboot.version>
         <springcloud.version>Hoxton.SR7</springcloud.version>
-        <java.version>11</java.version>
         <orika.version>1.5.1</orika.version>
+        <bytebuddy.version>1.10.13</bytebuddy.version>
         <surefire.version>2.22.2</surefire.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <javax.activation.version>1.2.0</javax.activation.version>
@@ -236,13 +237,13 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.10.13</version>
+            <version>${bytebuddy.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-dep</artifactId>
-            <version>1.10.13</version>
+            <version>${bytebuddy.version}</version>
         </dependency>
 
         <dependency>
@@ -254,7 +255,6 @@
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
-            <version>1.5.2</version>
         </dependency>
 
 
