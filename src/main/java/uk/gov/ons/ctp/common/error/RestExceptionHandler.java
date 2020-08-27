@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.error;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -31,9 +31,13 @@ public class RestExceptionHandler {
    */
   @ExceptionHandler(CTPException.class)
   public ResponseEntity<?> handleCTPException(CTPException exception) {
-    log.with("fault", exception.getFault())
-        .with("exception_message", exception.getMessage())
-        .error("Uncaught CTPException", exception);
+    log.error(
+        "fault: "
+            + exception.getFault()
+            + ". exception_message"
+            + exception.getMessage()
+            + ", Uncaught CTPException",
+        exception);
 
     HttpStatus status;
     switch (exception.getFault()) {
@@ -89,9 +93,13 @@ public class RestExceptionHandler {
             .map(e -> String.format("field=%s message=%s", e.getField(), e.getDefaultMessage()))
             .collect(Collectors.joining(","));
 
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getSourceMessage())
-        .error("Unhandled InvalidRequestException", ex);
+    log.error(
+        "validation_errors: "
+            + errors
+            + ", source_message: "
+            + ex.getSourceMessage()
+            + ", Unhandled InvalidRequestException",
+        ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -128,8 +136,11 @@ public class RestExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
-    log.with("parameter", ex.getParameter().getParameterName())
-        .error("Uncaught MethodArgumentNotValidException", ex);
+    log.error(
+        "parameter: "
+            + ex.getParameter().getParameterName()
+            + ", Uncaught MethodArgumentNotValidException",
+        ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);

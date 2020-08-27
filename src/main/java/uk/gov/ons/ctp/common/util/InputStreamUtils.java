@@ -1,11 +1,11 @@
 package uk.gov.ons.ctp.common.util;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Class to collect together some useful InputStream manipulation methods */
 public class InputStreamUtils {

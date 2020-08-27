@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.common.util;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.Arrays;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to provide more flexible parsing of dates than the standard DateFormats.
@@ -29,7 +29,7 @@ public class AggregatedDateFormat extends DateFormat {
   @Override
   public StringBuffer format(
       final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {
-    log.with("date", date).trace("Formatting date to string");
+    log.trace("Date: " + date + ", formatting date to string");
     return outputFormat.format(date, toAppendTo, fieldPosition);
   }
 
@@ -49,7 +49,7 @@ public class AggregatedDateFormat extends DateFormat {
 
   @Override
   public Date parse(final String source, final ParsePosition pos) {
-    log.with("string", source).trace("Parsing string to date");
+    log.trace("string: " + source + ", parsing string to date");
     return Arrays.stream(inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
   }
 }

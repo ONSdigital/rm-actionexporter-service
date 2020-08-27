@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.response.action.export.message;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +16,7 @@ public class EventPublisher {
   private RabbitTemplate rabbitTemplate;
 
   public void publishEvent(String event) {
-    log.with("event", event).debug("Publish Event action exporter ");
+    log.info("event: " + event + "Publish Event action exporter");
     rabbitTemplate.convertAndSend(event);
   }
 }

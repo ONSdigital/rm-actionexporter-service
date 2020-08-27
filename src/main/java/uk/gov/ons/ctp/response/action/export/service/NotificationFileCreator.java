@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
@@ -63,14 +63,15 @@ public class NotificationFileCreator {
     String filename = String.format("%s_%s.csv", filenamePrefix, now);
 
     if (exportFileRepository.existsByFilename(filename)) {
-      log.with("filename", filename)
-          .warn(
-              "Duplicate filename. The cron job is probably running too frequently. The "
-                  + "Action Exporter service is designed to only run every minute, maximum");
+      log.warn(
+          "filename: "
+              + filename.toString()
+              + ", duplicate filename. The cron job is probably running too frequently. The "
+              + "Action Exporter service is designed to only run every minute, maximum");
       throw new RuntimeException();
     }
 
-    log.with("filename", filename).info("Uploading file");
+    log.info("filename: " + filename + ", uploading file");
 
     ExportFile exportFile = new ExportFile();
     exportFile.setExportJobId(exportJob.getId());
@@ -81,7 +82,7 @@ public class NotificationFileCreator {
     if (isEnabled) {
       String bucket = appConfig.getGcs().getBucket();
       uploadObjectGCS.uploadObject(filename, bucket, data);
-      log.with("bucket", bucket).info("File Uploaded to bucket.");
+      log.info("bucket: " + bucket + ", file uploaded to bucket.");
     }
     sftpService.sendMessage(filename, responseRequiredList, Integer.toString(actionCount), data);
 

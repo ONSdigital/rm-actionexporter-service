@@ -23,6 +23,13 @@
         <property name="allowUnknownKeys" value="true"/>
     </bean>
 
+    <bean id="success" class="org.springframework.integration.config.ExpressionFactoryBean">
+        <constructor-arg value="#root" />
+    </bean>
+    <bean id="failure" class="org.springframework.integration.config.ExpressionFactoryBean">
+        <constructor-arg value="payload" />
+    </bean>
+
     <int:channel id="sftpOutbound"/>
 
     <int-sftp:outbound-channel-adapter id="sftpOutboundAdapter"
@@ -32,9 +39,9 @@
                                        remote-directory="${sftp.directory}">
         <int-sftp:request-handler-advice-chain>
             <bean class="org.springframework.integration.handler.advice.ExpressionEvaluatingRequestHandlerAdvice">
-                <property name="onSuccessExpression" value="#root" />
+                <property name="onSuccessExpression" ref="success" />
                 <property name="successChannel" ref="sftpSuccessProcess" />
-                <property name="onFailureExpression" value="payload" />
+                <property name="onFailureExpression" ref="failure" />
                 <property name="failureChannel" ref="sftpFailedProcess" />
                 <property name="trapException" value="true" />
             </bean>

@@ -18,42 +18,25 @@ logging:
   profile: DEV
   useJson: false
 
-liquibase:
-  user: postgres
-  password: postgres
-  default-schema: actionexporter
-  url: jdbc:postgresql://localhost:5432/postgres
-  changeLog: classpath:/database/changelog-master.yml
-
-security:
-  basic:
-    enabled: true
-    realm: sdc
-  user:
-    name: admin
-    password: secret
-
-
 management:
-  security:
-    role: SUPERUSER
-    enabled: true
   health:
     mongo:
       enabled: true
     rabbit:
       enabled: false
+  endpoint:
+    info:
+      enabled: true
+  endpoints:
+    enabled-by-default: true
+    web:
+      base-path: /
+      exposure:
+        include: "*"
 
 server:
   port: 8141
-  servlet-path: /
-
-endpoints:
-  info:
-    enabled: true
-    sensitive: false
-  enabled: true
-
+  
 spring:
   output:
     ansi:
@@ -66,13 +49,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
-    driverClassName: org.postgresql.Driver
+    driver-class-name: org.postgresql.Driver
     continue-on-error: true
-    tomcat:
-      initial-size: 5
-      max-active: 10
-      max-idle: 5
-      min-idle: 3
+    initialization-mode: always
 
   freemarker:
     template-loader-path: classpath:/templates/
@@ -86,6 +65,22 @@ spring:
       hibernate:
         ddl-auto: update
         default_schema: actionexporter
+  
+  liquibase:
+    user: postgres
+    password: postgres
+    default-schema: actionexporter
+    url: jdbc:postgresql://localhost:5432/postgres
+    changeLog: classpath:/database/changelog-master.yml
+
+  mvc:
+    servlet:
+      path: /
+
+  security:
+    user:
+      name: admin
+      password: secret
 
 data-grid:
   address: localhost:6379

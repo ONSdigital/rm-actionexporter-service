@@ -1,12 +1,12 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -39,9 +39,9 @@ public class TemplateMappingService {
 
   public TemplateMapping retrieveTemplateMappingByActionType(String actionType)
       throws CTPException {
-    TemplateMapping templateMapping = repository.findOne(actionType);
+    TemplateMapping templateMapping = repository.getOne(actionType);
     if (templateMapping == null) {
-      log.with("action_type", actionType).error("No template mapping for actionType found.");
+      log.error("action_type:" + actionType + ", no template mapping for actionType found.");
       throw new CTPException(
           CTPException.Fault.RESOURCE_NOT_FOUND,
           String.format("%s %s", EXCEPTION_RETRIEVING_TEMPLATE_MAPPING, actionType));

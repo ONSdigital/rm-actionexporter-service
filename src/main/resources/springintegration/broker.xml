@@ -15,7 +15,7 @@
 	<rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
 
 	<!-- Retry policy for a failed publish -->
-	<bean id="retryTemplate" class="org.springframework.retry.support.RetryTemplate">
+	<bean id="retryTemplateBroker" class="org.springframework.retry.support.RetryTemplate">
       <property name="backOffPolicy">
         <bean class="org.springframework.retry.backoff.ExponentialBackOffPolicy">
           <property name="initialInterval" value="1000" />

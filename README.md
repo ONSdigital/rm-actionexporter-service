@@ -68,7 +68,7 @@ An entry is also created in the Export Report Repository (aka filerowcount table
 a flag to determine if it was sent successful and another flag to indicate if it has been reported (which for some reason
  is always false). 
  
-If the transfer is unsuccessful unfortunately it that point the generated file is lost and cannot be recreated. (Note: 
+If the transfer is unsuccessful unfortunately at that point the generated file is lost and cannot be recreated. (Note: 
 we implement a temporary push to a GCP bucket so that if the SFTP process fails we can recover the file).
 
 There is a distributed lock on REDIS to ensure only one action exporter can run this process at a time. It also uses a 

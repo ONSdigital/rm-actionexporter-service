@@ -29,7 +29,7 @@ public class DataSourceConfiguration {
    * @return DataSource
    */
   @Bean
-  @ConfigurationProperties(prefix = "spring.datasource.tomcat")
+  @ConfigurationProperties(prefix = "spring.datasource.hikari")
   public DataSource dataSource() {
     return cloud().getSingletonServiceConnector(DataSource.class, null);
   }
