@@ -42,7 +42,6 @@ public class DeleteEndpoint {
 
           actionRequestInstructions.forEach(
               ari -> {
-
                 actionRequestRepository.delete(ari);
                 log.info("Deleted action request row " + ari.getActionrequestPK());
               });
