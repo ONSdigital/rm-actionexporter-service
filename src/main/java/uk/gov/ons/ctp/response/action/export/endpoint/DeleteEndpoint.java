@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
+import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
@@ -26,36 +27,53 @@ public class DeleteEndpoint {
   private static final long DAY_IN_MS = 1000 * 60 * 60 * 24;
 
   @Autowired private ActionRequestRepository actionRequestRepository;
-
   @Autowired private ExportJobRepository exportJobRepository;
-
   @Autowired private ExportFileRepository exportFileRepository;
 
   @RequestMapping(method = RequestMethod.DELETE)
   @Transactional
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
-      List<ExportFile> exportFiles = exportFileRepository.findAll();
-      log.info("Found " + exportFiles.size() + " files");
-      for (ExportFile exportFile : exportFiles) {
-        Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
-        Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+      List<ExportJob> exportJobs = exportJobRepository.findAll();
+      log.info("Found " + exportJobs.size() + " exportJobIds to process");
 
-        if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
-          Stream<ActionRequestInstruction> actionRequestInstructions =
-              actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
+      for (ExportJob exportJob : exportJobs) {
+        List<ExportFile> exportFiles =
+            exportFileRepository.findAllByExportJobId(exportJob.getId().toString());
+        log.info("Found " + exportFiles.size() + " files for the exportJobId " + exportJob.getId());
+        // If the exportJob has any files unsent or younger then 90 days, we don't want to remove
+        // the linking id.
+        boolean allFilesFromExportJobSent = true;
 
-          actionRequestInstructions.forEach(
-              ari -> {
-                actionRequestRepository.delete(ari);
-                log.info("Deleted action request row " + ari.getActionrequestPK());
-              });
+        for (ExportFile exportFile : exportFiles) {
 
-          exportJobRepository.deleteById(exportFile.getExportJobId());
-          log.info("Deleted exportJob row " + exportFile.getExportJobId());
+          Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
+          Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+          if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
+            Stream<ActionRequestInstruction> actionRequestInstructions =
+                actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
 
-          exportFileRepository.delete(exportFile);
-          log.info("Deleted exportFile row " + exportFile.getId());
+            actionRequestInstructions.forEach(
+                ari -> {
+                  actionRequestRepository.delete(ari);
+                  log.info("Deleted action request row " + ari.getActionrequestPK());
+                });
+            exportFileRepository.delete(exportFile);
+            log.info("Deleted exportFile row " + exportFile.getId());
+          } else {
+            log.info("ExportFile with id" + exportFile.getId() + "hasn't been processed");
+            allFilesFromExportJobSent = false;
+          }
+        }
+
+        // If we've deleted all records associated with this exportJobId, then we delete it because
+        // it's not useful.
+        if (allFilesFromExportJobSent) {
+          exportJobRepository.deleteById(exportJob.getId());
+          log.info(
+              "Deleted exportJob row "
+                  + exportJob.getId()
+                  + " as all associated data has been deleted");
         }
       }
 
