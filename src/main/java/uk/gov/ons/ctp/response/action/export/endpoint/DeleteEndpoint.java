@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
+import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 
 @RestController
 @RequestMapping(value = "/delete", produces = "application/json")
@@ -25,9 +27,12 @@ public class DeleteEndpoint {
 
   @Autowired private ActionRequestRepository actionRequestRepository;
 
+  @Autowired private ExportJobRepository exportJobRepository;
+
   @Autowired private ExportFileRepository exportFileRepository;
 
   @RequestMapping(method = RequestMethod.DELETE)
+  @Transactional
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
       List<ExportFile> exportFiles = exportFileRepository.findAll();
@@ -45,6 +50,10 @@ public class DeleteEndpoint {
                 actionRequestRepository.delete(ari);
                 log.info("Deleted action request row " + ari.getActionrequestPK());
               });
+
+          exportJobRepository.deleteById(exportFile.getExportJobId());
+          log.info("Deleted exportJob row " + exportFile.getExportJobId());
+
           exportFileRepository.delete(exportFile);
           log.info("Deleted exportFile row " + exportFile.getId());
         }
