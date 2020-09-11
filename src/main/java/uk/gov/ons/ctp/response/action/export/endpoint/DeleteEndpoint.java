@@ -21,6 +21,7 @@ import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 @RequestMapping(value = "/delete", produces = "application/json")
 public class DeleteEndpoint {
   private static final Logger log = LoggerFactory.getLogger(DeleteEndpoint.class);
+  private static final long DAY_IN_MS = 1000 * 60 * 60 * 24;
 
   @Autowired private ActionRequestRepository actionRequestRepository;
 
@@ -30,9 +31,9 @@ public class DeleteEndpoint {
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
       List<ExportFile> exportFiles = exportFileRepository.findAll();
+      log.info("Found " + exportFiles.size() + " files");
       for (ExportFile exportFile : exportFiles) {
         Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
-        long DAY_IN_MS = 1000 * 60 * 60 * 24;
         Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
 
         if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
@@ -41,9 +42,12 @@ public class DeleteEndpoint {
 
           actionRequestInstructions.forEach(
               ari -> {
+
                 actionRequestRepository.delete(ari);
+                log.info("Deleted action request row " + ari.getActionrequestPK());
               });
           exportFileRepository.delete(exportFile);
+          log.info("Deleted exportFile row " + exportFile.getId());
         }
       }
 
