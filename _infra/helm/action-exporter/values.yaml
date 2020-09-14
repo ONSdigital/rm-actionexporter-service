@@ -28,6 +28,10 @@ service:
   port: 8080
 
 crons:
+  recordDeleter:
+    name: record-deleter
+    cron: "0 3 * * *"
+    target: "delete"
   exportScheduler:
     name: export-scheduler
     cron: "*/30 * * * *"
