@@ -10,7 +10,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 public interface ExportFileRepository extends JpaRepository<ExportFile, UUID> {
   ExportFile findOneByFilename(String filename);
 
-  List<ExportFile> findAllByExportJobId(String filename);
+  List<ExportFile> findAllByExportJobId(UUID filename);
 
   boolean existsByFilename(String filename);
 }

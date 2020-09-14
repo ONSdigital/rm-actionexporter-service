@@ -35,33 +35,36 @@ public class DeleteEndpoint {
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
       List<ExportJob> exportJobs = exportJobRepository.findAll();
-      log.info("Found " + exportJobs.size() + " exportJobIds to process");
+      log.info("Found [" + exportJobs.size() + "] exportJobIds to process");
 
       for (ExportJob exportJob : exportJobs) {
-        List<ExportFile> exportFiles =
-            exportFileRepository.findAllByExportJobId(exportJob.getId().toString());
-        log.info("Found " + exportFiles.size() + " files for the exportJobId " + exportJob.getId());
+        List<ExportFile> exportFiles = exportFileRepository.findAllByExportJobId(exportJob.getId());
+        log.info("Found [" + exportFiles.size() + "] files for the exportJobId [" + exportJob.getId() + "]");
         // If the exportJob has any files unsent or younger then 90 days, we don't want to remove
         // the linking id.
         boolean allFilesFromExportJobSent = true;
 
         for (ExportFile exportFile : exportFiles) {
-
+          log.info("Working on exportFile with id [" + exportFile.getId() + "]");
           Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
           Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+
           if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
+            log.info("exportFile [" + exportFile.getId() + "] is older then 90 days.  Deleting all associated " +
+                    "actionRequests and the exportFile row.");
             Stream<ActionRequestInstruction> actionRequestInstructions =
                 actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
 
             actionRequestInstructions.forEach(
                 ari -> {
                   actionRequestRepository.delete(ari);
-                  log.info("Deleted action request row " + ari.getActionrequestPK());
+                  log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
                 });
             exportFileRepository.delete(exportFile);
-            log.info("Deleted exportFile row " + exportFile.getId());
+            log.info("Deleted exportFile row [" + exportFile.getId() + "]");
           } else {
-            log.info("ExportFile with id" + exportFile.getId() + "hasn't been processed");
+            log.info("Not deleting exportFile [" + exportFile.getId() + "]. It either hasn't been processed or is " +
+                    "less than 90 days old");
             allFilesFromExportJobSent = false;
           }
         }
@@ -71,9 +74,7 @@ public class DeleteEndpoint {
         if (allFilesFromExportJobSent) {
           exportJobRepository.deleteById(exportJob.getId());
           log.info(
-              "Deleted exportJob row "
-                  + exportJob.getId()
-                  + " as all associated data has been deleted");
+              "Deleted exportJob row [" + exportJob.getId() + "] as all associated data has been deleted");
         }
       }
 
