@@ -17,6 +17,7 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
+import uk.gov.ons.ctp.response.action.export.repository.AddressRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 
@@ -39,7 +40,12 @@ public class DeleteEndpoint {
 
       for (ExportJob exportJob : exportJobs) {
         List<ExportFile> exportFiles = exportFileRepository.findAllByExportJobId(exportJob.getId());
-        log.info("Found [" + exportFiles.size() + "] files for the exportJobId [" + exportJob.getId() + "]");
+        log.info(
+            "Found ["
+                + exportFiles.size()
+                + "] files for the exportJobId ["
+                + exportJob.getId()
+                + "]");
         // If the exportJob has any files unsent or younger then 90 days, we don't want to remove
         // the linking id.
         boolean allFilesFromExportJobSent = true;
@@ -50,8 +56,11 @@ public class DeleteEndpoint {
           Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
 
           if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
-            log.info("exportFile [" + exportFile.getId() + "] is older then 90 days.  Deleting all associated " +
-                    "actionRequests and the exportFile row.");
+            log.info(
+                "exportFile ["
+                    + exportFile.getId()
+                    + "] is older then 90 days.  Deleting all associated "
+                    + "actionRequests and the exportFile row.");
             Stream<ActionRequestInstruction> actionRequestInstructions =
                 actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
 
@@ -63,8 +72,11 @@ public class DeleteEndpoint {
             exportFileRepository.delete(exportFile);
             log.info("Deleted exportFile row [" + exportFile.getId() + "]");
           } else {
-            log.info("Not deleting exportFile [" + exportFile.getId() + "]. It either hasn't been processed or is " +
-                    "less than 90 days old");
+            log.info(
+                "Not deleting exportFile ["
+                    + exportFile.getId()
+                    + "]. It either hasn't been processed or is "
+                    + "less than 90 days old");
             allFilesFromExportJobSent = false;
           }
         }
@@ -74,7 +86,9 @@ public class DeleteEndpoint {
         if (allFilesFromExportJobSent) {
           exportJobRepository.deleteById(exportJob.getId());
           log.info(
-              "Deleted exportJob row [" + exportJob.getId() + "] as all associated data has been deleted");
+              "Deleted exportJob row ["
+                  + exportJob.getId()
+                  + "] as all associated data has been deleted");
         }
       }
 

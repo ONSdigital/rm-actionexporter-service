@@ -70,7 +70,9 @@ public class ActionRequestInstruction {
   @Column(name = "casegroupstatus")
   private String caseGroupStatus;
 
-  @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToOne(
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      orphanRemoval = true)
   @JoinColumn(name = "contactfk", referencedColumnName = "contactpk")
   private Contact contact;
 
