@@ -33,6 +33,9 @@ spec:
             items:
             - key: "credentials.json"
               path: "credentials.json"
+        - name: google-cloud-key
+          secret:
+            secretName: google-application-credentials
       {{- end }}
       {{- if .Values.sftp.test.enabled }}
       volumes:
@@ -74,6 +77,9 @@ spec:
           image: "{{ .Values.image.devRepo }}/{{ .Chart.Name }}:{{ .Values.image.tag }}"
           {{- end}}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
           ports:
             - name: http-server
               containerPort: {{ .Values.container.port }}
@@ -243,6 +249,8 @@ spec:
             value: "{{ .Values.gcs.enabled }}"
           - name: GCS_BUCKET
             value: "{{ .Values.gcs.bucket }}"
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/credentials.json
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
