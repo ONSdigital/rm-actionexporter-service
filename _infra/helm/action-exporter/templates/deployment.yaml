@@ -24,8 +24,11 @@ spec:
         helmVersion: {{ .Chart.Version }}
         env: {{ .Values.env }}
     spec:
-      {{- if .Values.database.sqlProxyEnabled }}
       volumes:
+        - name: google-cloud-key
+          secret:
+            secretName: google-application-credentials
+      {{- if .Values.database.sqlProxyEnabled }}
         - name: cloudsql-instance-credentials
           secret:
             secretName: cloudsql-proxy-credentials
@@ -35,7 +38,6 @@ spec:
               path: "credentials.json"
       {{- end }}
       {{- if .Values.sftp.test.enabled }}
-      volumes:
         - name: sftp-data
           persistentVolumeClaim:
             claimName: sftp-pvc
@@ -74,6 +76,9 @@ spec:
           image: "{{ .Values.image.devRepo }}/{{ .Chart.Name }}:{{ .Values.image.tag }}"
           {{- end}}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
           ports:
             - name: http-server
               containerPort: {{ .Values.container.port }}
@@ -243,6 +248,8 @@ spec:
             value: "{{ .Values.gcs.enabled }}"
           - name: GCS_BUCKET
             value: "{{ .Values.gcs.bucket }}"
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/credentials.json
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
