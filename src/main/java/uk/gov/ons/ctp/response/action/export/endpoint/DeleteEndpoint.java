@@ -22,7 +22,7 @@ public class DeleteEndpoint {
     try {
       deleteProcessor.triggerDelete();
       return ResponseEntity.ok().body("Deletion of old records completed");
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       log.error(
           "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", e);
       throw new CTPException(
