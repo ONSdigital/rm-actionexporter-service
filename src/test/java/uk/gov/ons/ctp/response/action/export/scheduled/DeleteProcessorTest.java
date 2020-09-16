@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Stream;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,7 +39,8 @@ public class DeleteProcessorTest {
     exportFile.setId(UUID.randomUUID());
     exportFile.setFilename("BSNOT_009_2011_14092020_1000.csv");
     exportFile.setExportJobId(exportJob.getId());
-    exportFile.setDateSuccessfullySent(new Timestamp(System.currentTimeMillis() - (90 * DAY_IN_MS)));
+    exportFile.setDateSuccessfullySent(
+        new Timestamp(System.currentTimeMillis() - (90 * DAY_IN_MS)));
     exportFile.setStatus(ExportFile.SendStatus.QUEUED);
     exportFile.setRowCount(1);
 
