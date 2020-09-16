@@ -12,19 +12,17 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.scheduled.DeleteProcessor;
 
 @RestController
-@RequestMapping(value = "/delete", produces = "application/json")
+@RequestMapping(value = "/delete-old-data", produces = "application/json")
 public class DeleteEndpoint {
   private static final Logger log = LoggerFactory.getLogger(DeleteEndpoint.class);
 
   @Autowired private DeleteProcessor deleteProcessor;
 
   @RequestMapping(method = RequestMethod.DELETE)
-  @Transactional
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
       deleteProcessor.triggerDelete();
-      // TODO triggerDelete returns a count of how much was deleted
-      return ResponseEntity.ok().body("Delete completed - TODO better info");
+      return ResponseEntity.ok().body("Deletion of old records completed");
     } catch (Exception e) {
       log.error(
           "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", e);

@@ -1,41 +1,29 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
-import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.aspectj.apache.bcel.classfile.Module;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
-import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
-import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeleteProcessorTest {
-  @Mock private TemplateMappingService templateMappingService;
   @Mock private ActionRequestRepository actionRequestRepository;
-  @Mock private NotificationFileCreator notificationFileCreator;
   @Mock private ExportJobRepository exportJobRepository;
   @Mock private ExportFileRepository exportFileRepository;
 
@@ -72,14 +60,8 @@ public class DeleteProcessorTest {
     given(exportFileRepository.findAllByExportJobId(exportJob.getId())).willReturn(exportFileList);
     given(actionRequestRepository.findByExportJobId(any())).willReturn(Stream.of(ari));
 
-
     // When
-    try {
-      deleteProcessor.triggerDelete();
-    }
-    catch (CTPException e) {
-      fail("Trigger delete threw an exception");
-    }
+    deleteProcessor.triggerDelete();
 
     // Verify
     verify(exportJobRepository).findAll();
