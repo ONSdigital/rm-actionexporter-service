@@ -44,8 +44,9 @@ public class DeleteProcessor {
               + "] files for the exportJobId ["
               + exportJob.getId()
               + "]");
-      // If the exportJob has any files unsent or younger then 90 days, we don't want to remove
-      // the linking id.
+      // If the exportJob has any files unsent or younger then 90 days, we don't want to remove the linking id.
+      // As we loop over every related exportFile, if any of them are less than 90 days old, we'll change this flag to
+      // false as we need to keep a record of it until every related record is removed.
       boolean allFilesFromExportJobSent = true;
 
       for (ExportFile exportFile : exportFiles) {
