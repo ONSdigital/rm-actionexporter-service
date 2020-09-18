@@ -11,6 +11,8 @@ info:
 logging:
   level:
     uk.gov.ons.ctp: DEBUG
+    com.zaxxer.hikari: INFO
+    com.zaxxer.hikari.pool: ERROR
     org.springframework: DEBUG
     org.springframework.retry: DEBUG
     org.springframework.integration.handler.advice: DEBUG
