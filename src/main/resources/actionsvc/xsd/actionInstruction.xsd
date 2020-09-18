@@ -82,8 +82,8 @@
                     <xs:element name="caseGroupStatus" type="xs:string" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="caseId" type="xs:string" minOccurs="0"/>
                     <xs:element name="priority" type="Priority" minOccurs="0" maxOccurs="1"/>
-                    <xs:element name="caseRef" type="xs:string" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="isPubsub" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="caseRef" type="xs:string" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="iac" type="xs:string" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="events" type="ActionEvent"/>
                     <xs:element name="exerciseRef" type="xs:string" minOccurs="0" maxOccurs="1"/>
