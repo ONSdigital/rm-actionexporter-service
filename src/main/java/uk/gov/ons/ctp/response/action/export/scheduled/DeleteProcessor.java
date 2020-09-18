@@ -51,6 +51,27 @@ public class DeleteProcessor {
       // false as we need to keep a record of it until every related record is removed.
       boolean allFilesFromExportJobSent = true;
 
+      // It's possible for an exportJobId to exist and have the Id against a number of
+      // actionRequestInstructions
+      // but for a corresponding exportFile to not exist (because it got manually deleted for
+      // example).  In that case,
+      // the actionRequestInstructions are orphaned and can be safely deleted.
+      if (exportFiles.size() == 0) {
+        log.info(
+            "ExportJobId ["
+                + exportJob.getId()
+                + "] has 0 exportFiles associated with it, deleting any "
+                + "orphaned actionRequestInstructions that might exist");
+        Stream<ActionRequestInstruction> actionRequestInstructions =
+            actionRequestRepository.findByExportJobId(exportJob.getId());
+
+        actionRequestInstructions.forEach(
+            ari -> {
+              actionRequestRepository.delete(ari);
+              log.info("Deleted orphaned action request row [" + ari.getActionrequestPK() + "]");
+            });
+      }
+
       for (ExportFile exportFile : exportFiles) {
         log.info("Working on exportFile with id [" + exportFile.getId() + "]");
         Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
