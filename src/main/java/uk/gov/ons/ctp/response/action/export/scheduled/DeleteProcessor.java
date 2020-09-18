@@ -51,34 +51,55 @@ public class DeleteProcessor {
       // false as we need to keep a record of it until every related record is removed.
       boolean allFilesFromExportJobSent = true;
 
-      for (ExportFile exportFile : exportFiles) {
-        log.info("Working on exportFile with id [" + exportFile.getId() + "]");
-        Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
-        Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+      // It's possible for an exportJobId to exist and have the Id against a number of
+      // actionRequestInstructions
+      // but for a corresponding exportFile to not exist (because it got manually deleted for
+      // example).  In that case,
+      // the actionRequestInstructions are orphaned and can be safely deleted.
+      if (exportFiles.size() == 0) {
+        log.info(
+            "ExportJobId ["
+                + exportJob.getId()
+                + "] has 0 exportFiles associated with it, deleting any "
+                + "orphaned actionRequestInstructions that might exist");
+        Stream<ActionRequestInstruction> actionRequestInstructions =
+            actionRequestRepository.findByExportJobId(exportJob.getId());
 
-        if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
-          log.info(
-              "exportFile ["
-                  + exportFile.getId()
-                  + "] is older then 90 days.  Deleting all associated "
-                  + "actionRequests and the exportFile row.");
-          Stream<ActionRequestInstruction> actionRequestInstructions =
-              actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
+        actionRequestInstructions.forEach(
+            ari -> {
+              actionRequestRepository.delete(ari);
+              log.info("Deleted orphaned action request row [" + ari.getActionrequestPK() + "]");
+            });
+      } else {
+        for (ExportFile exportFile : exportFiles) {
+          log.info("Working on exportFile with id [" + exportFile.getId() + "]");
+          Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
+          Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
 
-          actionRequestInstructions.forEach(
-              ari -> {
-                actionRequestRepository.delete(ari);
-                log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
-              });
-          exportFileRepository.delete(exportFile);
-          log.info("Deleted exportFile row [" + exportFile.getId() + "]");
-        } else {
-          log.info(
-              "Not deleting exportFile ["
-                  + exportFile.getId()
-                  + "]. It either hasn't been processed or is "
-                  + "less than 90 days old");
-          allFilesFromExportJobSent = false;
+          if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
+            log.info(
+                "exportFile ["
+                    + exportFile.getId()
+                    + "] is older then 90 days.  Deleting all associated "
+                    + "actionRequests and the exportFile row.");
+            Stream<ActionRequestInstruction> actionRequestInstructions =
+                actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
+
+            actionRequestInstructions.forEach(
+                ari -> {
+                  actionRequestRepository.delete(ari);
+                  log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
+                });
+            exportFileRepository.delete(exportFile);
+            log.info("Deleted exportFile row [" + exportFile.getId() + "]");
+          } else {
+            log.info(
+                "Not deleting exportFile ["
+                    + exportFile.getId()
+                    + "]. It either hasn't been processed or is "
+                    + "less than 90 days old");
+            allFilesFromExportJobSent = false;
+          }
         }
       }
 
