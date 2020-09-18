@@ -23,10 +23,10 @@
         <property name="allowUnknownKeys" value="true"/>
     </bean>
 
-    <bean id="success" class="org.springframework.integration.config.ExpressionFactoryBean">
+    <bean id="success" class="org.springframework.expression.common.LiteralExpression">
         <constructor-arg value="#root" />
     </bean>
-    <bean id="failure" class="org.springframework.integration.config.ExpressionFactoryBean">
+    <bean id="failure" class="org.springframework.expression.common.LiteralExpression">
         <constructor-arg value="payload" />
     </bean>
 
