@@ -46,7 +46,7 @@ public class SftpServicePublisher {
       @Header(RESPONSES_REQUIRED) String[] responseRequiredList,
       @Header(ACTION_COUNT) String actionCount,
       ByteArrayOutputStream stream) {
-
+    log.info("sendMessage sftpOutbound");
     return stream.toByteArray();
   }
 
@@ -54,6 +54,7 @@ public class SftpServicePublisher {
   @ServiceActivator(inputChannel = "sftpSuccessProcess")
   public void sftpSuccessProcess(GenericMessage<GenericMessage<byte[]>> message) {
     String filename = (String) message.getPayload().getHeaders().get(FileHeaders.REMOTE_FILE);
+    log.info("sftpSuccessProcess sftpSuccessProcess");
     Timestamp now = DateTimeUtil.nowUTC();
 
     int actionCount = Integer.valueOf((String) message.getPayload().getHeaders().get(ACTION_COUNT));
@@ -75,6 +76,7 @@ public class SftpServicePublisher {
   @SuppressWarnings("unchecked")
   @ServiceActivator(inputChannel = "sftpFailedProcess")
   public void sftpFailedProcess(GenericMessage message) {
+    log.info("sftpFailedProcess sftpFailedProcess");
     MessagingException payload = (MessagingException) message.getPayload();
     log.error("SFTP process failed", payload);
     MessageHeaders headers = payload.getFailedMessage().getHeaders();
