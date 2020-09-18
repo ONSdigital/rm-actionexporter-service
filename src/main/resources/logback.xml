@@ -87,7 +87,7 @@
     </filter>
   </appender>
 
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="${profile}" />
     <appender-ref ref="SYSLOG" />
     <appender-ref ref="STDOUT" />
