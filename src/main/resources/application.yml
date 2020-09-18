@@ -11,6 +11,7 @@ info:
 logging:
   level:
     uk.gov.ons.ctp: DEBUG
+    org.springframework: DEBUF
     org.springframework.retry: DEBUG
     org.springframework.integration.handler.advice: DEBUG
     org.springframework.context.annotation.ConfigurationClassPostProcessor: ERROR
