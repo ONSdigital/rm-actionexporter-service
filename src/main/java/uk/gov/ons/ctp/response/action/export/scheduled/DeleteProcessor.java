@@ -70,36 +70,36 @@ public class DeleteProcessor {
               actionRequestRepository.delete(ari);
               log.info("Deleted orphaned action request row [" + ari.getActionrequestPK() + "]");
             });
-      }
+      } else {
+        for (ExportFile exportFile : exportFiles) {
+          log.info("Working on exportFile with id [" + exportFile.getId() + "]");
+          Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
+          Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
 
-      for (ExportFile exportFile : exportFiles) {
-        log.info("Working on exportFile with id [" + exportFile.getId() + "]");
-        Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
-        Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+          if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
+            log.info(
+                "exportFile ["
+                    + exportFile.getId()
+                    + "] is older then 90 days.  Deleting all associated "
+                    + "actionRequests and the exportFile row.");
+            Stream<ActionRequestInstruction> actionRequestInstructions =
+                actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
 
-        if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
-          log.info(
-              "exportFile ["
-                  + exportFile.getId()
-                  + "] is older then 90 days.  Deleting all associated "
-                  + "actionRequests and the exportFile row.");
-          Stream<ActionRequestInstruction> actionRequestInstructions =
-              actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
-
-          actionRequestInstructions.forEach(
-              ari -> {
-                actionRequestRepository.delete(ari);
-                log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
-              });
-          exportFileRepository.delete(exportFile);
-          log.info("Deleted exportFile row [" + exportFile.getId() + "]");
-        } else {
-          log.info(
-              "Not deleting exportFile ["
-                  + exportFile.getId()
-                  + "]. It either hasn't been processed or is "
-                  + "less than 90 days old");
-          allFilesFromExportJobSent = false;
+            actionRequestInstructions.forEach(
+                ari -> {
+                  actionRequestRepository.delete(ari);
+                  log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
+                });
+            exportFileRepository.delete(exportFile);
+            log.info("Deleted exportFile row [" + exportFile.getId() + "]");
+          } else {
+            log.info(
+                "Not deleting exportFile ["
+                    + exportFile.getId()
+                    + "]. It either hasn't been processed or is "
+                    + "less than 90 days old");
+            allFilesFromExportJobSent = false;
+          }
         }
       }
 
