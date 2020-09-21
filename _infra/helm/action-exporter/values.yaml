@@ -30,7 +30,7 @@ service:
 crons:
   recordDeleter:
     name: old-record-deleter
-    cron: "*/15 * * * *"
+    cron: "*/30 * * * *"
     target: "delete-old-data"
   exportScheduler:
     name: export-scheduler
