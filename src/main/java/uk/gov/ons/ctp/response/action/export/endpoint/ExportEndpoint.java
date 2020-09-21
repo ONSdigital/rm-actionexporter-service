@@ -20,6 +20,7 @@ public class ExportEndpoint {
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<String> triggerExport() throws CTPException {
     try {
+      log.debug("Process export requested");
       exportProcessor.processExport();
       return ResponseEntity.ok().body("Export started");
     } catch (Exception e) {
