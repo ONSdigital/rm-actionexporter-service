@@ -32,10 +32,10 @@ public class DeleteProcessor {
   }
 
   /**
-   * Deletes all records for an exportJob that are older then 90 days. This is done partly for GDPR reasons as
-   * after we've sent the printfile then we don't need to hold onto the users data. It's also done
-   * partly to keep the database tidy as we don't need years worth of old printfile data as they're
-   * never replayed.
+   * Deletes all records for an exportJob that are older then 90 days. This is done partly for GDPR
+   * reasons as after we've sent the printfile then we don't need to hold onto the users data. It's
+   * also done partly to keep the database tidy as we don't need years worth of old printfile data
+   * as they're never replayed.
    */
   @Transactional
   public void triggerDeleteForExportJob(ExportJob exportJob) {
