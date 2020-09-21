@@ -1,13 +1,14 @@
+liquibase:
+  user: postgres
+  password: postgres
+  url: jdbc:postgresql://localhost:16432/postgres
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:16432/postgres
     username: postgres
     password: postgres
-
-  liquibase:
-    user: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:16432/postgres
+    port: 16432
 
 gcs:
   bucket: "bucket"

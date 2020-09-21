@@ -11,14 +11,12 @@
 
     <properties>
         <java.version>11</java.version>
-        <springboot.version>2.2.9.RELEASE</springboot.version>
-        <springcloud.version>Hoxton.SR7</springcloud.version>
+        <springboot.version>1.5.22.RELEASE</springboot.version>
+        <springcloud.version>Dalston.SR1</springcloud.version>
         <orika.version>1.5.1</orika.version>
-        <bytebuddy.version>1.10.13</bytebuddy.version>
         <surefire.version>2.22.2</surefire.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <javax.activation.version>1.2.0</javax.activation.version>
-        <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
     </properties>
 
@@ -134,11 +132,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-spring-service-connector</artifactId>
         </dependency>
@@ -152,11 +145,6 @@
         <!-- SPRING END -->
 
         <!-- Third party libraries -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-       </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
@@ -234,30 +222,6 @@
             <version>1.11.1</version>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${bytebuddy.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-dep</artifactId>
-            <version>${bytebuddy.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>javax.xml.soap-api</artifactId>
-            <version>${javax.xml.soap.version}</version>
-        </dependency> 
-
-        <dependency>
-            <groupId>com.sun.xml.messaging.saaj</groupId>
-            <artifactId>saaj-impl</artifactId>
-        </dependency>
-
 
         <!-- Third party end -->
 

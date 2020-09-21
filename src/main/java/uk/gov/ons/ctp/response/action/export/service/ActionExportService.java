@@ -111,11 +111,11 @@ public class ActionExportService {
   private void processActionCancel(ActionCancel actionCancel) {
     log.debug("action_cancel: " + actionCancel.toString() + ", processing actionCancel");
     ActionRequestInstruction actionRequest =
-        actionRequestRepo.getOne(UUID.fromString(actionCancel.getActionId()));
+        actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
 
     boolean cancelled = false;
     if (actionRequest != null && actionRequest.getExportJobId() == null) {
-      actionRequestRepo.deleteById(UUID.fromString(actionCancel.getActionId()));
+      actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
       cancelled = true;
     } else {
       cancelled = false;
