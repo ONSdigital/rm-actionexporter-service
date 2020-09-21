@@ -70,6 +70,6 @@ public class DeleteProcessorTest {
     verify(exportFileRepository).findAllByExportJobId(eq(exportJob.getId()));
     verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
     verify(exportFileRepository).delete(exportFile);
-    assertEquals(actualExportJobs,exportJobList);
+    assertEquals(actualExportJobs, exportJobList);
   }
 }
