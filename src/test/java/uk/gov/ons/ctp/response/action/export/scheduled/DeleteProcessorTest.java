@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -61,12 +62,14 @@ public class DeleteProcessorTest {
     given(actionRequestRepository.findByExportJobId(any())).willReturn(Stream.of(ari));
 
     // When
-    deleteProcessor.triggerDelete();
+    List<ExportJob> actualExportJobs = deleteProcessor.getAllExportJobIdsForDeletion();
+    deleteProcessor.triggerDeleteForExportJob(exportJob);
 
     // Verify
     verify(exportJobRepository).findAll();
     verify(exportFileRepository).findAllByExportJobId(eq(exportJob.getId()));
     verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
     verify(exportFileRepository).delete(exportFile);
+    assertEquals(actualExportJobs, exportJobList);
   }
 }

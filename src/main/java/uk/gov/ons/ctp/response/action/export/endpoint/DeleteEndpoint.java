@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.endpoint;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.scheduled.DeleteProcessor;
 
 @RestController
@@ -20,8 +22,13 @@ public class DeleteEndpoint {
   @RequestMapping(method = RequestMethod.DELETE)
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
-      deleteProcessor.triggerDelete();
-      return ResponseEntity.ok().body("Deletion of old records completed");
+      List<ExportJob> exportJobs = deleteProcessor.getAllExportJobIdsForDeletion();
+
+      for (ExportJob exportJob : exportJobs) {
+        deleteProcessor.triggerDeleteForExportJob(exportJob);
+      }
+      return ResponseEntity.ok()
+          .body("Deletion of old records from [" + exportJobs.size() + "] exportJobs completed");
     } catch (RuntimeException e) {
       log.error(
           "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", e);
