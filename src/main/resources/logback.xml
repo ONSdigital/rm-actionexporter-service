@@ -88,7 +88,6 @@
   </appender>
 
   <root level="WARN">
-    <appender-ref ref="${profile}" />
     <appender-ref ref="SYSLOG" />
     <appender-ref ref="STDOUT" />
   </root>
