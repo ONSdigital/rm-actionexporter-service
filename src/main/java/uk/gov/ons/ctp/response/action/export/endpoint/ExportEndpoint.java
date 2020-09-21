@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.response.action.export.scheduled.ExportScheduler;
+import uk.gov.ons.ctp.response.action.export.scheduled.ExportProcessor;
 
 @RestController
 @RequestMapping(value = "/export", produces = "application/json")
 public class ExportEndpoint {
   private static final Logger log = LoggerFactory.getLogger(ExportEndpoint.class);
 
-  @Autowired private ExportScheduler exportScheduler;
+  @Autowired private ExportProcessor exportProcessor;
 
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<String> triggerExport() throws CTPException {
     try {
-      exportScheduler.processExport();
+      exportProcessor.processExport();
       return ResponseEntity.ok().body("Export started");
     } catch (Exception e) {
       log.error(
