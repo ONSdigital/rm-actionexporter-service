@@ -25,93 +25,90 @@ public class DeleteProcessor {
   @Autowired private ExportJobRepository exportJobRepository;
   @Autowired private ExportFileRepository exportFileRepository;
 
-  /**
-   * Deletes all records for exportJobs older then 90 days. This is done partly for GDPR reasons as
-   * after we've sent the printfile then we don't need to hold onto the users data. It's also done
-   * partly to keep the database tidy as we don't need years worth of old printfile data as they're
-   * never replayed.
-   */
-  @Transactional
-  public void triggerDelete() {
+  public List<ExportJob> getAllExportJobIdsForDeletion() {
     List<ExportJob> exportJobs = exportJobRepository.findAll();
     log.info("Found [" + exportJobs.size() + "] exportJobIds to process");
+    return exportJobs;
+  }
 
-    for (ExportJob exportJob : exportJobs) {
-      List<ExportFile> exportFiles = exportFileRepository.findAllByExportJobId(exportJob.getId());
+  /**
+   * Deletes all records for an exportJob that are older then 90 days. This is done partly for GDPR
+   * reasons as after we've sent the printfile then we don't need to hold onto the users data. It's
+   * also done partly to keep the database tidy as we don't need years worth of old printfile data
+   * as they're never replayed.
+   */
+  @Transactional
+  public void triggerDeleteForExportJob(ExportJob exportJob) {
+    List<ExportFile> exportFiles = exportFileRepository.findAllByExportJobId(exportJob.getId());
+    log.info(
+        "Found [" + exportFiles.size() + "] files for the exportJobId [" + exportJob.getId() + "]");
+    // If the exportJob has any files unsent or younger then 90 days, we don't want to remove the
+    // linking id.
+    // As we loop over every related exportFile, if any of them are less than 90 days old, we'll
+    // change this flag to
+    // false as we need to keep a record of it until every related record is removed.
+    boolean allFilesFromExportJobSent = true;
+
+    // It's possible for an exportJobId to exist and have the Id against a number of
+    // actionRequestInstructions
+    // but for a corresponding exportFile to not exist (because it got manually deleted for
+    // example).  In that case,
+    // the actionRequestInstructions are orphaned and can be safely deleted.
+    if (exportFiles.isEmpty()) {
       log.info(
-          "Found ["
-              + exportFiles.size()
-              + "] files for the exportJobId ["
+          "ExportJobId ["
               + exportJob.getId()
-              + "]");
-      // If the exportJob has any files unsent or younger then 90 days, we don't want to remove the
-      // linking id.
-      // As we loop over every related exportFile, if any of them are less than 90 days old, we'll
-      // change this flag to
-      // false as we need to keep a record of it until every related record is removed.
-      boolean allFilesFromExportJobSent = true;
+              + "] has 0 exportFiles associated with it, deleting any "
+              + "orphaned actionRequestInstructions that might exist");
+      Stream<ActionRequestInstruction> actionRequestInstructions =
+          actionRequestRepository.findByExportJobId(exportJob.getId());
 
-      // It's possible for an exportJobId to exist and have the Id against a number of
-      // actionRequestInstructions
-      // but for a corresponding exportFile to not exist (because it got manually deleted for
-      // example).  In that case,
-      // the actionRequestInstructions are orphaned and can be safely deleted.
-      if (exportFiles.size() == 0) {
-        log.info(
-            "ExportJobId ["
-                + exportJob.getId()
-                + "] has 0 exportFiles associated with it, deleting any "
-                + "orphaned actionRequestInstructions that might exist");
-        Stream<ActionRequestInstruction> actionRequestInstructions =
-            actionRequestRepository.findByExportJobId(exportJob.getId());
+      actionRequestInstructions.forEach(
+          ari -> {
+            actionRequestRepository.delete(ari);
+            log.info("Deleted orphaned action request row [" + ari.getActionrequestPK() + "]");
+          });
+    } else {
+      for (ExportFile exportFile : exportFiles) {
+        log.info("Working on exportFile with id [" + exportFile.getId() + "]");
+        Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
+        Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
 
-        actionRequestInstructions.forEach(
-            ari -> {
-              actionRequestRepository.delete(ari);
-              log.info("Deleted orphaned action request row [" + ari.getActionrequestPK() + "]");
-            });
-      } else {
-        for (ExportFile exportFile : exportFiles) {
-          log.info("Working on exportFile with id [" + exportFile.getId() + "]");
-          Timestamp dateSuccessfullySent = exportFile.getDateSuccessfullySent();
-          Date ninetyDaysAgo = new Date(System.currentTimeMillis() - (90 * DAY_IN_MS));
+        if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
+          log.info(
+              "exportFile ["
+                  + exportFile.getId()
+                  + "] is older then 90 days.  Deleting all associated "
+                  + "actionRequests and the exportFile row.");
+          Stream<ActionRequestInstruction> actionRequestInstructions =
+              actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
 
-          if (dateSuccessfullySent != null && dateSuccessfullySent.before(ninetyDaysAgo)) {
-            log.info(
-                "exportFile ["
-                    + exportFile.getId()
-                    + "] is older then 90 days.  Deleting all associated "
-                    + "actionRequests and the exportFile row.");
-            Stream<ActionRequestInstruction> actionRequestInstructions =
-                actionRequestRepository.findByExportJobId(exportFile.getExportJobId());
-
-            actionRequestInstructions.forEach(
-                ari -> {
-                  actionRequestRepository.delete(ari);
-                  log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
-                });
-            exportFileRepository.delete(exportFile);
-            log.info("Deleted exportFile row [" + exportFile.getId() + "]");
-          } else {
-            log.info(
-                "Not deleting exportFile ["
-                    + exportFile.getId()
-                    + "]. It either hasn't been processed or is "
-                    + "less than 90 days old");
-            allFilesFromExportJobSent = false;
-          }
+          actionRequestInstructions.forEach(
+              ari -> {
+                actionRequestRepository.delete(ari);
+                log.info("Deleted action request row [" + ari.getActionrequestPK() + "]");
+              });
+          exportFileRepository.delete(exportFile);
+          log.info("Deleted exportFile row [" + exportFile.getId() + "]");
+        } else {
+          log.info(
+              "Not deleting exportFile ["
+                  + exportFile.getId()
+                  + "]. It either hasn't been processed or is "
+                  + "less than 90 days old");
+          allFilesFromExportJobSent = false;
         }
       }
+    }
 
-      // If we've deleted all records associated with this exportJobId, then we delete it because
-      // it's not useful.
-      if (allFilesFromExportJobSent) {
-        exportJobRepository.deleteById(exportJob.getId());
-        log.info(
-            "Deleted exportJob row ["
-                + exportJob.getId()
-                + "] as all associated data has been deleted");
-      }
+    // If we've deleted all records associated with this exportJobId, then we delete it because
+    // it's not useful.
+    if (allFilesFromExportJobSent) {
+      exportJobRepository.deleteById(exportJob.getId());
+      log.info(
+          "Deleted exportJob row ["
+              + exportJob.getId()
+              + "] as all associated data has been deleted");
     }
   }
 }
