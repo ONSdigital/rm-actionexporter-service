@@ -54,7 +54,7 @@ public class DeleteProcessor {
     // but for a corresponding exportFile to not exist (because it got manually deleted for
     // example).  In that case,
     // the actionRequestInstructions are orphaned and can be safely deleted.
-    if (exportFiles.size() == 0) {
+    if (exportFiles.isEmpty()) {
       log.info(
           "ExportJobId ["
               + exportJob.getId()

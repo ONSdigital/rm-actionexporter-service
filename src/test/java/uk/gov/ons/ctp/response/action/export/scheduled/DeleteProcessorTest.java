@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -70,6 +70,6 @@ public class DeleteProcessorTest {
     verify(exportFileRepository).findAllByExportJobId(eq(exportJob.getId()));
     verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
     verify(exportFileRepository).delete(exportFile);
-    assertThat(actualExportJobs == exportJobList);
+    assertEquals(actualExportJobs,exportJobList);
   }
 }
