@@ -29,6 +29,7 @@ service:
 
 crons:
   recordDeleter:
+    enabled: false
     name: old-record-deleter
     cron: "0 3 * * *"
     target: "delete-old-data"
