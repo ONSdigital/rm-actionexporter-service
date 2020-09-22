@@ -104,7 +104,7 @@ public class DeleteProcessor {
     // If we've deleted all records associated with this exportJobId, then we delete it because
     // it's not useful.
     if (allFilesFromExportJobSent) {
-      exportJobRepository.deleteById(exportJob.getId());
+      exportJobRepository.delete(exportJob.getId());
       log.info(
           "Deleted exportJob row ["
               + exportJob.getId()
