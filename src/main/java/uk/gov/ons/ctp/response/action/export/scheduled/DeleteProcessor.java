@@ -36,6 +36,9 @@ public class DeleteProcessor {
    * reasons as after we've sent the printfile then we don't need to hold onto the users data. It's
    * also done partly to keep the database tidy as we don't need years worth of old printfile data
    * as they're never replayed.
+   *
+   * If the number of exportJobs exceeds 70k~ then it'll become highly likely that you will encounter an
+   * OutOfMemory error.
    */
   @Transactional
   public void triggerDeleteForExportJob(ExportJob exportJob) {
