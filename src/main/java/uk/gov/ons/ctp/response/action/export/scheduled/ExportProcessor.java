@@ -82,6 +82,7 @@ public class ExportProcessor {
   public void processExport() {
     log.info("export process started");
     if (!actionRequestRepository.existsByExportJobIdIsNull()) {
+      log.info("export process not required");
       return;
     }
 
