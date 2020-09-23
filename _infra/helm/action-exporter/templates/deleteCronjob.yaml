@@ -34,4 +34,4 @@ spec:
             - -c
             - curl -X DELETE -u $(SECURITY_USER_NAME):$(SECURITY_USER_PASSWORD) http://$(APP_NAME):$(APP_PORT)/$(TARGET)
           restartPolicy: OnFailure
-  {{- end }}
+{{- end }}

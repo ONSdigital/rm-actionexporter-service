@@ -1,0 +1,1 @@
+ALTER TABLE actionexporter.actionrequest DROP CONSTRAINT contactfk_fkey;

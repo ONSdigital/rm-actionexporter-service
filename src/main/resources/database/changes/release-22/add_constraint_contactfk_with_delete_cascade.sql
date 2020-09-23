@@ -1,0 +1,1 @@
+ALTER TABLE actionexporter.actionrequest ADD CONSTRAINT contactfk_fkey FOREIGN KEY (contactfk) REFERENCES actionexporter.contact(contactpk) on delete cascade;
