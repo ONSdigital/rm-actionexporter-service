@@ -80,7 +80,9 @@ public class ExportProcessor {
 
   @Transactional
   public void processExport() {
+    log.info("export process started");
     if (!actionRequestRepository.existsByExportJobIdIsNull()) {
+      log.info("nothing to export");
       return;
     }
 
@@ -92,6 +94,7 @@ public class ExportProcessor {
     Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob);
 
     createAndSendFiles(filenamePrefixToDataMap, exportJob);
+    log.info("export process finished");
   }
 
   private Map<String, ExportData> prepareData(ExportJob exportJob) {
