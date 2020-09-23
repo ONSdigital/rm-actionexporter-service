@@ -238,6 +238,10 @@ spec:
             value: "{{ .Values.gcs.enabled }}"
           - name: GCS_BUCKET
             value: "{{ .Values.gcs.bucket }}"
+          - name: GCP_PROJECT
+            value: "{{ .Values.gcp.project }}"
+          - name: GCP_TOPIC
+            value: "{{ .Values.gcp.topic }}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/secrets/google/credentials.json
           resources:

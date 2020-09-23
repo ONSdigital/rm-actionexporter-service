@@ -2,8 +2,7 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayOutputStream;
@@ -70,6 +69,8 @@ public class ExportProcessorTest {
     given(templateMappingService.retrieveAllTemplateMappingsByActionType())
         .willReturn(fileNameTemplateMappings);
     given(templateService.stream(any(), any())).willReturn(bos);
+    given(notificationFileCreator.createFilename("FILENAMEPREFIX_SURVEYREF_EXERCISEREF"))
+        .willReturn("FILENAMEPREFIX_SURVEYREF_EXERCISEREF.csv");
 
     // When
     exportProcessor.processExport();
@@ -79,7 +80,9 @@ public class ExportProcessorTest {
     verify(actionRequestRepository).updateActionsWithExportJob(eq(exportJob.getId()));
     verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
     verify(templateMappingService).retrieveAllTemplateMappingsByActionType();
-    verify(printFileService).send(actionRequestInstructions);
+    verify(notificationFileCreator).createFilename("FILENAMEPREFIX_SURVEYREF_EXERCISEREF");
+    verify(printFileService)
+        .send("FILENAMEPREFIX_SURVEYREF_EXERCISEREF.csv", actionRequestInstructions);
 
     ArgumentCaptor<ByteArrayOutputStream> bosCaptor =
         ArgumentCaptor.forClass(ByteArrayOutputStream.class);

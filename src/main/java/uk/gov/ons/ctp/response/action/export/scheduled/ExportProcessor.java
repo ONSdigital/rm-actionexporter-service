@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.response.action.export.scheduled;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,9 @@ import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 @Component
 public class ExportProcessor {
   private static final Logger log = LoggerFactory.getLogger(ExportProcessor.class);
+
+  private static final SimpleDateFormat FILENAME_DATE_FORMAT =
+      new SimpleDateFormat("ddMMyyyy_HHmm");
 
   private final TemplateMappingService templateMappingService;
 
@@ -96,20 +100,15 @@ public class ExportProcessor {
 
     actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
 
-    Stream<ActionRequestInstruction> actionRequestInstructions =
-        actionRequestRepository.findByExportJobId(exportJob.getId());
-    List<ActionRequestInstruction> instructions =
-        actionRequestInstructions.collect(Collectors.toList());
+    Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob);
 
-    printFileService.send(instructions);
-
-    Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob, instructions);
     createAndSendFiles(filenamePrefixToDataMap, exportJob);
     log.info("export process finished");
   }
 
-  private Map<String, ExportData> prepareData(
-      ExportJob exportJob, List<ActionRequestInstruction> actionRequestInstructions) {
+  private Map<String, ExportData> prepareData(ExportJob exportJob) {
+    Stream<ActionRequestInstruction> actionRequestInstructions =
+        actionRequestRepository.findByExportJobId(exportJob.getId());
 
     Map<String, TemplateMapping> templateMappings =
         templateMappingService.retrieveAllTemplateMappingsByActionType();
@@ -144,6 +143,11 @@ public class ExportProcessor {
     filenamePrefixToDataMap.forEach(
         (filenamePrefix, data) -> {
           List<ByteArrayOutputStream> streamList = new LinkedList<>();
+
+          // temporarily hook in here as at this point we know the name of the file
+          // and all the action request instructions
+          String filename = notificationFileCreator.createFilename(filenamePrefix);
+          printFileService.send(filename, data.getActionRequestInstructionList());
 
           streamList.add(
               templateService.stream(

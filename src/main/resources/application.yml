@@ -125,3 +125,7 @@ messaging:
 gcs:
   bucket: "bucket"
   enabled: false
+
+gcp:
+  project: ras-rm-sandbox
+  topic: ras-rm-print-file

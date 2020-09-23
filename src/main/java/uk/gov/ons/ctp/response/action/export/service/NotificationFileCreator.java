@@ -59,8 +59,7 @@ public class NotificationFileCreator {
       return;
     }
 
-    final String now = FILENAME_DATE_FORMAT.format(clock.millis());
-    String filename = String.format("%s_%s.csv", filenamePrefix, now);
+    String filename = createFilename(filenamePrefix);
 
     if (exportFileRepository.existsByFilename(filename)) {
       log.warn(
@@ -87,5 +86,11 @@ public class NotificationFileCreator {
     sftpService.sendMessage(filename, responseRequiredList, Integer.toString(actionCount), data);
 
     eventPublisher.publishEvent("Printed file " + filename);
+  }
+
+  public String createFilename(String filenamePrefix) {
+    final String now = FILENAME_DATE_FORMAT.format(clock.millis());
+    String filename = String.format("%s_%s.csv", filenamePrefix, now);
+    return filename;
   }
 }
