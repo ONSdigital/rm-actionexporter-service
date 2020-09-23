@@ -22,6 +22,7 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
+import uk.gov.ons.ctp.response.action.export.service.PrintFileService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
@@ -39,17 +40,21 @@ public class ExportProcessor {
 
   private ExportJobRepository exportJobRepository;
 
+  private PrintFileService printFileService;
+
   public ExportProcessor(
       TemplateMappingService templateMappingService,
       NotificationFileCreator notificationFileCreator,
       ActionRequestRepository actionRequestRepository,
       TemplateService templateService,
-      ExportJobRepository exportJobRepository) {
+      ExportJobRepository exportJobRepository,
+      PrintFileService printFileService) {
     this.templateMappingService = templateMappingService;
     this.notificationFileCreator = notificationFileCreator;
     this.actionRequestRepository = actionRequestRepository;
     this.templateService = templateService;
     this.exportJobRepository = exportJobRepository;
+    this.printFileService = printFileService;
   }
 
   private class ExportData {
@@ -91,15 +96,20 @@ public class ExportProcessor {
 
     actionRequestRepository.updateActionsWithExportJob(exportJob.getId());
 
-    Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob);
+    Stream<ActionRequestInstruction> actionRequestInstructions =
+        actionRequestRepository.findByExportJobId(exportJob.getId());
+    List<ActionRequestInstruction> instructions =
+        actionRequestInstructions.collect(Collectors.toList());
 
+    printFileService.send(instructions);
+
+    Map<String, ExportData> filenamePrefixToDataMap = prepareData(exportJob, instructions);
     createAndSendFiles(filenamePrefixToDataMap, exportJob);
     log.info("export process finished");
   }
 
-  private Map<String, ExportData> prepareData(ExportJob exportJob) {
-    Stream<ActionRequestInstruction> actionRequestInstructions =
-        actionRequestRepository.findByExportJobId(exportJob.getId());
+  private Map<String, ExportData> prepareData(
+      ExportJob exportJob, List<ActionRequestInstruction> actionRequestInstructions) {
 
     Map<String, TemplateMapping> templateMappings =
         templateMappingService.retrieveAllTemplateMappingsByActionType();

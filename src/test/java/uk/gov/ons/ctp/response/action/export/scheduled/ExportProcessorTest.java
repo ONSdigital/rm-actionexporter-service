@@ -7,10 +7,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -23,6 +20,7 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
+import uk.gov.ons.ctp.response.action.export.service.PrintFileService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
@@ -33,6 +31,7 @@ public class ExportProcessorTest {
   @Mock private NotificationFileCreator notificationFileCreator;
   @Mock private ExportJobRepository exportJobRepository;
   @Mock private TemplateService templateService;
+  @Mock private PrintFileService printFileService;
 
   @InjectMocks private ExportProcessor exportProcessor;
 
@@ -47,6 +46,8 @@ public class ExportProcessorTest {
     ari.setSurveyRef("SURVEYREF");
     ari.setExerciseRef("EXERCISEREF");
     ari.setResponseRequired(true);
+
+    List<ActionRequestInstruction> actionRequestInstructions = Collections.singletonList(ari);
 
     TemplateMapping templateMapping = new TemplateMapping();
     templateMapping.setTemplate("TEMPLATENAME");
@@ -63,8 +64,9 @@ public class ExportProcessorTest {
     // Given
     given(actionRequestRepository.existsByExportJobIdIsNull()).willReturn(true);
     given(exportJobRepository.saveAndFlush(any())).willReturn(exportJob);
+
     given(actionRequestRepository.findByExportJobId(any()))
-        .willReturn(Collections.singletonList(ari).stream());
+        .willReturn(actionRequestInstructions.stream());
     given(templateMappingService.retrieveAllTemplateMappingsByActionType())
         .willReturn(fileNameTemplateMappings);
     given(templateService.stream(any(), any())).willReturn(bos);
@@ -77,6 +79,7 @@ public class ExportProcessorTest {
     verify(actionRequestRepository).updateActionsWithExportJob(eq(exportJob.getId()));
     verify(actionRequestRepository).findByExportJobId(eq(exportJob.getId()));
     verify(templateMappingService).retrieveAllTemplateMappingsByActionType();
+    verify(printFileService).send(actionRequestInstructions);
 
     ArgumentCaptor<ByteArrayOutputStream> bosCaptor =
         ArgumentCaptor.forClass(ByteArrayOutputStream.class);
