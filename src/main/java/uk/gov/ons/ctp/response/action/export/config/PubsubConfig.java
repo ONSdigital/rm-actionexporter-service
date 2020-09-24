@@ -16,7 +16,7 @@ public class PubsubConfig {
   public Publisher publisherSupplier(
       @Value("${gcp.project}") String project, @Value("${gcp.topic}") String topic)
       throws IOException {
-    log.info("creating pubsub publish for topic " + topic);
+    log.info("creating pubsub publish for topic " + topic + " in project " + project);
     TopicName topicName = TopicName.of(project, topic);
     return Publisher.newBuilder(topicName).build();
   }
