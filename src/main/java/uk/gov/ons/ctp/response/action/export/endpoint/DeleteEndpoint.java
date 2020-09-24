@@ -22,13 +22,16 @@ public class DeleteEndpoint {
   @RequestMapping(method = RequestMethod.DELETE)
   public ResponseEntity<String> triggerDelete() throws CTPException {
     try {
+      log.info("Beginning deletion of old records");
       List<ExportJob> exportJobs = deleteProcessor.getAllExportJobIdsForDeletion();
 
       for (ExportJob exportJob : exportJobs) {
         deleteProcessor.triggerDeleteForExportJob(exportJob);
       }
+      log.info("Completed deletion of old records. [" + exportJobs.size() + "] exportJobs deleted");
       return ResponseEntity.ok()
-          .body("Deletion of old records from [" + exportJobs.size() + "] exportJobs completed");
+          .body(
+              "Completed deletion of old records. [" + exportJobs.size() + "] exportJobs deleted");
     } catch (RuntimeException e) {
       log.error(
           "Uncaught exception - transaction rolled back. Will re-run when scheduled by cron", e);
