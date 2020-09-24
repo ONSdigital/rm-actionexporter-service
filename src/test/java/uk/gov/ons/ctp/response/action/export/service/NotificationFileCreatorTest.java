@@ -68,8 +68,8 @@ public class NotificationFileCreatorTest {
     assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
-    verify(sftpService)
-        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
+    //    verify(sftpService)
+    //        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
 
     verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
   }
@@ -100,11 +100,11 @@ public class NotificationFileCreatorTest {
     assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
-    verify(sftpService)
-        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
+    //    verify(sftpService)
+    //        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
 
     verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
-    verify(uploadObjectGCS).uploadObject(eq(expectedFilename), eq("testBucket"), eq(bos));
+    //    verify(uploadObjectGCS).uploadObject(eq(expectedFilename), eq("testBucket"), eq(bos));
   }
 
   @Test

@@ -77,13 +77,15 @@ public class NotificationFileCreator {
     exportFile.setFilename(filename);
     exportFileRepository.saveAndFlush(exportFile);
 
-    boolean isEnabled = appConfig.getGcs().isEnabled();
-    if (isEnabled) {
-      String bucket = appConfig.getGcs().getBucket();
-      uploadObjectGCS.uploadObject(filename, bucket, data);
-      log.info("bucket: " + bucket + ", file uploaded to bucket.");
-    }
-    sftpService.sendMessage(filename, responseRequiredList, Integer.toString(actionCount), data);
+    //    remove SFTP and GCS upload
+    //    boolean isEnabled = appConfig.getGcs().isEnabled();
+    //    if (isEnabled) {
+    //      String bucket = appConfig.getGcs().getBucket();
+    //      uploadObjectGCS.uploadObject(filename, bucket, data);
+    //      log.info("bucket: " + bucket + ", file uploaded to bucket.");
+    //    }
+    //    sftpService.sendMessage(filename, responseRequiredList, Integer.toString(actionCount),
+    // data);
 
     eventPublisher.publishEvent("Printed file " + filename);
   }

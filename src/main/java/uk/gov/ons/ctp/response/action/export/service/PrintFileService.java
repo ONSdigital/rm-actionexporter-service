@@ -30,7 +30,7 @@ public class PrintFileService {
 
       ByteString data = ByteString.copyFromUtf8(json);
       PubsubMessage pubsubMessage =
-          PubsubMessage.newBuilder().setData(data).setMessageId(filename).build();
+          PubsubMessage.newBuilder().setData(data).putAttributes("filename", filename).build();
 
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
