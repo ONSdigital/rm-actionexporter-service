@@ -1,7 +1,7 @@
 databaseChangeLog:
 
   - changeSet:
-      id: 23
+      id: 23-1
       author: Warren Bailey
       changes:
         - sqlFile:
@@ -9,4 +9,3 @@ databaseChangeLog:
             path: drop_template_mapping.sql
             relativeToChangelogFile: true
             splitStatements: false
-
