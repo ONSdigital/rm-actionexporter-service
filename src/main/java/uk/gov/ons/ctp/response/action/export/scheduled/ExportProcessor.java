@@ -14,11 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
-import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
+import uk.gov.ons.ctp.response.action.export.service.FilenamePrefix;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
-import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 
 @Component
 public class ExportProcessor {
@@ -27,8 +26,6 @@ public class ExportProcessor {
   private static final SimpleDateFormat FILENAME_DATE_FORMAT =
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
-  private final TemplateMappingService templateMappingService;
-
   private final NotificationFileCreator notificationFileCreator;
 
   private final ActionRequestRepository actionRequestRepository;
@@ -36,27 +33,19 @@ public class ExportProcessor {
   private ExportJobRepository exportJobRepository;
 
   public ExportProcessor(
-      TemplateMappingService templateMappingService,
       NotificationFileCreator notificationFileCreator,
       ActionRequestRepository actionRequestRepository,
       ExportJobRepository exportJobRepository) {
-    this.templateMappingService = templateMappingService;
     this.notificationFileCreator = notificationFileCreator;
     this.actionRequestRepository = actionRequestRepository;
     this.exportJobRepository = exportJobRepository;
   }
 
   private class ExportData {
-    private TemplateMapping mapping;
     private List<ActionRequestInstruction> ariList;
 
-    public ExportData(TemplateMapping mapping, ActionRequestInstruction ari) {
-      this.mapping = mapping;
+    public ExportData(ActionRequestInstruction ari) {
       this.ariList = new ArrayList<ActionRequestInstruction>(Arrays.asList(ari));
-    }
-
-    public TemplateMapping getTemplateMapping() {
-      return mapping;
     }
 
     public List<ActionRequestInstruction> getActionRequestInstructionList() {
@@ -95,27 +84,21 @@ public class ExportProcessor {
     Stream<ActionRequestInstruction> actionRequestInstructions =
         actionRequestRepository.findByExportJobId(exportJob.getId());
 
-    Map<String, TemplateMapping> templateMappings =
-        templateMappingService.retrieveAllTemplateMappingsByActionType();
-
     Map<String, ExportData> filenamePrefixToDataMap = new HashMap<>();
 
     actionRequestInstructions.forEach(
         ari -> {
-          if (templateMappings.containsKey(ari.getActionType())) {
-            TemplateMapping mapping = templateMappings.get(ari.getActionType());
-            String filenamePrefix =
-                mapping.getFileNamePrefix()
-                    + "_"
-                    + ari.getSurveyRef()
-                    + "_"
-                    + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
+          String filenamePrefix =
+              FilenamePrefix.getPrefix(ari.getActionType())
+                  + "_"
+                  + ari.getSurveyRef()
+                  + "_"
+                  + getExerciseRefWithoutSurveyRef(ari.getExerciseRef());
 
-            if (filenamePrefixToDataMap.containsKey(filenamePrefix)) {
-              filenamePrefixToDataMap.get(filenamePrefix).addActionRequestInstruction(ari);
-            } else {
-              filenamePrefixToDataMap.put(filenamePrefix, new ExportData(mapping, ari));
-            }
+          if (filenamePrefixToDataMap.containsKey(filenamePrefix)) {
+            filenamePrefixToDataMap.get(filenamePrefix).addActionRequestInstruction(ari);
+          } else {
+            filenamePrefixToDataMap.put(filenamePrefix, new ExportData(ari));
           }
         });
 

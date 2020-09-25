@@ -17,7 +17,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
@@ -32,7 +31,6 @@ public class NotificationFileCreatorTest {
 
   @Mock private Clock clock;
   @Mock private ExportFileRepository exportFileRepository;
-  @Mock private AppConfig appConfig;
   @Mock private PrintFileService printFileService;
   @InjectMocks private NotificationFileCreator notificationFileCreator;
 
@@ -56,11 +54,10 @@ public class NotificationFileCreatorTest {
     given(clock.millis()).willReturn(now.getTime());
 
     // When
-    notificationFileCreator.uploadData("TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
+    notificationFileCreator.uploadData("BSNOT", actionRequestInstructions, exportJob);
 
     // Then
-    String expectedFilename =
-        String.format("TESTFILENAMEPREFIX_%s.csv", FILENAME_DATE_FORMAT.format(now));
+    String expectedFilename = String.format("BSNOT_%s.csv", FILENAME_DATE_FORMAT.format(now));
     ArgumentCaptor<ExportFile> exportFileArgumentCaptor = ArgumentCaptor.forClass(ExportFile.class);
     verify(exportFileRepository).saveAndFlush(exportFileArgumentCaptor.capture());
     assertThat(exportFileArgumentCaptor.getValue().getFilename()).isEqualTo(expectedFilename);
@@ -91,8 +88,7 @@ public class NotificationFileCreatorTest {
 
     // When
     try {
-      notificationFileCreator.uploadData(
-          "TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
+      notificationFileCreator.uploadData("BSNOT", actionRequestInstructions, exportJob);
     } catch (RuntimeException ex) {
       expectedExceptionThrown = true;
     }
