@@ -12,5 +12,7 @@
 
     <import resource="action-feedback-outbound-flow.xml"/>
 
+    <import resource="rabbit-template.xml"/>
+
 </beans>
 
