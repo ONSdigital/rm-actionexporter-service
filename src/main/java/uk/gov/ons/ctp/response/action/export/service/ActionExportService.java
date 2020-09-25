@@ -1,8 +1,6 @@
 package uk.gov.ons.ctp.response.action.export.service;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import org.slf4j.Logger;
@@ -14,12 +12,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ctp.common.time.DateTimeUtil;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
-import uk.gov.ons.ctp.response.action.export.message.ActionFeedbackPublisher;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.AddressRepository;
-import uk.gov.ons.ctp.response.action.message.feedback.ActionFeedback;
-import uk.gov.ons.ctp.response.action.message.feedback.Outcome;
-import uk.gov.ons.ctp.response.action.message.instruction.ActionCancel;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionInstruction;
 import uk.gov.ons.ctp.response.action.message.instruction.ActionRequest;
 
@@ -31,8 +25,6 @@ public class ActionExportService {
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
 
   private static final int TRANSACTION_TIMEOUT = 60;
-
-  @Autowired private ActionFeedbackPublisher actionFeedbackPubl;
 
   @Qualifier("actionExporterBeanMapper")
   @Autowired
@@ -52,7 +44,7 @@ public class ActionExportService {
     } else {
       log.info("No ActionRequest to process");
       if (instruction.getActionCancel() != null) {
-        processActionCancel(instruction.getActionCancel());
+        log.error("cancel actions no longer supported");
       } else {
         log.info("No ActionCancel to process");
       }
@@ -90,45 +82,6 @@ public class ActionExportService {
       log.warn("action_id: ", actionRequestDoc.getActionId() + ", key ActionId already exists");
     } else {
       actionRequestRepo.persist(actionRequestDoc);
-    }
-
-    if (actionRequestDoc.isResponseRequired()) {
-      String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(now);
-      ActionFeedback actionFeedback =
-          new ActionFeedback(
-              actionRequestDoc.getActionId().toString(),
-              "ActionExport Stored: " + timeStamp,
-              Outcome.REQUEST_ACCEPTED);
-      actionFeedbackPubl.sendActionFeedback(actionFeedback);
-    }
-  }
-
-  /**
-   * To process an ActionCancel
-   *
-   * @param actionCancel to be processed
-   */
-  private void processActionCancel(ActionCancel actionCancel) {
-    log.debug("action_cancel: " + actionCancel.toString() + ", processing actionCancel");
-    ActionRequestInstruction actionRequest =
-        actionRequestRepo.findOne(UUID.fromString(actionCancel.getActionId()));
-
-    boolean cancelled = false;
-    if (actionRequest != null && actionRequest.getExportJobId() == null) {
-      actionRequestRepo.delete(UUID.fromString(actionCancel.getActionId()));
-      cancelled = true;
-    } else {
-      cancelled = false;
-    }
-
-    if (actionCancel.isResponseRequired()) {
-      String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-      ActionFeedback actionFeedback =
-          new ActionFeedback(
-              actionCancel.getActionId(),
-              "ActionExport Cancelled: " + timeStamp,
-              cancelled ? Outcome.CANCELLATION_COMPLETED : Outcome.CANCELLATION_FAILED);
-      actionFeedbackPubl.sendActionFeedback(actionFeedback);
     }
   }
 }
