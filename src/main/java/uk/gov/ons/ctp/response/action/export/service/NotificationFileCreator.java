@@ -6,11 +6,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
-import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 
 @Service
@@ -21,8 +19,6 @@ public class NotificationFileCreator {
   private static final SimpleDateFormat FILENAME_DATE_FORMAT =
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
-  private final EventPublisher eventPublisher;
-
   private final ExportFileRepository exportFileRepository;
 
   private final Clock clock;
@@ -30,12 +26,7 @@ public class NotificationFileCreator {
   private PrintFileService printFileService;
 
   public NotificationFileCreator(
-      EventPublisher eventPublisher,
-      ExportFileRepository exportFileRepository,
-      Clock clock,
-      AppConfig appConfig,
-      PrintFileService printFileService) {
-    this.eventPublisher = eventPublisher;
+      ExportFileRepository exportFileRepository, Clock clock, PrintFileService printFileService) {
     this.exportFileRepository = exportFileRepository;
     this.clock = clock;
     this.printFileService = printFileService;
@@ -72,7 +63,5 @@ public class NotificationFileCreator {
     // temporarily hook in here as at this point we know the name of the file
     // and all the action request instructions
     printFileService.send(filename, actionRequestInstructions);
-
-    eventPublisher.publishEvent("Printed file " + filename);
   }
 }

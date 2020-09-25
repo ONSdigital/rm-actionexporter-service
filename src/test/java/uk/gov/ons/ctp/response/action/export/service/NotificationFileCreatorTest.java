@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.response.action.export.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.text.SimpleDateFormat;
@@ -23,8 +22,6 @@ import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
-import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
-import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,8 +31,6 @@ public class NotificationFileCreatorTest {
       new SimpleDateFormat("ddMMyyyy_HHmm");
 
   @Mock private Clock clock;
-  @Mock private ActionRequestRepository actionRequestRepository;
-  @Mock private EventPublisher eventPublisher;
   @Mock private ExportFileRepository exportFileRepository;
   @Mock private AppConfig appConfig;
   @Mock private PrintFileService printFileService;
@@ -73,7 +68,6 @@ public class NotificationFileCreatorTest {
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
     verify(printFileService).send(expectedFilename, actionRequestInstructions);
-    verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
   }
 
   @Test
@@ -106,6 +100,5 @@ public class NotificationFileCreatorTest {
     // Then
     assertThat(expectedExceptionThrown).isTrue();
     verify(exportFileRepository, never()).saveAndFlush(any());
-    verify(eventPublisher, never()).publishEvent(any());
   }
 }
