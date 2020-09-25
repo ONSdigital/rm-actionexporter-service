@@ -46,7 +46,7 @@ databaseChangeLog:
       changes:
         - sqlFile:
             comment: Drop template table
-            path: drop_template.sql
+            path: drop_template_mapping.sql
             relativeToChangelogFile: true
             splitStatements: false
 
