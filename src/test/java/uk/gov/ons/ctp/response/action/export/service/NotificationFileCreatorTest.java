@@ -19,13 +19,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
-import uk.gov.ons.ctp.response.action.export.config.GCS;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
-import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 
@@ -37,7 +35,6 @@ public class NotificationFileCreatorTest {
 
   @Mock private Clock clock;
   @Mock private ActionRequestRepository actionRequestRepository;
-  @Mock private SftpServicePublisher sftpService;
   @Mock private EventPublisher eventPublisher;
   @Mock private ExportFileRepository exportFileRepository;
   @Mock private AppConfig appConfig;
@@ -59,52 +56,11 @@ public class NotificationFileCreatorTest {
     ExportJob exportJob = new ExportJob(UUID.randomUUID());
 
     Date now = new Date();
-    GCS mockGCS = mock(GCS.class);
-    mockGCS.setEnabled(false);
+
     // Given
-    given(appConfig.getGcs()).willReturn(mockGCS);
     given(clock.millis()).willReturn(now.getTime());
 
     // When
-    notificationFileCreator.uploadData("TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
-
-    // Then
-    String expectedFilename =
-        String.format("TESTFILENAMEPREFIX_%s.csv", FILENAME_DATE_FORMAT.format(now));
-    ArgumentCaptor<ExportFile> exportFileArgumentCaptor = ArgumentCaptor.forClass(ExportFile.class);
-    verify(exportFileRepository).saveAndFlush(exportFileArgumentCaptor.capture());
-    assertThat(exportFileArgumentCaptor.getValue().getFilename()).isEqualTo(expectedFilename);
-    assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
-    assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
-
-    //    verify(sftpService)
-    //        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
-
-    verify(printFileService).send(expectedFilename, actionRequestInstructions);
-    verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
-  }
-
-  @Test
-  public void shouldCreateTheCorrectFilenameAndUploadDataToGCS() {
-    String actionType = "ACTIONTYPE";
-    ActionRequestInstruction ari = new ActionRequestInstruction();
-    ari.setActionId(UUID.randomUUID());
-    ari.setActionType(actionType);
-    ari.setSurveyRef("SURVEYREF");
-    ari.setExerciseRef("EXERCISEREF");
-    ari.setResponseRequired(true);
-
-    List<ActionRequestInstruction> actionRequestInstructions = Collections.singletonList(ari);
-    ExportJob exportJob = new ExportJob(UUID.randomUUID());
-    Date now = new Date();
-    GCS mockGCS = mock(GCS.class);
-    // Given
-    given(appConfig.getGcs()).willReturn(mockGCS);
-    given(clock.millis()).willReturn(now.getTime());
-
-    // When
-    when(appConfig.getGcs().isEnabled()).thenReturn(true);
-    when(appConfig.getGcs().getBucket()).thenReturn("testBucket");
     notificationFileCreator.uploadData("TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
 
     // Then
@@ -150,7 +106,6 @@ public class NotificationFileCreatorTest {
     // Then
     assertThat(expectedExceptionThrown).isTrue();
     verify(exportFileRepository, never()).saveAndFlush(any());
-    verify(sftpService, never()).sendMessage(any(), any(), any(), any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 }

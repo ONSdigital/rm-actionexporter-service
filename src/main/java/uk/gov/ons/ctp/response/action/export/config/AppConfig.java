@@ -11,8 +11,5 @@ import uk.gov.ons.ctp.common.message.rabbit.Rabbitmq;
 @Data
 public class AppConfig {
   private Rabbitmq rabbitmq;
-  private ExportSchedule exportSchedule;
-  private DataGrid dataGrid;
   private Logging logging;
-  private GCS gcs;
 }

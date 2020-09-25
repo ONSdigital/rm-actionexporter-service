@@ -19,7 +19,6 @@ import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
-import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
 @Component
 public class ExportProcessor {
@@ -40,7 +39,6 @@ public class ExportProcessor {
       TemplateMappingService templateMappingService,
       NotificationFileCreator notificationFileCreator,
       ActionRequestRepository actionRequestRepository,
-      TemplateService templateService,
       ExportJobRepository exportJobRepository) {
     this.templateMappingService = templateMappingService;
     this.notificationFileCreator = notificationFileCreator;
