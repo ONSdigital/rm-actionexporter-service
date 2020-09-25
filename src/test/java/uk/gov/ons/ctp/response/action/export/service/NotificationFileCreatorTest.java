@@ -6,10 +6,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,12 +20,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.config.GCS;
+import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile;
 import uk.gov.ons.ctp.response.action.export.domain.ExportFile.SendStatus;
 import uk.gov.ons.ctp.response.action.export.domain.ExportJob;
 import uk.gov.ons.ctp.response.action.export.message.EventPublisher;
 import uk.gov.ons.ctp.response.action.export.message.SftpServicePublisher;
-import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportFileRepository;
 
@@ -40,14 +41,23 @@ public class NotificationFileCreatorTest {
   @Mock private EventPublisher eventPublisher;
   @Mock private ExportFileRepository exportFileRepository;
   @Mock private AppConfig appConfig;
-  @Mock private UploadObjectGCS uploadObjectGCS;
+  @Mock private PrintFileService printFileService;
   @InjectMocks private NotificationFileCreator notificationFileCreator;
 
   @Test
   public void shouldCreateTheCorrectFilename() {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    String actionType = "ACTIONTYPE";
+    ActionRequestInstruction ari = new ActionRequestInstruction();
+    ari.setActionId(UUID.randomUUID());
+    ari.setActionType(actionType);
+    ari.setSurveyRef("SURVEYREF");
+    ari.setExerciseRef("EXERCISEREF");
+    ari.setResponseRequired(true);
+
+    List<ActionRequestInstruction> actionRequestInstructions = Collections.singletonList(ari);
+
     ExportJob exportJob = new ExportJob(UUID.randomUUID());
-    String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
+
     Date now = new Date();
     GCS mockGCS = mock(GCS.class);
     mockGCS.setEnabled(false);
@@ -56,8 +66,7 @@ public class NotificationFileCreatorTest {
     given(clock.millis()).willReturn(now.getTime());
 
     // When
-    notificationFileCreator.uploadData(
-        "TESTFILENAMEPREFIX", bos, exportJob, responseRequiredList, 666);
+    notificationFileCreator.uploadData("TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
 
     // Then
     String expectedFilename =
@@ -71,14 +80,22 @@ public class NotificationFileCreatorTest {
     //    verify(sftpService)
     //        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
 
+    verify(printFileService).send(expectedFilename, actionRequestInstructions);
     verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
   }
 
   @Test
   public void shouldCreateTheCorrectFilenameAndUploadDataToGCS() {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    String actionType = "ACTIONTYPE";
+    ActionRequestInstruction ari = new ActionRequestInstruction();
+    ari.setActionId(UUID.randomUUID());
+    ari.setActionType(actionType);
+    ari.setSurveyRef("SURVEYREF");
+    ari.setExerciseRef("EXERCISEREF");
+    ari.setResponseRequired(true);
+
+    List<ActionRequestInstruction> actionRequestInstructions = Collections.singletonList(ari);
     ExportJob exportJob = new ExportJob(UUID.randomUUID());
-    String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
     Date now = new Date();
     GCS mockGCS = mock(GCS.class);
     // Given
@@ -88,8 +105,7 @@ public class NotificationFileCreatorTest {
     // When
     when(appConfig.getGcs().isEnabled()).thenReturn(true);
     when(appConfig.getGcs().getBucket()).thenReturn("testBucket");
-    notificationFileCreator.uploadData(
-        "TESTFILENAMEPREFIX", bos, exportJob, responseRequiredList, 666);
+    notificationFileCreator.uploadData("TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
 
     // Then
     String expectedFilename =
@@ -100,18 +116,22 @@ public class NotificationFileCreatorTest {
     assertThat(exportFileArgumentCaptor.getValue().getExportJobId()).isEqualTo(exportJob.getId());
     assertThat(exportFileArgumentCaptor.getValue().getStatus()).isEqualTo(SendStatus.QUEUED);
 
-    //    verify(sftpService)
-    //        .sendMessage(eq(expectedFilename), eq(responseRequiredList), eq("666"), eq(bos));
-
+    verify(printFileService).send(expectedFilename, actionRequestInstructions);
     verify(eventPublisher).publishEvent(eq("Printed file " + expectedFilename));
-    //    verify(uploadObjectGCS).uploadObject(eq(expectedFilename), eq("testBucket"), eq(bos));
   }
 
   @Test
   public void shouldThrowExceptionForDuplicateFilename() {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    String actionType = "ACTIONTYPE";
+    ActionRequestInstruction ari = new ActionRequestInstruction();
+    ari.setActionId(UUID.randomUUID());
+    ari.setActionType(actionType);
+    ari.setSurveyRef("SURVEYREF");
+    ari.setExerciseRef("EXERCISEREF");
+    ari.setResponseRequired(true);
+
+    List<ActionRequestInstruction> actionRequestInstructions = Collections.singletonList(ari);
     ExportJob exportJob = new ExportJob(UUID.randomUUID());
-    String[] responseRequiredList = {"123", "ABC", "FOO", "BAR"};
     Date now = new Date();
     boolean expectedExceptionThrown = false;
 
@@ -122,7 +142,7 @@ public class NotificationFileCreatorTest {
     // When
     try {
       notificationFileCreator.uploadData(
-          "TESTFILENAMEPREFIX", bos, exportJob, responseRequiredList, 666);
+          "TESTFILENAMEPREFIX", actionRequestInstructions, exportJob);
     } catch (RuntimeException ex) {
       expectedExceptionThrown = true;
     }

@@ -1,16 +1,11 @@
 package uk.gov.ons.ctp.response.action.export.scheduled;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +18,6 @@ import uk.gov.ons.ctp.response.action.export.domain.TemplateMapping;
 import uk.gov.ons.ctp.response.action.export.repository.ActionRequestRepository;
 import uk.gov.ons.ctp.response.action.export.repository.ExportJobRepository;
 import uk.gov.ons.ctp.response.action.export.service.NotificationFileCreator;
-import uk.gov.ons.ctp.response.action.export.service.PrintFileService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateMappingService;
 import uk.gov.ons.ctp.response.action.export.service.TemplateService;
 
@@ -40,25 +34,18 @@ public class ExportProcessor {
 
   private final ActionRequestRepository actionRequestRepository;
 
-  private TemplateService templateService;
-
   private ExportJobRepository exportJobRepository;
-
-  private PrintFileService printFileService;
 
   public ExportProcessor(
       TemplateMappingService templateMappingService,
       NotificationFileCreator notificationFileCreator,
       ActionRequestRepository actionRequestRepository,
       TemplateService templateService,
-      ExportJobRepository exportJobRepository,
-      PrintFileService printFileService) {
+      ExportJobRepository exportJobRepository) {
     this.templateMappingService = templateMappingService;
     this.notificationFileCreator = notificationFileCreator;
     this.actionRequestRepository = actionRequestRepository;
-    this.templateService = templateService;
     this.exportJobRepository = exportJobRepository;
-    this.printFileService = printFileService;
   }
 
   private class ExportData {
@@ -142,45 +129,10 @@ public class ExportProcessor {
 
     filenamePrefixToDataMap.forEach(
         (filenamePrefix, data) -> {
-          List<ByteArrayOutputStream> streamList = new LinkedList<>();
-
-          // temporarily hook in here as at this point we know the name of the file
-          // and all the action request instructions
-          String filename = notificationFileCreator.createFilename(filenamePrefix);
-          printFileService.send(filename, data.getActionRequestInstructionList());
-
-          streamList.add(
-              templateService.stream(
-                  data.getActionRequestInstructionList(), data.getTemplateMapping().getTemplate()));
-
-          Set<String> responseRequiredList =
-              data.getActionRequestInstructionList().stream()
-                  .filter(ActionRequestInstruction::isResponseRequired)
-                  .map(ari -> ari.getActionId().toString())
-                  .collect(Collectors.toSet());
-
-          notificationFileCreator.uploadData(
-              filenamePrefix,
-              getMergedStreams(streamList),
-              exportJob,
-              responseRequiredList.toArray(new String[0]),
-              data.getActionRequestInstructionList().size());
+          List<ActionRequestInstruction> actionRequestInstructions =
+              data.getActionRequestInstructionList();
+          notificationFileCreator.uploadData(filenamePrefix, actionRequestInstructions, exportJob);
         });
-  }
-
-  private ByteArrayOutputStream getMergedStreams(List<ByteArrayOutputStream> streamList) {
-    ByteArrayOutputStream mergedStream = new ByteArrayOutputStream();
-
-    for (ByteArrayOutputStream outputStream : streamList) {
-      try {
-        mergedStream.write(outputStream.toByteArray());
-      } catch (IOException ex) {
-        log.error("Error merging ByteArrayOutputStreams", ex);
-        throw new RuntimeException();
-      }
-    }
-
-    return mergedStream;
   }
 
   private String getExerciseRefWithoutSurveyRef(String exerciseRef) {
