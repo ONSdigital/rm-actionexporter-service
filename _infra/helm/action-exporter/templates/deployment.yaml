@@ -186,58 +186,14 @@ spec:
             value: "$(DB_USERNAME)"
           - name: SPRING_DATASOURCE_PASSWORD
             value: "$(DB_PASSWORD)"
-          - name: SFTP_HOST
-            {{- if .Values.sftp.test.enabled }}
-            value: "$(SFTP_SERVICE_HOST)"
-            {{- else }}
-            value: {{ .Values.sftp.host }}
-            {{- end }}
-          - name: SFTP_PORT
-            value: "22"
-          - name: SFTP_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: sftp-secret
-                key: sftp-actionexporter-user
-          - name: SFTP_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: sftp-secret
-                key: sftp-actionexporter-password
-          - name: SFTP_DIRECTORY
-            value: "{{ .Values.sftp.directory }}"
-          - name: REDIS_HOST
-            {{- if .Values.database.managedRedis }}
-            valueFrom:
-              configMapKeyRef:
-                name: redis-config
-                key: redis-host
-            {{- else }}
-            value: "$(REDIS_MASTER_SERVICE_HOST)"
-            {{- end }}
-          - name: REDIS_PORT
-            {{- if .Values.database.managedRedis }}
-            valueFrom:
-              configMapKeyRef:
-                name: redis-config
-                key: redis-port
-            {{- else }}
-            value: "$(REDIS_MASTER_SERVICE_PORT)"
-            {{- end}}
-          - name: DATA_GRID_ADDRESS
-            value: "$(REDIS_HOST):$(REDIS_PORT)"
-          - name: FREEMARKER_DELAYFORNEWTEMPLATES
-            value: "3600000"
-          - name: DATA_GRID_LOCK_TIME_TO_LIVE_SECONDS
-            value: "45"
           - name: LOGGING_LEVEL_uk.gov.ons.ctp.response.action.export.scheduled
             value: "WARN"
           - name: LOGGING_LEVEL_com.jcraft.jsch
             value: "DEBUG"
-          - name: GCS_ENABLED
-            value: "{{ .Values.gcs.enabled }}"
-          - name: GCS_BUCKET
-            value: "{{ .Values.gcs.bucket }}"
+          - name: GCP_PROJECT
+            value: "{{ .Values.gcp.project }}"
+          - name: GCP_TOPIC
+            value: "{{ .Values.gcp.topic }}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/secrets/google/credentials.json
           resources:

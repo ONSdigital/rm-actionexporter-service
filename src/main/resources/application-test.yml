@@ -10,19 +10,5 @@ spring:
     password: postgres
     port: 16432
 
-gcs:
-  bucket: "bucket"
-  enabled: false
-
-sftp:
-  port: 1122
-  host: localhost
-  username: centos
-  password: "JLibV2&XD,"
-  directory: Documents/sftp/
-
-data-grid:
-  address: localhost:17379
-
 rabbitmq:
   port: 7672

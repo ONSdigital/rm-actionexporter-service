@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.domain.Address;
+import uk.gov.ons.ctp.response.action.export.domain.Contact;
 
 /** Utility class to build objects required in tests */
 public class ObjectBuilder {
@@ -33,7 +34,22 @@ public class ObjectBuilder {
     result.setActionType("testActionType");
     result.setIac("testIac");
     result.setAddress(buildActionAddress());
+    result.setSurveyRef("testSurveyRef");
+    result.setCaseGroupStatus("testCaseGroupStatus");
+    result.setEnrolmentStatus("testEnrolmentStatus");
+    result.setRespondentStatus("testRespondentStatus");
+    result.setContact(buildContact());
+    result.setRegion("testRegion");
+    result.setSampleUnitRef("testSampleUnitRef");
     return result;
+  }
+
+  private static Contact buildContact() {
+    Contact contact = new Contact();
+    contact.setEmailAddress("testEmailAddress");
+    contact.setForename("testForename");
+    contact.setSurname("testSurname");
+    return contact;
   }
 
   /**

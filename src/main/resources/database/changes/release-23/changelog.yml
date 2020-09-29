@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 23-1
+      author: Warren Bailey
+      changes:
+        - sqlFile:
+            comment: Drop template mapping table
+            path: drop_template_mapping.sql
+            relativeToChangelogFile: true
+            splitStatements: false

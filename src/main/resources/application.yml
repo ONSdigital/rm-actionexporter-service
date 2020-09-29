@@ -76,11 +76,6 @@ spring:
       min-idle: 3
     initialization-mode: always
 
-  freemarker:
-    template-loader-path: classpath:/templates/
-    suffix: .ftl
-    delayfornewtemplates: 86400000
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     show-sql: false
@@ -88,17 +83,6 @@ spring:
       hibernate:
         ddl-auto: update
         default_schema: actionexporter
-  
-data-grid:
-  address: localhost:6379
-  lock-time-to-live-seconds: 3600
-
-sftp:
-  host: localhost
-  port: 122
-  username: centos
-  password: "JLibV2&XD,"
-  directory: Documents/sftp/
 
 redelivery-policy:
   maxRedeliveries: 10
@@ -125,3 +109,7 @@ messaging:
 gcs:
   bucket: "bucket"
   enabled: false
+
+gcp:
+  project: ras-rm-sandbox
+  topic: ras-rm-print-file

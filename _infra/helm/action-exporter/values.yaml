@@ -45,14 +45,9 @@ resources:
   requests:
     memory: "256Mi"
 
-sftp:
-  directory: /home/demo/sftp
-  test:
-    enabled: true
-
 managedRabbitMQ:
   enabled: false
 
-gcs:
-  bucket: "example"
-  enabled: false
+gcp:
+  project: ras-rm-sandbox
+  topic: print-file-jobs

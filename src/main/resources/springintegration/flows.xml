@@ -10,11 +10,7 @@
 
     <import resource="action-instruction-inbound-flow.xml"/>
 
-    <import resource="sftp-outbound-flow.xml"/>
-
-    <import resource="action-feedback-outbound-flow.xml"/>
-    
-    <import resource="action-exporter-event-messager.xml"/>
+    <import resource="rabbit-template.xml"/>
 
 </beans>
 
