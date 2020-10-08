@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.ons.ctp.response.action.export.config.AppConfig;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
 import uk.gov.ons.ctp.response.action.export.printfile.Contact;
 import uk.gov.ons.ctp.response.action.export.printfile.PrintFileEntry;
 
@@ -22,15 +25,32 @@ public class PrintFileService {
 
   @Autowired private Publisher publisher;
 
-  public void send(String filename, List<ActionRequestInstruction> actionRequestInstructions) {
+  @Autowired private AppConfig appConfig;
+
+  @Autowired private UploadObjectGCS uploadObjectGCS;
+
+  public void send(String printFilename, List<ActionRequestInstruction> actionRequestInstructions) {
+
+    String dataFilename = FilenameUtils.removeExtension(printFilename).concat(".json");
+
     List<PrintFileEntry> printFile = convertToPrintFile(actionRequestInstructions);
     try {
       String json = createJsonRepresentation(printFile);
       log.info("json");
 
       ByteString data = ByteString.copyFromUtf8(json);
+
+      String bucket = appConfig.getGcs().getBucket();
+      uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
+      log.info("bucket: " + bucket + ", file " + dataFilename + " uploaded to bucket.");
+
+      ByteString pubsubData = ByteString.copyFromUtf8(dataFilename);
+
       PubsubMessage pubsubMessage =
-          PubsubMessage.newBuilder().setData(data).putAttributes("filename", filename).build();
+          PubsubMessage.newBuilder()
+              .setData(pubsubData)
+              .putAttributes("filename", printFilename)
+              .build();
 
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();

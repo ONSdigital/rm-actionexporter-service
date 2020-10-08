@@ -3,6 +3,7 @@ package uk.gov.ons.ctp.response.action.export.service;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import com.google.api.core.ApiFuture;
@@ -13,7 +14,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.ons.ctp.response.action.export.config.AppConfig;
+import uk.gov.ons.ctp.response.action.export.config.GCS;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
+import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
 import uk.gov.ons.ctp.response.action.export.printfile.PrintFileEntry;
 import uk.gov.ons.ctp.response.action.export.utility.ObjectBuilder;
 
@@ -23,6 +27,9 @@ public class PrintFileServiceTest {
 
   @Mock private Publisher publisher;
   @Mock ApiFuture<String> apiFuture;
+  @Mock UploadObjectGCS uploadObjectGCS;
+  @Mock AppConfig appConfig;
+  @Mock GCS gcs;
 
   @InjectMocks private PrintFileService printFileService;
 
@@ -54,16 +61,17 @@ public class PrintFileServiceTest {
 
     given(publisher.publish(any())).willReturn(apiFuture);
     given(apiFuture.get()).willReturn("test");
+    given(uploadObjectGCS.uploadObject(anyString(), anyString(), any())).willReturn(true);
+    given(appConfig.getGcs()).willReturn(gcs);
+    given(gcs.getBucket()).willReturn("test-bucket");
+
     List<ActionRequestInstruction> actionRequestInstructions =
         ObjectBuilder.buildListOfActionRequests();
 
-    try {
-      printFileService.send("test.csv", actionRequestInstructions);
-    } catch (RuntimeException e) {
-      fail(e.getMessage());
-    }
+    printFileService.send("test.csv", actionRequestInstructions);
 
     verify(publisher).publish(any());
     verify(apiFuture).get();
+    verify(uploadObjectGCS).uploadObject(anyString(), anyString(), any());
   }
 }

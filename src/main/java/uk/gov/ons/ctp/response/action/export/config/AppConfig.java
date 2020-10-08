@@ -12,4 +12,5 @@ import uk.gov.ons.ctp.common.message.rabbit.Rabbitmq;
 public class AppConfig {
   private Rabbitmq rabbitmq;
   private Logging logging;
+  private GCS gcs;
 }

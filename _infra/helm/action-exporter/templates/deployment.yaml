@@ -194,6 +194,10 @@ spec:
             value: "{{ .Values.gcp.project }}"
           - name: GCP_TOPIC
             value: "{{ .Values.gcp.topic }}"
+          - name: GCS_ENABLED
+            value: "{{ .Values.gcs.enabled }}"
+          - name: GCS_BUCKET
+            value: "{{ .Values.gcs.bucket }}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/secrets/google/credentials.json
           resources:
