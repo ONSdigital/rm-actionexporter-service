@@ -35,14 +35,13 @@ public class PrintFileService {
 
     List<PrintFileEntry> printFile = convertToPrintFile(actionRequestInstructions);
     try {
+      log.debug("creating json representation of print file");
       String json = createJsonRepresentation(printFile);
-      log.info("json");
-
       ByteString data = ByteString.copyFromUtf8(json);
 
       String bucket = appConfig.getGcs().getBucket();
+      log.info(" about to uploaded to bucket " + bucket);
       uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
-      log.info("bucket: " + bucket + ", file " + dataFilename + " uploaded to bucket.");
 
       ByteString pubsubData = ByteString.copyFromUtf8(dataFilename);
 
@@ -55,8 +54,7 @@ public class PrintFileService {
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
       log.debug("messageId: " + messageId);
-      log.debug("print file pubsub sent sucessfully");
-      log.info(json);
+      log.debug("print file pubsub successfully sent with messageId:" + messageId);
     } catch (JsonProcessingException e) {
       log.error("unable to convert to json", e);
     } catch (InterruptedException | ExecutionException e) {

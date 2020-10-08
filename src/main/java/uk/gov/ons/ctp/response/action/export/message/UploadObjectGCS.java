@@ -16,7 +16,7 @@ public class UploadObjectGCS {
 
   public boolean uploadObject(String filename, String bucket, byte[] data) {
     BlobId blobId = BlobId.of(bucket, filename);
-    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/json").build();
     Boolean isSuccess = false;
     log.info("file_name: ", filename + "bucket: " + bucket + ", Uploading to GCS bucket");
     try {
