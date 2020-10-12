@@ -22,10 +22,15 @@ public class UploadObjectGCS {
     try {
       storage.create(blobInfo, data);
       isSuccess = true;
-      log.info("file_name: "+ filename + " bucket: " + bucket + ", Upload Successful!");
+      log.info("file_name: " + filename + " bucket: " + bucket + ", Upload Successful!");
     } catch (StorageException exception) {
       log.error(
-          "file_name: " + filename  + " bucket: " + bucket + ", Error uploading the generated file to GCS", exception);
+          "file_name: "
+              + filename
+              + " bucket: "
+              + bucket
+              + ", Error uploading the generated file to GCS",
+          exception);
     }
     return isSuccess;
   }
