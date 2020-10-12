@@ -50,7 +50,7 @@ public class PrintFileService {
         PubsubMessage pubsubMessage =
             PubsubMessage.newBuilder()
                 .setData(pubsubData)
-                .putAttributes("filename", printFilename)
+                .putAttributes("printFilename", printFilename)
                 .build();
 
         ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
