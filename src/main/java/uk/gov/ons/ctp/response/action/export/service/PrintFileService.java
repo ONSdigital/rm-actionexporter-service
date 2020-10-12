@@ -41,7 +41,7 @@ public class PrintFileService {
       ByteString data = ByteString.copyFromUtf8(json);
 
       String bucket = appConfig.getGcs().getBucket();
-      log.info(" about to uploaded to bucket " + bucket);
+      log.info("about to uploaded to bucket " + bucket);
       boolean uploaded = uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
 
       if (uploaded) {
@@ -55,8 +55,7 @@ public class PrintFileService {
 
         ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
         String messageId = messageIdFuture.get();
-        log.debug("messageId: " + messageId);
-        log.debug("print file pubsub successfully sent with messageId:" + messageId);
+        log.info("print file pubsub successfully sent with messageId:" + messageId);
         success = true;
       }
     } catch (JsonProcessingException e) {
