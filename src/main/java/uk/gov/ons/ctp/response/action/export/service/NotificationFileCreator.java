@@ -55,13 +55,15 @@ public class NotificationFileCreator {
 
     log.info("filename: " + filename + ", uploading file");
 
-    ExportFile exportFile = new ExportFile();
-    exportFile.setExportJobId(exportJob.getId());
-    exportFile.setFilename(filename);
-    exportFileRepository.saveAndFlush(exportFile);
-
     // temporarily hook in here as at this point we know the name of the file
     // and all the action request instructions
-    printFileService.send(filename, actionRequestInstructions);
+    boolean success = printFileService.send(filename, actionRequestInstructions);
+
+    if (success) {
+      ExportFile exportFile = new ExportFile();
+      exportFile.setExportJobId(exportJob.getId());
+      exportFile.setFilename(filename);
+      exportFileRepository.saveAndFlush(exportFile);
+    }
   }
 }

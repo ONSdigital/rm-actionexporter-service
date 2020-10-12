@@ -48,6 +48,9 @@ resources:
 managedRabbitMQ:
   enabled: false
 
+gcs:
+  bucket: "ras-rm-print-file"
+
 gcp:
   project: ras-rm-sandbox
   topic: print-file-jobs
