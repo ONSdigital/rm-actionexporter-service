@@ -29,8 +29,9 @@ public class PrintFileService {
 
   @Autowired private UploadObjectGCS uploadObjectGCS;
 
-  public void send(String printFilename, List<ActionRequestInstruction> actionRequestInstructions) {
-
+  public boolean send(
+      String printFilename, List<ActionRequestInstruction> actionRequestInstructions) {
+    boolean success = false;
     String dataFilename = FilenameUtils.removeExtension(printFilename).concat(".json");
 
     List<PrintFileEntry> printFile = convertToPrintFile(actionRequestInstructions);
@@ -41,25 +42,29 @@ public class PrintFileService {
 
       String bucket = appConfig.getGcs().getBucket();
       log.info(" about to uploaded to bucket " + bucket);
-      uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
+      boolean uploaded = uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
 
-      ByteString pubsubData = ByteString.copyFromUtf8(dataFilename);
+      if (uploaded) {
+        ByteString pubsubData = ByteString.copyFromUtf8(dataFilename);
 
-      PubsubMessage pubsubMessage =
-          PubsubMessage.newBuilder()
-              .setData(pubsubData)
-              .putAttributes("filename", printFilename)
-              .build();
+        PubsubMessage pubsubMessage =
+            PubsubMessage.newBuilder()
+                .setData(pubsubData)
+                .putAttributes("filename", printFilename)
+                .build();
 
-      ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-      String messageId = messageIdFuture.get();
-      log.debug("messageId: " + messageId);
-      log.debug("print file pubsub successfully sent with messageId:" + messageId);
+        ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+        String messageId = messageIdFuture.get();
+        log.debug("messageId: " + messageId);
+        log.debug("print file pubsub successfully sent with messageId:" + messageId);
+        success = true;
+      }
     } catch (JsonProcessingException e) {
       log.error("unable to convert to json", e);
     } catch (InterruptedException | ExecutionException e) {
       log.error("pub/sub error", e);
     }
+    return success;
   }
 
   private String createJsonRepresentation(List<PrintFileEntry> printFile)

@@ -25,11 +25,7 @@ public class UploadObjectGCS {
       log.info("file_name: ", filename + "bucket: " + bucket + ", Upload Successful!");
     } catch (StorageException exception) {
       log.error(
-          "exception:"
-              + exception
-              + ", file_name: "
-              + filename
-              + ", Error uploading the generated file to GCS");
+          "file_name: " + filename + ", Error uploading the generated file to GCS", exception);
     }
     return isSuccess;
   }

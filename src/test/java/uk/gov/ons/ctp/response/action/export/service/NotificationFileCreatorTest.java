@@ -51,13 +51,14 @@ public class NotificationFileCreatorTest {
     Date now = new Date();
 
     // Given
+    String expectedFilename = String.format("BSNOT_%s.csv", FILENAME_DATE_FORMAT.format(now));
     given(clock.millis()).willReturn(now.getTime());
+    given(printFileService.send(expectedFilename, actionRequestInstructions)).willReturn(true);
 
     // When
     notificationFileCreator.uploadData("BSNOT", actionRequestInstructions, exportJob);
 
     // Then
-    String expectedFilename = String.format("BSNOT_%s.csv", FILENAME_DATE_FORMAT.format(now));
     ArgumentCaptor<ExportFile> exportFileArgumentCaptor = ArgumentCaptor.forClass(ExportFile.class);
     verify(exportFileRepository).saveAndFlush(exportFileArgumentCaptor.capture());
     assertThat(exportFileArgumentCaptor.getValue().getFilename()).isEqualTo(expectedFilename);
