@@ -9,6 +9,3 @@ spring:
     username: postgres
     password: postgres
     port: 16432
-
-rabbitmq:
-  port: 7672

@@ -89,23 +89,6 @@ redelivery-policy:
   initialRedeliveryDelay: 1000
   redeliveryDelay: 1000
 
-rabbitmq:
-  username: guest
-  password: guest
-  host: localhost
-  port: 5672
-  virtualhost: /
-
-messaging:
-  backoffInitial: 5000
-  backoffMultiplier: 3
-  backoffMax: 45000
-  consumingThreads: 1
-  pubMaxAttempts: 3
-  conMaxAttempts: 3
-  prefetchCount: 10
-  txSize: 1
-
 gcs:
   bucket: "bucket"
   enabled: false
