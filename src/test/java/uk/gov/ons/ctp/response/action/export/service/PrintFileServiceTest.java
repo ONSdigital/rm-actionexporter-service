@@ -15,7 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ons.ctp.response.action.export.config.AppConfig;
-import uk.gov.ons.ctp.response.action.export.config.GCS;
+import uk.gov.ons.ctp.response.action.export.config.Bucket;
+import uk.gov.ons.ctp.response.action.export.config.GCP;
 import uk.gov.ons.ctp.response.action.export.domain.ActionRequestInstruction;
 import uk.gov.ons.ctp.response.action.export.message.UploadObjectGCS;
 import uk.gov.ons.ctp.response.action.export.printfile.PrintFileEntry;
@@ -29,7 +30,8 @@ public class PrintFileServiceTest {
   @Mock ApiFuture<String> apiFuture;
   @Mock UploadObjectGCS uploadObjectGCS;
   @Mock AppConfig appConfig;
-  @Mock GCS gcs;
+  @Mock GCP gcp;
+  @Mock Bucket bucket;
 
   @InjectMocks private PrintFileService printFileService;
 
@@ -62,8 +64,9 @@ public class PrintFileServiceTest {
     given(publisher.publish(any())).willReturn(apiFuture);
     given(apiFuture.get()).willReturn("test");
     given(uploadObjectGCS.uploadObject(anyString(), anyString(), any())).willReturn(true);
-    given(appConfig.getGcs()).willReturn(gcs);
-    given(gcs.getBucket()).willReturn("test-bucket");
+    given(appConfig.getGcp()).willReturn(gcp);
+    given(gcp.getBucket()).willReturn(bucket);
+    given(bucket.getName()).willReturn("test-bucket");
 
     List<ActionRequestInstruction> actionRequestInstructions =
         ObjectBuilder.buildListOfActionRequests();

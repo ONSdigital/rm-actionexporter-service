@@ -40,7 +40,7 @@ public class PrintFileService {
       String json = createJsonRepresentation(printFile);
       ByteString data = ByteString.copyFromUtf8(json);
 
-      String bucket = appConfig.getGcs().getBucket();
+      String bucket = appConfig.getGcp().getBucket().getName();
       log.info("about to uploaded to bucket " + bucket);
       boolean uploaded = uploadObjectGCS.uploadObject(dataFilename, bucket, data.toByteArray());
 

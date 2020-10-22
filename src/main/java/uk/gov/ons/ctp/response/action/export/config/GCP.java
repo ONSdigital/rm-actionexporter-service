@@ -4,6 +4,6 @@ import lombok.Data;
 
 /** Config POJO for GCS params */
 @Data
-public class GCS {
-  private String bucket;
+public class GCP {
+  private Bucket bucket;
 }
