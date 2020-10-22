@@ -195,9 +195,9 @@ spec:
           - name: GCP_TOPIC
             value: "{{ .Values.gcp.topic }}"
           - name: GCP_BUCKET_NAME
-            value: "{{ .Values.gcs.bucket.name }}"
+            value: "{{ .Values.gcp.bucket.name }}"
           - name: GCP_BUCKET_PREFIX
-            value: "{{ .Values.gcs.bucket.prefix }}"
+            value: "{{ .Values.gcp.bucket.prefix }}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/secrets/google/credentials.json
           resources:
