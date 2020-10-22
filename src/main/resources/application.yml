@@ -106,10 +106,9 @@ messaging:
   prefetchCount: 10
   txSize: 1
 
-gcs:
-  bucket: "bucket"
-  enabled: false
-
 gcp:
+  bucket:
+    name: ras-rm-print-file
+    prefix: ""
   project: ras-rm-sandbox
   topic: ras-rm-print-file
